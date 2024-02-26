@@ -4,5 +4,5 @@ export interface EvaluateRequest {
 }
 
 export interface EvaluateResponse {
-    score: number,
+    scores: number[],
 }

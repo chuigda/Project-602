@@ -6,5 +6,5 @@ pub struct EvaluateRequest {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct EvaluateResponse {
-    pub score: i64,
+    pub scores: Vec<i64>,
 }
