@@ -1,7 +1,3 @@
-# Tauri + Vanilla TS
+# Project-602
 
-This template should help get you started developing with Tauri in vanilla HTML, CSS and Typescript.
-
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+我一日找不到恰当的语言，表达我对各位予以怎样的期望。我可以告诉大家重要的决定，我要把精力放在军事上面 ... 一举收复荆州，是完全可能的。
