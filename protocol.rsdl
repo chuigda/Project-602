@@ -1,0 +1,7 @@
+[rust_serde]
+[rust_derive(Debug, Clone)]
+EvaluateRequest(positions: list<str>, without_king: bool)
+
+[rust_serde]
+[rust_derive(Debug, Clone)]
+EvaluateResponse(score: int)
