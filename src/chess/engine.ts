@@ -21,7 +21,7 @@ export interface Engine {
 export async function makeMove(game: Chess, engine: Engine): Promise<string> {
     const fen = trimFEN(game.fen())
 
-    if (fen in OpeningBook) {
+    if (fen in OpeningBook && OpeningBook[fen].moves.length !== 0) {
         const openingInaccuracyTolerance = engine.config.openingInaccuracyTolerance ??
             engine.config.inaccuracyTolerance
 
@@ -30,6 +30,12 @@ export async function makeMove(game: Chess, engine: Engine): Promise<string> {
         const mostTolerableScore = bestMoveScore - openingInaccuracyTolerance
 
         const acceptableMoves = opening.moves.filter(([, score]) => score >= mostTolerableScore)
+        if (acceptableMoves.length === 0) {
+            const randomIndex = Math.floor(Math.random() * opening.moves.length)
+            const [move, _] = opening.moves[randomIndex]
+            game.move(move)
+            return move
+        }
         const randomIndex = Math.floor(Math.random() * acceptableMoves.length)
 
         const [move, _] = acceptableMoves[randomIndex]
