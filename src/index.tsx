@@ -62,8 +62,11 @@ async function onMove() {
     const scores = response.result!.scores
     $('debuginfo')!.textContent =
     `Initial position, white score: ${-scores[0]}
-Candidate moves: ${candidateMoves.map(move => move.lan).join(',')}
-Scores: ${scores.slice(1).join(',')}`
+Candidate moves:`
+
+for (let i = 0; i < candidateMoves.length; i++) {
+    $('debuginfo')!.textContent += `\n${candidateMoves[i].lan}: ${-scores[i + 1]}`
+}
 
     // find the move of minimum (white) score
     let minScore = 999999
