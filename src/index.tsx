@@ -71,7 +71,7 @@ for (let i = 0; i < candidateMoves.length; i++) {
     // find the move of minimum (white) score
     let minScore = 999999
     let minScoreIdx = -1
-    for (let i = 1; i < scores.length; i++) {
+    for (let i = 0; i < scores.length; i++) {
         if (scores[i] < minScore) {
             minScore = scores[i]
             minScoreIdx = i
