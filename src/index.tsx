@@ -9,7 +9,7 @@ const game = new Chess()
 
 async function applicationStart() {
     $('body')!.appendChild(<div>
-        <code><pre>{ game.ascii() }</pre></code>
+        <code><pre id="gameboard">{ game.ascii() }</pre></code>
         <span>
             MOVE:
             <input id="move" type="text"></input>
@@ -25,10 +25,12 @@ async function applicationStart() {
 
 async function onMove() {
     const move = ($('move')! as HTMLInputElement).value as string
+    ($('move') as HTMLInputElement).value = ''
     try {
         game.move(move)
     } catch (e) {
         $('debuginfo')!.textContent = `Error: invalid move: ${e}`
+        return
     }
 
     const initialPosition = game.fen()
@@ -59,10 +61,25 @@ async function onMove() {
 
     const scores = response.result!.scores
     $('debuginfo')!.textContent =
-    `Initial position, white score: ${-scores[0]}\n
-Candidate moves: ${candidateMoves.map(move => move.lan).join(',')}\n
+    `Initial position, white score: ${-scores[0]}
+Candidate moves: ${candidateMoves.map(move => move.lan).join(',')}
 Scores: ${scores.slice(1).join(',')}`
 
+    // find the move of minimum (white) score
+    let minScore = 999999
+    let minScoreIdx = -1
+    for (let i = 1; i < scores.length; i++) {
+        if (scores[i] < minScore) {
+            minScore = scores[i]
+            minScoreIdx = i
+        }
+    }
+
+    const bestMove = candidateMoves[minScoreIdx]
+    game.move(bestMove)
+
+    $('debuginfo')!.textContent += `\nBest move: ${bestMove.lan}`
+    $('gameboard')!.textContent = game.ascii()
 }
 
 document.addEventListener('DOMContentLoaded', applicationStart)
