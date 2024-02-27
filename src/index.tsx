@@ -61,11 +61,11 @@ async function onMove() {
 
     const scores = response.result!.scores
     $('debuginfo')!.textContent =
-    `Initial position, white score: ${-scores[0]}
+    `Before black move, white score: ${-scores[0]}
 Candidate moves:`
 
 for (let i = 0; i < candidateMoves.length; i++) {
-    $('debuginfo')!.textContent += `\n${candidateMoves[i].lan}: ${-scores[i + 1]}`
+    $('debuginfo')!.textContent += `\n${candidateMoves[i].lan}: ${scores[i + 1]}`
 }
 
     // find the move of minimum (white) score
