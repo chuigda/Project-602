@@ -3129,8 +3129,7 @@ checksum = "42ff0bf0c66b8238c6f3b578df37d0b7848e55df8577b3f74f92a69acceeb825"
 [[package]]
 name = "uciengine"
 version = "0.1.33"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "40fbc4b3240348173c7ebe246c03ba7948c6b958fea6151c54369e451bd85c8f"
+source = "git+https://github.com/chuigda/uciengine?rev=58a859dbde947124612c4bf0ac2c1697053ab885#58a859dbde947124612c4bf0ac2c1697053ab885"
 dependencies = [
  "envor",
  "log",

@@ -1,14 +1,18 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod protocol;
+mod analyse;
 
+use analyse::evaluate_position;
 use protocol::{CommandResult, EvaluateRequest, EvaluateResponse};
 
 #[tauri::command]
 async fn evaluate(request: EvaluateRequest) -> CommandResult<EvaluateResponse> {
-    let mut scores = Vec::new();
-    scores.extend(request.positions.iter().map(|_| 1));
-    CommandResult::success(EvaluateResponse { scores })
+    if let Ok(scores) = evaluate_position(request).await {
+        CommandResult::success(EvaluateResponse { scores })
+    } else {
+        CommandResult::failure()
+    }
 }
 
 fn main() {
