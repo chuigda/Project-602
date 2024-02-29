@@ -1,35 +1,41 @@
-import { h } from 'tsx-dom'
-
 import { $ } from './min-jquery'
 import { Chess, Square } from 'chess.js'
 import { Chessground } from 'chessground';
 
-import { makeMove, createEngine } from './chess/engine'
+import { makeMove, createEngine, Engine} from './chess/engine'
 import { Key, MoveMetadata } from 'chessground/types';
 import { Api } from 'chessground/api';
 
 const game = new Chess()
-const engine = createEngine({
-    targetAverageInaccuracy: 125,
-    inaccuracyTolerance: 200,
-    openingInaccuracyTolerance: 30
-})
-
+let engine: Engine
 let chessboard: Api
 
 async function applicationStart() {
-    setTimeout(() => {
-        chessboard = Chessground($('chessground') as HTMLElement, {
-            turnColor: 'white',
-            movable: {
-                free: true,
-                color: 'white',
-                events: {
-                    after: onMove
-                }
+    $('start')?.addEventListener('click', configureAndStartGame)
+}
+
+function configureAndStartGame() {
+    const targetAverageInaccuracy = parseInt(($('targetAverageInaccuracy')! as HTMLInputElement).value)
+    const inaccuracyTolerance = parseInt(($('inaccuracyTolerance')! as HTMLInputElement).value)
+    const openingInaccuracyTolerance = parseInt(($('openingInaccuracyTolerance')! as HTMLInputElement).value)
+
+    engine = createEngine({
+        targetAverageInaccuracy: targetAverageInaccuracy,
+        inaccuracyTolerance: inaccuracyTolerance,
+        openingInaccuracyTolerance: openingInaccuracyTolerance
+    })
+    chessboard = Chessground($('chessground') as HTMLElement, {
+        turnColor: 'white',
+        movable: {
+            free: true,
+            color: 'white',
+            events: {
+                after: onMove
             }
-        })
-    }, 50)
+        }
+    })
+
+    $('config')?.remove()
 }
 
 async function onMove(orig: Key, dest: Key, metadata: MoveMetadata) {
@@ -76,7 +82,7 @@ async function onMove(orig: Key, dest: Key, metadata: MoveMetadata) {
         $('debuginfo')!.textContent = `Error: engine move: ${e}`
         return
     }
-    $('debuginfo')!.textContent = `Engine move: ${engineMove}
+    $('debuginfo')!.textContent = `Engine move: ${engineMove} ${engine.inaccuracyHistory.length === 0 ? "(book move)" : ""}
 current average inaccuracy: ${engine.currentAverageInaccuracy}
 target average inaccuracy: ${engine.config.targetAverageInaccuracy}`
     if (engine.inaccuracyHistory.length != 0) {

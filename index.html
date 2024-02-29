@@ -25,6 +25,13 @@
   </head>
 
   <body id="body">
+    <div id="config">
+      <div>目标平均失准<input id="targetAverageInaccuracy" type="number" value="125" /></div>
+      <div>最大单步失准容许<input id="inaccuracyTolerance" type="number" value="200" /></div>
+      <div>开局书失准容许<input id="openingInaccuracyTolerance" type="number" value="30" /></div>
+      <button id="start">开始</button>
+    </div>
+
     <div id="chessground">
     </div>
     <code style="color: red"><pre id="debuginfo">debuginfo</pre></code>
