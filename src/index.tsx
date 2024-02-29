@@ -2,6 +2,8 @@ import { h } from 'tsx-dom'
 
 import { $ } from './min-jquery'
 import { Chess } from 'chess.js'
+import { Chessground } from 'chessground';
+
 import { makeMove, createEngine } from './chess/engine'
 
 const game = new Chess()
@@ -11,24 +13,15 @@ const engine = createEngine({
     openingInaccuracyTolerance: 30
 })
 
-async function applicationStart() {
-    $('body')!.appendChild(<div>
-        <code><pre id="gameboard">{ game.ascii() }</pre></code>
-        <span>
-            MOVE:
-            <input id="move" type="text"></input>
-            <button onClick={onMove}>Move</button>
-        </span>
-        <br />
-        <code style="color: red">
-            <pre id="debuginfo">
-            </pre>
-        </code>
-    </div>)
-}
+let chessboard
 
-function updateDisplay() {
-    $('gameboard')!.textContent = game.ascii()
+async function applicationStart() {
+    const div = <div id="chessboard" /> as HTMLElement
+    $('body')!.appendChild(div)
+
+    setTimeout(() => {
+        chessboard = Chessground(div, {})
+    }, 50)
 }
 
 async function onMove() {
@@ -43,14 +36,12 @@ async function onMove() {
 
     if (game.isGameOver()) {
         $('debuginfo')!.textContent = `Game over`
-        updateDisplay()
         return
     }
 
     const engineMove = await makeMove(game, engine)
     $('debuginfo')!.textContent = `Engine move: ${engineMove}`
 
-    updateDisplay()
     if (game.isGameOver()) {
         $('debuginfo')!.textContent = `Game over`
     }

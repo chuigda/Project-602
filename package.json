@@ -1,6 +1,6 @@
 {
   "name": "project-602",
-  "private": true,
+  "private": false,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^1",
-    "chess.js": "^1.0.0-beta.8"
+    "chess.js": "^1.0.0-beta.8",
+    "chessground": "^9.0.4"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1",
