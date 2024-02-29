@@ -64,57 +64,48 @@ export async function makeMove(game: Chess, engine: Engine): Promise<string> {
     const scores = response.result!.scores
     const moveScores = candidateMoves.map((move, i) => ({
         move,
-        score: -scores[i]
+        score: -scores[i],
+        inaccuracy: 0
     })).sort((a, b) => b.score - a.score)
-
     const bestScore = moveScores[0].score
-    const tolerableScore = bestScore - engine.config.inaccuracyTolerance
-    const acceptableMoveScores = moveScores.filter(({ score }) => score >= tolerableScore)
 
-    console.log('candidate moves:', acceptableMoveScores)
-    if (engine.currentAverageInaccuracy > engine.config.targetAverageInaccuracy) {
-        // try to play more precisely by using moves inaccuracy < (current - target)
-        const inaccuracyDiff = engine.currentAverageInaccuracy - engine.config.targetAverageInaccuracy
-        const tolerableScore = bestScore - inaccuracyDiff
-        const acceptableMoveScores1 = acceptableMoveScores.filter(({ score }) => score >= tolerableScore)
+    for (const moveScore of moveScores) {
+        moveScore.inaccuracy = Math.abs(bestScore - moveScore.score)
+    }
 
-        // if there're no moves with inaccuracy < (current - target), just play the best move
-        if (acceptableMoveScores1.length === 0) {
-            const { move } = acceptableMoveScores[0]
-            game.move(move)
-            engine.inaccuracyHistory.push(0)
-            engine.currentAverageInaccuracy = engine.currentInaccuracy / engine.inaccuracyHistory.length
-            return move.lan
+    const acceptableMoveScores = moveScores.filter(({ inaccuracy }) => inaccuracy <= engine.config.inaccuracyTolerance)
+    console.log('acceptable candidate moves: ', acceptableMoveScores)
+
+    let moveScore
+    console.log('current ACPL:', engine.currentAverageInaccuracy, 'target ACPL:', engine.config.targetAverageInaccuracy)
+    if (engine.currentAverageInaccuracy <= engine.config.targetAverageInaccuracy) {
+        const moreInaccurateMoveScores = acceptableMoveScores.filter(({ inaccuracy }) => inaccuracy > engine.config.targetAverageInaccuracy)
+        if (moreInaccurateMoveScores.length !== 0) {
+            moveScore = moreInaccurateMoveScores[Math.floor(Math.random() * moreInaccurateMoveScores.length)]
         } else {
-            const randomIndex = Math.floor(Math.random() * acceptableMoveScores1.length)
-            const { move, score } = acceptableMoveScores1[randomIndex]
-            game.move(move)
-            engine.inaccuracyHistory.push(bestScore - score)
-            engine.currentInaccuracy += bestScore - score
-            engine.currentAverageInaccuracy = engine.currentInaccuracy / engine.inaccuracyHistory.length
-            console.info(`playing less inaccurate: ${move.lan}, inaccuracy = ${bestScore - score}, current avg = ${engine.currentAverageInaccuracy}`)
-            return move.lan
+            moveScore = acceptableMoveScores[Math.floor(Math.random() * moveScores.length)]
         }
     } else {
-        // try to play less precisely by using moves inaccuracy > (current - target)
-        const inaccuracyDiff = engine.config.targetAverageInaccuracy - engine.currentAverageInaccuracy
-        const tolerableScore = bestScore - inaccuracyDiff
-        let acceptableMoveScores1 = acceptableMoveScores.filter(({ score }) => score >= tolerableScore)
-
-        // if there're no moves with inaccuracy > (current - target), just play a random move
-        if (acceptableMoveScores1.length === 0) {
-            acceptableMoveScores1 = acceptableMoveScores
+        const lessInaccurateMoveScores = acceptableMoveScores.filter(({ inaccuracy }) => inaccuracy <= engine.config.targetAverageInaccuracy)
+        if (lessInaccurateMoveScores.length !== 0) {
+            moveScore = lessInaccurateMoveScores[Math.floor(Math.random() * lessInaccurateMoveScores.length)]
+        } else {
+            moveScore = acceptableMoveScores[Math.floor(Math.random() * moveScores.length)]
         }
-
-        const randomIndex = Math.floor(Math.random() * acceptableMoveScores1.length)
-        const { move, score } = acceptableMoveScores1[randomIndex]
-        game.move(move)
-        engine.inaccuracyHistory.push(bestScore - score)
-        engine.currentInaccuracy += bestScore - score
-        engine.currentAverageInaccuracy = engine.currentInaccuracy / engine.inaccuracyHistory.length
-        console.info(`playing more inaccurate: ${move.lan}, inaccuracy = ${bestScore - score}, current avg = ${engine.currentAverageInaccuracy}`)
-        return move.lan
     }
+
+    console.log('choosen move:', moveScore.move.lan, 'inaccuracy:', moveScore.inaccuracy)
+    game.move(moveScore.move)
+    recomputeAverageInaccuracy(engine, moveScore.inaccuracy)
+    return moveScore.move.lan
+}
+
+function recomputeAverageInaccuracy(engine: Engine, newMoveInaccuracy: number) {
+    const history = engine.inaccuracyHistory
+    const n = history.length
+    const newAverage = (engine.currentAverageInaccuracy * n + newMoveInaccuracy) / (n + 1)
+    engine.inaccuracyHistory.push(newMoveInaccuracy)
+    engine.currentAverageInaccuracy = newAverage
 }
 
 export function createEngine(config: EngineConfig): Engine {
