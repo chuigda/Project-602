@@ -81,19 +81,20 @@ export async function makeMove(game: Chess, engine: Engine): Promise<string> {
     if (engine.currentAverageInaccuracy <= engine.config.targetAverageInaccuracy) {
         const moreInaccurateMoveScores = acceptableMoveScores.filter(({ inaccuracy }) => inaccuracy > engine.config.targetAverageInaccuracy)
         if (moreInaccurateMoveScores.length !== 0) {
-            moveScore = moreInaccurateMoveScores[Math.floor(Math.random() * moreInaccurateMoveScores.length)]
+            moveScore = randomPick(moreInaccurateMoveScores)
         } else {
-            moveScore = acceptableMoveScores[Math.floor(Math.random() * moveScores.length)]
+            moveScore = randomPick(acceptableMoveScores)
         }
     } else {
         const lessInaccurateMoveScores = acceptableMoveScores.filter(({ inaccuracy }) => inaccuracy <= engine.config.targetAverageInaccuracy)
         if (lessInaccurateMoveScores.length !== 0) {
-            moveScore = lessInaccurateMoveScores[Math.floor(Math.random() * lessInaccurateMoveScores.length)]
+            moveScore = randomPick(lessInaccurateMoveScores)
         } else {
-            moveScore = acceptableMoveScores[Math.floor(Math.random() * moveScores.length)]
+            moveScore = randomPick(acceptableMoveScores)
         }
     }
 
+    console.log('moveScore:', moveScore)
     console.log('choosen move:', moveScore.move.lan, 'inaccuracy:', moveScore.inaccuracy)
     game.move(moveScore.move)
     recomputeAverageInaccuracy(engine, moveScore.inaccuracy)
@@ -106,6 +107,10 @@ function recomputeAverageInaccuracy(engine: Engine, newMoveInaccuracy: number) {
     const newAverage = (engine.currentAverageInaccuracy * n + newMoveInaccuracy) / (n + 1)
     engine.inaccuracyHistory.push(newMoveInaccuracy)
     engine.currentAverageInaccuracy = newAverage
+}
+
+function randomPick<T>(arr: T[]): T {
+    return arr[Math.floor(Math.random() * arr.length)]
 }
 
 export function createEngine(config: EngineConfig): Engine {

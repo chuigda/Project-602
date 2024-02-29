@@ -3,11 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="/src/index.css" />
+
+    <link rel="stylesheet" type="text/css" href="src/chessground-assets/chessground.base.css" />
+    <link rel="stylesheet" type="text/css" href="src/chessground-assets/chessground.brown.css" />
+    <link rel="stylesheet" type="text/css" href="src/chessground-assets/chessground.cburnett.css" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Project-AN602</title>
     <script type="module" src="/src/index.tsx" defer></script>
+
+    <style>
+      #chessground {
+        width: 500px;
+        height: 500px;
+      }
+
+      cg-board {
+        background-color: #bfcfdd;
+      }
+    </style>
   </head>
 
   <body id="body">
+    <div id="chessground">
+    </div>
+    <code style="color: red"><pre id="debuginfo">debuginfo</pre></code>
   </body>
 </html>
