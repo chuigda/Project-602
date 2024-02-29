@@ -31,7 +31,12 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "tech.icey.an602"
+      "identifier": "tech.icey.an602",
+      "icon": [
+        "icons/icon.png",
+        "icons/icon.ico"
+      ]
     }
   }
 }
+ 
