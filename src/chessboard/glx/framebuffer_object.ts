@@ -10,7 +10,8 @@ export interface Framebuffer {
 export function createFrameBuffer(
    gl: WebGLRenderingContext,
    width: number,
-   height: number
+   height: number,
+   depthBuffer: boolean
 ): Framebuffer {
    const fbo = gl.createFramebuffer()
    if (!fbo) {
@@ -33,6 +34,17 @@ export function createFrameBuffer(
    gl.bindTexture(gl.TEXTURE_2D, null)
 
    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0)
+
+   if (depthBuffer) {
+      const depthBuffer = gl.createRenderbuffer()
+      if (!depthBuffer) {
+         throw new Error('无法创建深度缓冲对象')
+      }
+
+      gl.bindRenderbuffer(gl.RENDERBUFFER, depthBuffer)
+      gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height)
+      gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthBuffer)
+   }
 
    gl.bindFramebuffer(gl.FRAMEBUFFER, null)
 
