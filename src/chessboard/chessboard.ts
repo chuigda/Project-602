@@ -1,4 +1,4 @@
-import { Chess, Move, Square } from 'chess.js'
+import { Chess, Square } from 'chess.js'
 
 import { ShaderProgram, createShaderProgram } from './glx/shader_program'
 import { VertexBufferObject, createVertexBufferObject, loadObject } from './glx/object'
