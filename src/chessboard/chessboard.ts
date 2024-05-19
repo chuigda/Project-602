@@ -1,6 +1,8 @@
+import { Chess, Square } from 'chess.js'
+
 import { ShaderProgram, createShaderProgram } from './glx/shader_program'
 import { VertexBufferObject, createVertexBufferObject, loadObject } from './glx/object'
-import { Chess, Square } from 'chess.js'
+import { Texture, createTexture } from './glx/texture.ts'
 
 import './gl_matrix/types.d.ts'
 // @ts-ignore
@@ -15,6 +17,7 @@ import PieceFrag from './shader/piece.fs?raw'
 import ClickTestVert from './shader/clicktest.vs?raw'
 // @ts-ignore
 import ClickTestFrag from './shader/clicktest.fs?raw'
+
 // @ts-ignore
 import RookOBJ from './chess-pieces-obj/rook.obj?raw'
 // @ts-ignore
@@ -28,6 +31,19 @@ import KingOBJ from './chess-pieces-obj/king.obj?raw'
 // @ts-ignore
 import PawnOBJ from './chess-pieces-obj/pawn.obj?raw'
 
+// @ts-ignore
+import RookTex from './chess-pieces-obj/rook.png?raw'
+// @ts-ignore
+import KnightTex from './chess-pieces-obj/knight.png?raw'
+// @ts-ignore
+import BishopTex from './chess-pieces-obj/bishop.png?raw'
+// @ts-ignore
+import QueenTex from './chess-pieces-obj/queen.png?raw'
+// @ts-ignore
+import KingTex from './chess-pieces-obj/king.png?raw'
+// @ts-ignore
+import PawnTex from './chess-pieces-obj/pawn.png?raw'
+
 export interface Chessboard3D {
    pieceProgram: ShaderProgram
    clickTestProgram: ShaderProgram
@@ -39,7 +55,16 @@ export interface Chessboard3D {
       queen: VertexBufferObject
       king: VertexBufferObject
       pawn: VertexBufferObject
-   }
+   },
+
+   // tex: {
+   //    rook: Texture,
+   //    knight: Texture,
+   //    bishop: Texture,
+   //    queen: Texture,
+   //    king: Texture,
+   //    pawn: Texture
+   // }
 
    chessboard: Chess
 }
