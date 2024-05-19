@@ -1,10 +1,12 @@
 import { h } from 'tsx-dom'
-import { Chess, Move } from 'chess.js'
+import { Chess } from 'chess.js'
 
 import { createChessboard3D } from './chessboard/chessboard'
 import { $ } from './min-jquery'
-
 import { createEngine, makeMove } from './chess/engine'
+
+// @ts-ignore
+import CanonInD from './resc/CanonInD.mp3'
 
 function showResult(game: Chess) {
    const element = <div class="dialog">
@@ -26,6 +28,8 @@ function showError(err: string) {
 
 }
 
+let started = false
+
 async function applicationStart() {
    const engine = createEngine({
       targetAverageInaccuracy: 125,
@@ -38,6 +42,18 @@ async function applicationStart() {
    const chessboard = createChessboard3D(canvas)
 
    async function onMove() {
+      if (!started) {
+         console.log('HiHiHi should play Canon in D')
+         started = true
+         const audio = $("audio") as HTMLAudioElement
+         console.log(CanonInD)
+         audio.src = CanonInD
+         audio.play()
+      
+         // set volume to 25%
+         audio.volume = 0.25
+      }
+
       if (chessboard.game.isGameOver()) {
          showResult(chessboard.game)
          return
