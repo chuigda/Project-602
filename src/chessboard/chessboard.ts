@@ -74,7 +74,8 @@ export interface Chessboard3D {
    currentObjectId?: number,
    selectedObjectId?: number,
 
-   onMovePlayed?: (move: Move) => void
+   onMovePlayed?: () => void
+   onInvalidMove?: () => void
 }
 
 export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
@@ -289,12 +290,14 @@ export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
                if (move) {
                   self.selectedObjectId = undefined
                   if (self.onMovePlayed) {
-                     self.onMovePlayed(move)
+                     self.onMovePlayed()
                   }
                }
             } catch (e) {
-               console.error(e)
                self.selectedObjectId = undefined
+               if (self.onInvalidMove) {
+                  self.onInvalidMove()
+               }
             }
          } else {
             const piece = self.game.get(<Square>newlyClickedSquare)
