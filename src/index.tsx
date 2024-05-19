@@ -50,8 +50,8 @@ async function applicationStart() {
          audio.src = CanonInD
          audio.play()
       
-         // set volume to 25%
-         audio.volume = 0.25
+         // set volume to 50%
+         audio.volume = 0.5
       }
 
       if (chessboard.game.isGameOver()) {
