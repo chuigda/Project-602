@@ -12,8 +12,8 @@ export interface ShaderProgram {
    vertexAttribPointer(gl: WebGLRenderingContext, name: string, size: number, type: number, normalized: boolean, stride: number, offset: number): void
    uniformMatrix4fv(gl: WebGLRenderingContext, name: string, transpose: boolean, value: Float32Array | number[]): void
    uniform3fv(gl: WebGLRenderingContext, name: string, value: Float32Array | number[]): void
+   uniform4fv(gl: WebGLRenderingContext, name: string, value: Float32Array | number[]): void
    uniform1f(gl: WebGLRenderingContext, name: string, value: number): void
-
 }
 
 export function createShaderProgram(
@@ -118,6 +118,18 @@ export function createShaderProgram(
          }
 
          gl.uniform3fv(uniformLocation, value)
+      },
+      uniform4fv(gl, name, value) {
+         if (value.constructor === Array) {
+            value = new Float32Array(value)
+         }
+
+         let uniformLocation = this.getUniformLocation(gl, name)
+         if (!uniformLocation) {
+            throw new Error(`无法获取 uniform 变量 ${name} 的位置`)
+         }
+
+         gl.uniform4fv(uniformLocation, value)
       },
       uniform1f(gl, name, value) {
          let uniformLocation = this.getUniformLocation(gl, name)
