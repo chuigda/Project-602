@@ -7,7 +7,7 @@ import { $ } from './min-jquery'
 import { createEngine, makeMove } from './chess/engine'
 
 function showResult(game: Chess) {
-   const element = <div style="border: 1px solid black; display: flex; flex-direction: column; align-items: center; padding: 1em; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+   const element = <div style="background-color: white; border: 1px solid black; display: flex; flex-direction: column; align-items: center; padding: 1em; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
       <h1>游戏结束</h1>
       <hr />
       <p>{game.isDraw() ? '平局' : game.turn() === 'w' ? '黑方胜' : '白方胜'}</p>
@@ -17,7 +17,7 @@ function showResult(game: Chess) {
 }
 
 function showError(err: string) {
-   const element = <div style="border: 1px solid red; display: flex; flex-direction: column; align-items: center; padding: 1em; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+   const element = <div style="background-color: white; border: 1px solid red; display: flex; flex-direction: column; align-items: center; padding: 1em; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
       <h1 style="color: red">错误</h1>
       <hr />
       <p style="color: red">{err}</p>
