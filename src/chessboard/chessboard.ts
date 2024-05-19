@@ -1,4 +1,4 @@
-import { Chess, Square } from 'chess.js'
+import { Chess, Move, Square } from 'chess.js'
 
 import { ShaderProgram, createShaderProgram } from './glx/shader_program'
 import { VertexBufferObject, createVertexBufferObject, loadObject } from './glx/object'
@@ -70,9 +70,11 @@ export interface Chessboard3D {
    //    pawn: Texture
    // }
 
-   chessboard: Chess,
+   game: Chess,
    currentObjectId?: number,
-   selectedObjectId?: number
+   selectedObjectId?: number,
+
+   onMovePlayed?: (move: Move) => void
 }
 
 export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
@@ -97,7 +99,7 @@ export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
          square: createVertexBufferObject(gl, loadObject(SquareOBJ))
       },
 
-      chessboard: new Chess(),
+      game: new Chess(),
       currentObjectId: undefined,
       selectedObjectId: undefined
    }
@@ -169,7 +171,7 @@ export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
             self.pieceProgram.uniform4fv(gl, 'u_ObjectColor', squareColor)
             self.vbo.square.draw(gl)
 
-            const piece = self.chessboard.get(<Square>`${fileLetters[file]}${rank}`)
+            const piece = self.game.get(<Square>`${fileLetters[file]}${rank}`)
             if (piece) {
                const pieceColor = piece.color === 'w' ?
                   [0.1 + colorDelta, 0.55 + colorDelta, 0.9 + colorDelta, 0.65] :
@@ -215,7 +217,7 @@ export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
             self.clickTestProgram.uniform1f(gl, 'u_ObjectId', (file * 8 + rank - 1) / 64.0)
             self.vbo.square.draw(gl)
 
-            const piece = self.chessboard.get(<Square>`${fileLetters[file]}${rank}`)
+            const piece = self.game.get(<Square>`${fileLetters[file]}${rank}`)
             if (piece) {
                switch (piece.type) {
                   case 'r':
@@ -266,7 +268,6 @@ export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
       }
    })
 
-   // prevent context menu
    canvas.addEventListener('contextmenu', event => {
       event.preventDefault()
       self.selectedObjectId = undefined
@@ -279,7 +280,7 @@ export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
          if (self.selectedObjectId !== undefined) {
             const fromSquare = ObjectIdToSquareMap[self.selectedObjectId]
             try {
-               const move = self.chessboard.move({
+               const move = self.game.move({
                   from: fromSquare,
                   to: newlyClickedSquare,
                   promotion: 'q'
@@ -287,13 +288,16 @@ export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
 
                if (move) {
                   self.selectedObjectId = undefined
+                  if (self.onMovePlayed) {
+                     self.onMovePlayed(move)
+                  }
                }
             } catch (e) {
                console.error(e)
                self.selectedObjectId = undefined
             }
          } else {
-            const piece = self.chessboard.get(<Square>newlyClickedSquare)
+            const piece = self.game.get(<Square>newlyClickedSquare)
             if (!piece) {
                return
             }
