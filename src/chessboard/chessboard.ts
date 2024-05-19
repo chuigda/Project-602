@@ -30,19 +30,8 @@ import QueenOBJ from './chess-pieces-obj/queen.obj?raw'
 import KingOBJ from './chess-pieces-obj/king.obj?raw'
 // @ts-ignore
 import PawnOBJ from './chess-pieces-obj/pawn.obj?raw'
-
 // @ts-ignore
-import RookTex from './chess-pieces-obj/rook.png?raw'
-// @ts-ignore
-import KnightTex from './chess-pieces-obj/knight.png?raw'
-// @ts-ignore
-import BishopTex from './chess-pieces-obj/bishop.png?raw'
-// @ts-ignore
-import QueenTex from './chess-pieces-obj/queen.png?raw'
-// @ts-ignore
-import KingTex from './chess-pieces-obj/king.png?raw'
-// @ts-ignore
-import PawnTex from './chess-pieces-obj/pawn.png?raw'
+import SquareOBJ from './chess-pieces-obj/square.obj?raw'
 
 export interface Chessboard3D {
    pieceProgram: ShaderProgram
@@ -55,6 +44,8 @@ export interface Chessboard3D {
       queen: VertexBufferObject
       king: VertexBufferObject
       pawn: VertexBufferObject
+
+      square: VertexBufferObject
    },
 
    // tex: {
@@ -92,7 +83,8 @@ export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
          bishop: createVertexBufferObject(gl, loadObject(BishopOBJ)),
          queen: createVertexBufferObject(gl, loadObject(QueenOBJ)),
          king: createVertexBufferObject(gl, loadObject(KingOBJ)),
-         pawn: createVertexBufferObject(gl, loadObject(PawnOBJ))
+         pawn: createVertexBufferObject(gl, loadObject(PawnOBJ)),
+         square: createVertexBufferObject(gl, loadObject(SquareOBJ))
       },
 
       chessboard: new Chess()
@@ -114,8 +106,18 @@ export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
          const thisMatrix = mat4.create()
          mat4.copy(thisMatrix, modelMatrix)
          mat4.translate(thisMatrix, thisMatrix, [file - 3.5, 0, (rank - 3.5)])
-         mat4.rotateY(thisMatrix, thisMatrix, 120 / 180 * Math.PI)
          allMatrices.push(thisMatrix)
+      }
+   }
+
+   const allMatricesRotated: any[] = []
+   for (let file = 0; file < 8; file++) {
+      for (let rank = 0; rank < 8; rank++) {
+         const thisMatrix = mat4.create()
+         mat4.copy(thisMatrix, modelMatrix)
+         mat4.translate(thisMatrix, thisMatrix, [file - 3.5, 0, (rank - 3.5)])
+         mat4.rotate(thisMatrix, thisMatrix, 240 / 180 * Math.PI / 2, [0, 1, 0])
+         allMatricesRotated.push(thisMatrix)
       }
    }
 
@@ -132,19 +134,27 @@ export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
       const fileLetters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
       for (let file = 0; file < 8; file++) {
          for (let rank = 1; rank <= 8; rank++) {
+            const isWhiteSquare = (file + rank) % 2 === 0
+
+            let modelMatrix = allMatrices[file * 8 + (8 - rank)]
+            self.pieceProgram.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, modelMatrix)
+
+            self.pieceProgram.uniform4fv(gl, 'u_ObjectColor', isWhiteSquare ? [0.8, 0.8, 0.8, 0.8] : [0.2, 0.2, 0.2, 1])
+            self.vbo.square.draw(gl)
+
             const piece = self.chessboard.get(<Square>`${fileLetters[file]}${rank}`)
             if (piece) {
-               const modelMatrix = allMatrices[file * 8 + (8 - rank)]
-               self.pieceProgram.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, modelMatrix)
-               self.pieceProgram.uniform4fv(gl, 'u_ObjectColor', piece.color === 'w' ? [0.1, 0.55, 1, 0.85] : [0.95, 0.15, 0.05, 0.85])
-
+               self.pieceProgram.uniform4fv(gl, 'u_ObjectColor', piece.color === 'w' ? [0.1, 0.55, 1, 0.65] : [0.95, 0.15, 0.05, 0.65])
                switch (piece.type) {
                   case 'r':
                      self.vbo.rook.draw(gl)
                      break
-                  case 'n':
+                  case 'n': {
+                     const rotatedMatrix = allMatricesRotated[file * 8 + (8 - rank)]
+                     self.pieceProgram.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, rotatedMatrix)
                      self.vbo.knight.draw(gl)
                      break
+                  }
                   case 'b':
                      self.vbo.bishop.draw(gl)
                      break
