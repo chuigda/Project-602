@@ -2,7 +2,6 @@ import { Chess, Square } from 'chess.js'
 
 import { ShaderProgram, createShaderProgram } from './glx/shader_program'
 import { VertexBufferObject, createVertexBufferObject, loadObject } from './glx/object'
-import { Texture, createTexture } from './glx/texture.ts'
 
 import './gl_matrix/types.d.ts'
 // @ts-ignore
@@ -34,6 +33,17 @@ import PawnOBJ from './chess-pieces-obj/pawn.obj?raw'
 import SquareOBJ from './chess-pieces-obj/square.obj?raw'
 import { Framebuffer, createFrameBuffer } from './glx/framebuffer_object.ts'
 
+const ObjectIdToSquareMap: string[] = [
+   'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8',
+   'b1', 'b2', 'b3', 'b4', 'b5', 'b6', 'b7', 'b8',
+   'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8',
+   'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8',
+   'e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'e7', 'e8',
+   'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8',
+   'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8',
+   'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'h8'
+]
+
 export interface Chessboard3D {
    pieceProgram: ShaderProgram
    clickTestProgram: ShaderProgram
@@ -61,7 +71,8 @@ export interface Chessboard3D {
    // }
 
    chessboard: Chess,
-   currentObjectId?: number
+   currentObjectId?: number,
+   selectedObjectId?: number
 }
 
 export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
@@ -87,7 +98,8 @@ export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
       },
 
       chessboard: new Chess(),
-      currentObjectId: undefined
+      currentObjectId: undefined,
+      selectedObjectId: undefined
    }
 
    const projection = mat4.create()
@@ -101,7 +113,7 @@ export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
    self.clickTestProgram.uniformMatrix4fv(gl, 'u_ProjectionMatrix', false, projection)
 
    const modelMatrix = mat4.create()
-   mat4.lookAt(modelMatrix, [0, 7.5, 9], [0, 0, 0], [0, 1, 0])
+   mat4.lookAt(modelMatrix, [0, 9, 6.5], [0, 0, 0], [0, 1, 0])
 
    const allMatrices: any[] = []
    for (let file = 0; file < 8; file++) {
@@ -144,22 +156,22 @@ export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
       for (let file = 0; file < 8; file++) {
          for (let rank = 1; rank <= 8; rank++) {
             const objectId = file * 8 + (rank - 1)
-            const colorDelta = self.currentObjectId === objectId ? 0.15 : 0
+            const colorDelta = (self.currentObjectId === objectId || self.selectedObjectId === objectId) ? 0.15 : 0
 
             const isWhiteSquare = (file + rank) % 2 === 0
 
             let modelMatrix = allMatrices[file * 8 + (8 - rank)]
             self.pieceProgram.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, modelMatrix)
 
-            const squareColor = isWhiteSquare ? 
-               [0.8 + colorDelta, 0.8 + colorDelta, 0.8 + colorDelta, 0.8] : 
+            const squareColor = isWhiteSquare ?
+               [0.8 + colorDelta, 0.8 + colorDelta, 0.8 + colorDelta, 0.8] :
                [0.2 + colorDelta, 0.2 + colorDelta, 0.2 + colorDelta, 1];
             self.pieceProgram.uniform4fv(gl, 'u_ObjectColor', squareColor)
             self.vbo.square.draw(gl)
 
             const piece = self.chessboard.get(<Square>`${fileLetters[file]}${rank}`)
             if (piece) {
-               const pieceColor = piece.color === 'w' ? 
+               const pieceColor = piece.color === 'w' ?
                   [0.1 + colorDelta, 0.55 + colorDelta, 0.9 + colorDelta, 0.65] :
                   [0.9 + colorDelta, 0.15 + colorDelta, 0.05 + colorDelta, 0.65]
                self.pieceProgram.uniform4fv(gl, 'u_ObjectColor', pieceColor)
@@ -192,7 +204,7 @@ export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
 
       self.clickTestProgram.useProgram(gl)
       self.clickTestingFramebuffer.bind(gl)
-      gl.clearColor(0, 0, 0, 1)
+      gl.clearColor(0, 0, 1, 1)
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
       gl.disable(gl.BLEND)
 
@@ -200,7 +212,7 @@ export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
          for (let rank = 1; rank <= 8; rank++) {
             const modelMatrix = allMatrices[file * 8 + (8 - rank)]
             self.clickTestProgram.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, modelMatrix)
-            self.clickTestProgram.uniform1f(gl, 'u_ObjectId', (file * 8 + (rank - 1)) / 64.0)
+            self.clickTestProgram.uniform1f(gl, 'u_ObjectId', (file * 8 + rank - 1) / 64.0)
             self.vbo.square.draw(gl)
 
             const piece = self.chessboard.get(<Square>`${fileLetters[file]}${rank}`)
@@ -246,11 +258,48 @@ export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
       gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel)
       self.clickTestingFramebuffer.release(gl)
 
-      if (pixel[0] != 0) {
+      if (pixel[3] != 1) {
          self.currentObjectId = Math.round(pixel[0] / 4.0)
          canvas.style.cursor = 'pointer'
       } else {
          canvas.style.cursor = 'default'
+      }
+   })
+
+   // prevent context menu
+   canvas.addEventListener('contextmenu', event => {
+      event.preventDefault()
+      self.selectedObjectId = undefined
+   })
+
+   canvas.addEventListener('click', () => {
+      if (self.currentObjectId !== undefined) {
+         const newlyClickedSquare = ObjectIdToSquareMap[self.currentObjectId]
+
+         if (self.selectedObjectId !== undefined) {
+            const fromSquare = ObjectIdToSquareMap[self.selectedObjectId]
+            try {
+               const move = self.chessboard.move({
+                  from: fromSquare,
+                  to: newlyClickedSquare,
+                  promotion: 'q'
+               })
+
+               if (move) {
+                  self.selectedObjectId = undefined
+               }
+            } catch (e) {
+               console.error(e)
+               self.selectedObjectId = undefined
+            }
+         } else {
+            const piece = self.chessboard.get(<Square>newlyClickedSquare)
+            if (!piece) {
+               return
+            }
+
+            self.selectedObjectId = self.currentObjectId
+         }
       }
    })
 
