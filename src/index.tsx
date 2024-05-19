@@ -17,15 +17,14 @@ function showResult(game: Chess) {
    document.body.appendChild(element)
 }
 
-function showError(err: string) {
+function showError(err: string, canRecover?: boolean) {
    const element = <div class="dialog">
       <h1 style="color: red">错误</h1>
       <p style="color: red">{err}</p>
-      <button onClick={() => document.body.removeChild(element)}>关闭</button>
+      { canRecover ? <button onClick={() => document.body.removeChild(element)}>关闭</button> : null }
    </div>
 
    document.body.appendChild(element)
-
 }
 
 let started = false
@@ -77,7 +76,7 @@ async function applicationStart() {
    chessboard.onMovePlayed = onMove
 
    chessboard.onInvalidMove = () => {
-      showError('无效的着法')
+      showError('无效的着法', true)
    }
 }
 
