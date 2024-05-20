@@ -261,10 +261,11 @@ export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
       gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel)
       self.clickTestingFramebuffer.release(gl)
 
-      if (pixel[3] != 1) {
+      if (pixel[2] < 1.0) {
          self.currentObjectId = Math.round(pixel[0] / 4.0)
          canvas.style.cursor = 'pointer'
       } else {
+         self.currentObjectId = undefined
          canvas.style.cursor = 'default'
       }
    })
