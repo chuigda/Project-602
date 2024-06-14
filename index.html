@@ -41,8 +41,8 @@
 
     <script type="module">
       async function startLoading() {
-        $('load-item-title').innerHTML = '正在加载基本系统'
-        await import("/src/index.tsx")
+        $('load-item-title').innerHTML = '正在加载基本输入输出系统 (BIOS)'
+        await import("/src/index.ts")
       }
 
       document.addEventListener("DOMContentLoaded", startLoading)
@@ -110,7 +110,7 @@
   <body id="body">
     <div class="load-progress-bar-container">
       <div class="load-progress-bar-dialog">
-        <b id="load-item-title">正在加载</b>
+        <b id="load-item-title">正在引导操作系统</b>
         <div class="load-progress-bar-item-container">
           <span>总体进度</span>
           <div class="load-progress-bar" id="progress-bar-overall">
