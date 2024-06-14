@@ -48,7 +48,7 @@ async function applicationStart() {
          console.log(CanonInD)
          audio.src = CanonInD
          audio.play()
-      
+
          // set volume to 50%
          audio.volume = 0.5
       }

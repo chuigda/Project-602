@@ -1,19 +1,28 @@
-import { defineConfig } from "vite";
+import { defineConfig, Plugin } from 'vite'
 
-// https://vitejs.dev/config/
-export default defineConfig(async () => ({
+const advancedCors: Plugin = {
+   name: 'configure-response-headers',
+   configureServer: server => {
+      server.middlewares.use((_req, res, next) => {
+         res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp')
+         res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')
+         next();
+      });
+   }
+}
 
-  // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
-  //
-  // 1. prevent vite from obscuring rust errors
-  clearScreen: false,
-  // 2. tauri expects a fixed port, fail if that port is not available
-  server: {
-    port: 1420,
-    strictPort: true,
-    watch: {
-      // 3. tell vite to ignore watching `src-tauri`
-      ignored: ["**/src-tauri/**"],
-    },
-  },
-}));
+export default defineConfig({
+   base: '',
+   plugins: [advancedCors],
+   build: {
+      target: 'es2018',
+      cssCodeSplit: false,
+      copyPublicDir: false,
+      rollupOptions: {
+         output: {
+            entryFileNames: 'index.js',
+            assetFileNames: 'index.css',
+         }
+      }
+   }
+})
