@@ -17,7 +17,7 @@ interface FakeJQuery {
       url: string,
       headers?: Record<string, string>,
       onProgress: (progress: ProgressEvent) => void
-   ): Promise<any>
+   ): Promise<string | Blob>
 }
 
 declare function $(selector: string): HTMLElement

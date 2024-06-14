@@ -18,12 +18,12 @@ export async function loadStockfishResource(): Promise<StockfishResource> {
       (event: ProgressEvent) => {
          setItemLoadProgress(0.02 + 0.98 * event.loaded / event.total)
       }
-   )
+   ) as Blob
    console.log('wasmBinary=', wasmBinary)
    setItemLoadProgress(1)
 
    return {
       stockfishScript: script,
-      stockfishWasmBinary: wasmBinary
+      stockfishWasmBinary: await wasmBinary.arrayBuffer()
    }
 }
