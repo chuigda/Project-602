@@ -1,69 +1,17 @@
-import { h } from 'tsx-dom'
-import { Chess } from 'chess.js'
+import { loadChessboardAsset } from './chessboard/chessboard'
+import { loadStockfishResource } from './fairy-stockfish/fairy-stockfish'
 
-import { createChessboard3D } from './chessboard/chessboard'
-import { $ } from './min-jquery'
-// import { createEngine, makeMove } from './chess/engine'
+async function continueLoadingOperation() {
+   $('load-item-title').innerText = '正在加载战场图像数据'
+   setOverallLoadProgress(1 / 3)
+   await loadChessboardAsset()
 
-// @ts-ignore
-import CanonInD from './resc/CanonInD.mp3'
+   setOverallLoadProgress(2 / 3)
+   $('load-item-title').innerText = '正在加载泛用型对抗人工智能'
+   await loadStockfishResource()
 
-function showResult(game: Chess) {
-   const element = <div class="dialog">
-      <h1>游戏结束</h1>
-      <p>{game.isDraw() ? '平局' : game.turn() === 'w' ? '黑方胜' : '白方胜'}</p>
-   </div>
-
-   document.body.appendChild(element)
+   setOverallLoadProgress(1)
+   $('load-item-title').innerText = '正在完成...'
 }
 
-function showError(err: string, canRecover?: boolean) {
-   const element = <div class="dialog">
-      <h1 style="color: red">错误</h1>
-      <p style="color: red">{err}</p>
-      { canRecover ? <button onClick={() => document.body.removeChild(element)}>关闭</button> : null }
-   </div>
-
-   document.body.appendChild(element)
-}
-
-let started = false
-
-async function applicationStart() {
-   // const engine = createEngine({
-   //    targetAverageInaccuracy: 125,
-   //    inaccuracyTolerance: 500,
-   //    openingInaccuracyTolerance: 50
-   // })
-
-   const canvas = $('chessboard') as HTMLCanvasElement
-
-   const chessboard = createChessboard3D(canvas)
-
-   async function onMove() {
-      if (!started) {
-         console.log('HiHiHi should play Canon in D')
-         started = true
-         const audio = $("audio") as HTMLAudioElement
-         console.log(CanonInD)
-         audio.src = CanonInD
-         audio.play()
-
-         // set volume to 50%
-         audio.volume = 0.5
-      }
-
-      if (chessboard.game.isGameOver()) {
-         showResult(chessboard.game)
-         return
-      }
-   }
-
-   chessboard.onMovePlayed = onMove
-
-   chessboard.onInvalidMove = () => {
-      showError('无效的着法', true)
-   }
-}
-
-document.addEventListener('DOMContentLoaded', applicationStart)
+continueLoadingOperation()

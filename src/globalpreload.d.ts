@@ -9,9 +9,19 @@ interface FakeJQuery {
    get<T>(
       url: string,
       headers?: Record<string, string>,
-      responder?: (resp: Response) => Promise<T>
+      responder: (resp: Response) => Promise<T>
    ): Promise<T>
+
+   get(url: string, headers?: Record<string, string>): Promise<string>
+   getWithProgressReport(
+      url: string,
+      headers?: Record<string, string>,
+      onProgress: (progress: ProgressEvent) => void
+   ): Promise<any>
 }
 
 declare function $(selector: string): HTMLElement
 declare function $(): FakeJQuery
+
+declare function setOverallLoadProgress(progress: number)
+declare function setItemLoadProgress(progress: number)

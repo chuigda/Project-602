@@ -7,30 +7,63 @@ import './gl_matrix/types.d.ts'
 // @ts-ignore
 import * as mat4 from './gl_matrix/mat4.mjs'
 
-// assets import
-// @ts-ignore
-import PieceVert from './shader/piece.vs?raw'
-// @ts-ignore
-import PieceFrag from './shader/piece.fs?raw'
-// @ts-ignore
-import ClickTestVert from './shader/clicktest.vs?raw'
-// @ts-ignore
-import ClickTestFrag from './shader/clicktest.fs?raw'
+export interface Chessboard3DAsset {
+   pieceVert: string
+   pieceFrag: string
+   clickTestVert: string
+   clickTestFrag: string
 
-// @ts-ignore
-import RookOBJ from './chess-pieces-obj/rook.obj?raw'
-// @ts-ignore
-import KnightOBJ from './chess-pieces-obj/knight.obj?raw'
-// @ts-ignore
-import BishopOBJ from './chess-pieces-obj/bishop.obj?raw'
-// @ts-ignore
-import QueenOBJ from './chess-pieces-obj/queen.obj?raw'
-// @ts-ignore
-import KingOBJ from './chess-pieces-obj/king.obj?raw'
-// @ts-ignore
-import PawnOBJ from './chess-pieces-obj/pawn.obj?raw'
-// @ts-ignore
-import SquareOBJ from './chess-pieces-obj/square.obj?raw'
+   rookObj: string
+   knightObj: string
+   bishopObj: string
+   queenObj: string
+   kingObj: string
+   pawnObj: string
+   squareObj: string
+}
+
+export async function loadChessboardAsset(): Promise<Chessboard3DAsset> {
+   setItemLoadProgress(0)
+   const pieceVert = await $().get("/shader/piece.vs")
+   setItemLoadProgress(1 / 11)
+   const pieceFrag = await $().get("/shader/piece.fs")
+   setItemLoadProgress(2 / 11)
+   const clickTestVert = await $().get("/shader/clicktest.vs")
+   setItemLoadProgress(3 / 11)
+   const clickTestFrag = await $().get("/shader/clicktest.fs")
+   setItemLoadProgress(4 / 11)
+
+   const rookObj = await $().get("/chess-pieces-obj/rook.obj")
+   setItemLoadProgress(5 / 11)
+   const knightObj = await $().get("/chess-pieces-obj/knight.obj")
+   setItemLoadProgress(6 / 11)
+   const bishopObj = await $().get("/chess-pieces-obj/bishop.obj")
+   setItemLoadProgress(7 / 11)
+   const queenObj = await $().get("/chess-pieces-obj/queen.obj")
+   setItemLoadProgress(8 / 11)
+   const kingObj = await $().get("/chess-pieces-obj/king.obj")
+   setItemLoadProgress(9 / 11)
+   const pawnObj = await $().get("/chess-pieces-obj/pawn.obj")
+   setItemLoadProgress(10 / 11)
+   const squareObj = await $().get("/chess-pieces-obj/square.obj")
+   setItemLoadProgress(11 / 11)
+
+   return {
+      pieceVert,
+      pieceFrag,
+      clickTestVert,
+      clickTestFrag,
+
+      rookObj,
+      knightObj,
+      bishopObj,
+      queenObj,
+      kingObj,
+      pawnObj,
+      squareObj
+   }
+}
+
 import { Framebuffer, createFrameBuffer } from './glx/framebuffer_object.ts'
 
 const ObjectIdToSquareMap: string[] = [
@@ -78,26 +111,29 @@ export interface Chessboard3D {
    onInvalidMove?: () => void
 }
 
-export function createChessboard3D(canvas: HTMLCanvasElement): Chessboard3D {
+export function createChessboard3D(
+   canvas: HTMLCanvasElement,
+   asset: Chessboard3DAsset
+): Chessboard3D {
    const gl = canvas.getContext('webgl')
    if (!gl) {
       throw new Error('无法创建 WebGL 上下文')
    }
 
    const self: Chessboard3D = {
-      pieceProgram: createShaderProgram(gl, PieceVert, PieceFrag),
-      clickTestProgram: createShaderProgram(gl, ClickTestVert, ClickTestFrag),
+      pieceProgram: createShaderProgram(gl, asset.pieceVert, asset.pieceFrag),
+      clickTestProgram: createShaderProgram(gl, asset.clickTestVert, asset.clickTestFrag),
 
       clickTestingFramebuffer: createFrameBuffer(gl, canvas.width, canvas.height, true),
 
       vbo: {
-         rook: createVertexBufferObject(gl, loadObject(RookOBJ)),
-         knight: createVertexBufferObject(gl, loadObject(KnightOBJ)),
-         bishop: createVertexBufferObject(gl, loadObject(BishopOBJ)),
-         queen: createVertexBufferObject(gl, loadObject(QueenOBJ)),
-         king: createVertexBufferObject(gl, loadObject(KingOBJ)),
-         pawn: createVertexBufferObject(gl, loadObject(PawnOBJ)),
-         square: createVertexBufferObject(gl, loadObject(SquareOBJ))
+         rook: createVertexBufferObject(gl, loadObject(asset.rookObj)),
+         knight: createVertexBufferObject(gl, loadObject(asset.knightObj)),
+         bishop: createVertexBufferObject(gl, loadObject(asset.bishopObj)),
+         queen: createVertexBufferObject(gl, loadObject(asset.queenObj)),
+         king: createVertexBufferObject(gl, loadObject(asset.kingObj)),
+         pawn: createVertexBufferObject(gl, loadObject(asset.pawnObj)),
+         square: createVertexBufferObject(gl, loadObject(asset.squareObj))
       },
 
       game: new Chess(),
