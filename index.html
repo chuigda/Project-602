@@ -10,6 +10,19 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Project-AN602</title>
+
+    <script type="text/javascript">
+      const ajax = {
+        get: async (url, headers, responder) => {
+          responder = responder || (x => x.json())
+          const resp = await fetch(url, {headers})
+          return await responder(resp)
+        }
+      }
+
+      self.$ = s => s ? document.querySelector(s) : ajax
+    </script>
+
     <script src="/fairy-stockfish/stockfish.js"></script>
     <script type="module" src="/src/index.tsx" defer></script>
 
