@@ -3,7 +3,7 @@ import { Chess } from 'chess.js'
 
 import { createChessboard3D } from './chessboard/chessboard'
 import { $ } from './min-jquery'
-import { createEngine, makeMove } from './chess/engine'
+// import { createEngine, makeMove } from './chess/engine'
 
 // @ts-ignore
 import CanonInD from './resc/CanonInD.mp3'
@@ -30,11 +30,11 @@ function showError(err: string, canRecover?: boolean) {
 let started = false
 
 async function applicationStart() {
-   const engine = createEngine({
-      targetAverageInaccuracy: 125,
-      inaccuracyTolerance: 500,
-      openingInaccuracyTolerance: 50
-   })
+   // const engine = createEngine({
+   //    targetAverageInaccuracy: 125,
+   //    inaccuracyTolerance: 500,
+   //    openingInaccuracyTolerance: 50
+   // })
 
    const canvas = $('chessboard') as HTMLCanvasElement
 
@@ -53,20 +53,6 @@ async function applicationStart() {
          audio.volume = 0.5
       }
 
-      if (chessboard.game.isGameOver()) {
-         showResult(chessboard.game)
-         return
-      }
-
-      let engineMove
-      try {
-         engineMove = await makeMove(chessboard.game, engine)
-      } catch (e) {
-         showError(`${e}`)
-         return
-      }
-
-      chessboard.game.move(engineMove)
       if (chessboard.game.isGameOver()) {
          showResult(chessboard.game)
          return
