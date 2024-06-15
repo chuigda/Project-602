@@ -50,7 +50,7 @@ export function createCheckmateWindow(
       await sleep(200)
 
       async function appendLine(text: string) {
-         await sleep(200)
+         await sleep(80)
          if (text.trim().length === 0) {
             checkmateDiagnose.appendChild(<br/>)
          } else {
@@ -61,23 +61,8 @@ export function createCheckmateWindow(
       await appendLine('SYSTEM DIAGNOSE')
       await appendLine(`* Initial position: ${data.startPos}`)
       await appendLine(`* Num moves played: ${data.moveCount}`)
-
-      await sleep(200)
-      checkmateDiagnose.innerHTML += '* Moves:&nbsp;'
-      await new Promise(async (resolve) => {
-         for (let i = 0; i < data.movesPlayed.length; i++) {
-            await sleep(16)
-            if (data.movesPlayed[i] === ' ') {
-               checkmateDiagnose.innerHTML += '&nbsp;'
-            } else {
-               checkmateDiagnose.innerHTML += data.movesPlayed[i]
-            }
-         }
-
-         checkmateDiagnose.appendChild(<br/>)
-         resolve(undefined)
-      })
-
+      await appendLine('')
+      await appendLine(`* Moves: ${data.movesPlayed}`)
       await appendLine('')
       await appendLine(`* Brilliant moves: ${data.brilliantCount}`)
       await appendLine(`* Excellent moves: ${data.excellentCount}`)

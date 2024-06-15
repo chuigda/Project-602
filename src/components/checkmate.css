@@ -1,7 +1,7 @@
 .checkmate-container {
-   z-index: 9999;
+   z-index: 5000;
    position: fixed;
-   top: 0%;
+   top: 0;
    left: 0;
    width: 100%;
    height: 100%;
@@ -27,9 +27,8 @@
    padding-left: 1em;
    padding-right: 1em;
    color: white;
-   font-size: 24px;
+   font-size: 32px;
    font-family: 'Courier New', Courier, monospace;
-   font-weight: bold;
 
    position: fixed;
    top: 50%;
@@ -62,7 +61,6 @@
 }
 
 .checkmate-diagnose a:hover {
-   /* add underline */
    text-decoration: underline;
    cursor: pointer;
 }
