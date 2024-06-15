@@ -3,6 +3,10 @@ declare function Stockfish(options: { wasmBinary: ArrayBuffer }): StockfishInsta
 interface StockfishInstance {
    postMessage: (message: string) => void
    addMessageListener: (listener: (line: string) => void) => void
+
+   FS: {
+      writeFile: (path: string, data: Uint8Array) => void
+   }
 }
 
 interface FakeJQuery {

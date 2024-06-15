@@ -1,4 +1,5 @@
 export interface StockfishResource {
+   variantsIni: ArrayBuffer
    stockfishWasmBinary: ArrayBuffer
 }
 
@@ -18,12 +19,15 @@ export async function loadStockfishResource(): Promise<StockfishResource> {
       '/fairy-stockfish/stockfish.wasm',
       undefined,
       (event: ProgressEvent) => {
-         setItemLoadProgress(0.02 + 0.98 * event.loaded / event.total)
+         setItemLoadProgress(0.02 + 0.96 * event.loaded / event.total)
       }
    ) as Blob
+
+   const variantsIni = await $().get('/fairy-stockfish/chess310.ini', undefined, resp => resp.blob())
    setItemLoadProgress(1)
 
    return {
+      variantsIni: await variantsIni.arrayBuffer(),
       stockfishWasmBinary: await wasmBinary.arrayBuffer()
    }
 }
@@ -43,13 +47,17 @@ export async function createFairyStockfish(stockfishResource: StockfishResource)
    return new Promise(resolve => {
       const fairyStockfish = new FairyStockfish(instance)
       fairyStockfish.messageHandler = line => {
-         if (line.trim() == "uciok") {
+         console.info(line)
+         if (line.trim() == 'uciok') {
             fairyStockfish.messageHandler = () => {}
             resolve(fairyStockfish)
          }
       }
 
       instance.addMessageListener(line => fairyStockfish.messageHandler(line))
-      instance.postMessage("uci")
+      instance.FS.writeFile(`/chess310.ini`, new Uint8Array(stockfishResource.variantsIni))
+      instance.postMessage('check /chess310.ini')
+      instance.postMessage('load /chess310.ini')
+      instance.postMessage('uci')
    })
 }
