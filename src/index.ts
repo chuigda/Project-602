@@ -18,7 +18,7 @@ async function continueLoadingOperation() {
    setOverallLoadProgress(3 / 4)
    $('load-item-title').innerText = '人工智能系统初始化'
    setItemLoadProgress(0)
-   const fairyStockfish = await createFairyStockfish(stockfishResource)
+   await createFairyStockfish(stockfishResource)
    setItemLoadProgress(1)
 
    setOverallLoadProgress(1)
