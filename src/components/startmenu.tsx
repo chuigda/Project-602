@@ -29,7 +29,7 @@ export function createStartMenu(): HTMLElement {
       startMenu.appendChild(startMenuButtonList)
 
       await sleep(300)
-      startMenuButtonList.style.left = '100px'
+      startMenuButtonList.style.left = '64px'
 
       await sleep(300)
       startMenuButtons.appendChild(<div>新战役</div>)
