@@ -130,26 +130,6 @@
       "fen": "rnbqkb1r/pppppp1p/5np1/8/2PP4/8/PP2PPPP/RNBQKBNR w KQkq -"
    },
    {
-      "eco": "E70",
-      "name": "王翼印度防御 通常变例",
-      "fen": "rnbqk2r/ppp1ppbp/3p1np1/8/2PPP3/2N5/PP3PPP/R1BQKBNR w KQkq -"
-   },
-   {
-      "eco": "E76",
-      "name": "王翼印度防御 四兵进攻",
-      "fen": "rnbqk2r/ppp1ppbp/3p1np1/8/2PPPP2/2N5/PP4PP/R1BQKBNR b KQkq -"
-   },
-   {
-      "eco": "E91",
-      "name": "王翼印度防御 正统变例",
-      "fen": "rnbq1rk1/ppp1ppbp/3p1np1/8/2PPP3/2N2N2/PP2BPPP/R1BQK2R b KQ -"
-   },
-   {
-      "eco": "E80",
-      "name": "王翼印度防御 杰米什变例",
-      "fen": "rnbqk2r/ppp1ppbp/3p1np1/8/2PPP3/2N2P2/PP4PP/R1BQKBNR b KQkq -"
-   },
-   {
       "eco": "A41",
       "name": "现代防御",
       "fen": "rnbqk1nr/ppp1ppbp/3p2p1/8/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq -"
