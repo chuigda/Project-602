@@ -26,8 +26,9 @@ async function continueLoadingOperation() {
    setOverallLoadProgress(4 / 5)
    $('load-item-title').innerText = '载入数据库'
    setItemLoadProgress(0)
-   const commonOpeningPositions =
+   let commonOpeningPositions =
       (await $().get('/chessdata/common-opening-positions.json', undefined, resp => resp.json())) as CommonOpeningPosition[]
+   commonOpeningPositions = commonOpeningPositions.sort((a, b) => a.eco.localeCompare(b.eco))
    setItemLoadProgress(1)
 
    setOverallLoadProgress(1)
