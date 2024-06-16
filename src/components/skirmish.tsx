@@ -48,10 +48,7 @@ export function showSkirmishWindow(commonOpeningPositions: CommonOpeningPosition
                <Select title="游戏模式"
                        options={[
                         {text: '标准国际象棋', value: ''},
-                        {text: '国际象棋960', value: ''},
-                        {text: '让一后', value: ''},
-                        {text: '让一车', value: ''},
-                        {text: '让一马', value: ''}
+                        {text: '国际象棋960', value: ''}
                        ]}
                />
                <Select title="玩家颜色"
@@ -109,7 +106,7 @@ function createChessboardFromFen(fen: string): HTMLElement[] {
             }
          } else {
             const color = (rank + file) % 2 === 0 ? 'light-square' : 'dark-square'
-            elements.push(<div class={`chessboard-square ${color}`} />)
+            elements.push(<div class={`chessboard-square ${color} chesspiece-${char}`} />)
             file += 1
          }
       }

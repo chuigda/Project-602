@@ -25,28 +25,36 @@ export interface Chessboard3DAsset {
 export async function loadChessboardAsset(): Promise<Chessboard3DAsset> {
    setItemLoadProgress(0)
    const pieceVert = await $().get("/shader/piece.vs")
-   setItemLoadProgress(1 / 11)
+   setItemLoadProgress(1 / 12)
    const pieceFrag = await $().get("/shader/piece.fs")
-   setItemLoadProgress(2 / 11)
+   setItemLoadProgress(2 / 12)
    const clickTestVert = await $().get("/shader/clicktest.vs")
-   setItemLoadProgress(3 / 11)
+   setItemLoadProgress(3 / 12)
    const clickTestFrag = await $().get("/shader/clicktest.fs")
-   setItemLoadProgress(4 / 11)
+   setItemLoadProgress(4 / 12)
 
    const rookObj = await $().get("/chess-pieces-obj/rook.obj")
-   setItemLoadProgress(5 / 11)
+   setItemLoadProgress(5 / 12)
    const knightObj = await $().get("/chess-pieces-obj/knight.obj")
-   setItemLoadProgress(6 / 11)
+   setItemLoadProgress(6 / 12)
    const bishopObj = await $().get("/chess-pieces-obj/bishop.obj")
-   setItemLoadProgress(7 / 11)
+   setItemLoadProgress(7 / 12)
    const queenObj = await $().get("/chess-pieces-obj/queen.obj")
-   setItemLoadProgress(8 / 11)
+   setItemLoadProgress(8 / 12)
    const kingObj = await $().get("/chess-pieces-obj/king.obj")
-   setItemLoadProgress(9 / 11)
+   setItemLoadProgress(9 / 12)
    const pawnObj = await $().get("/chess-pieces-obj/pawn.obj")
-   setItemLoadProgress(10 / 11)
+   setItemLoadProgress(10 / 12)
    const squareObj = await $().get("/chess-pieces-obj/square.obj")
-   setItemLoadProgress(11 / 11)
+   setItemLoadProgress(11 / 12)
+
+   const fileref = document.createElement('link')
+   fileref.rel = 'stylesheet'
+   fileref.type = 'text/css'
+   fileref.href = '/2d-chess-pieces/svg2css.css'
+   document.getElementsByTagName('head')[0].appendChild(fileref)
+   await new Promise(resolve => fileref.onload = resolve)
+   setItemLoadProgress(12 / 12)
 
    return {
       pieceVert,
