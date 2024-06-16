@@ -19,5 +19,32 @@
 }
 
 .skirmish-map-preview {
-   flex: 1;
+   border: 1px solid greenyellow;
+   width: 50vh;
+   height: 50vh;
+}
+
+.skirmish-chess960-selection {
+   display: flex;
+   flex-direction: row;
+   column-gap: 1em;
+   align-items: center;
+}
+
+.skirmish-chess960-selection > input {
+   width: 12em;
+   background-color: transparent;
+   border: 1px solid greenyellow;
+   color: greenyellow;
+   padding: 4px;
+   font-family: Dengxian, sans-serif;
+   font-size: 14pt;
+}
+
+.skirmish-chess960-selection > input:focus {
+   outline: none;
+}
+
+.skirmish-chess960-selection > input::placeholder {
+   color: rgba(173, 255, 47, 0.5);
 }

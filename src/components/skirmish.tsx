@@ -6,8 +6,34 @@ import { sleep } from '../util/sleep'
 
 import './skirmish.css'
 
-export function showSkirmishWindow(): HTMLElement {
+export interface CommonOpeningPosition {
+   eco: string
+   name: string
+   fen: string
+}
+
+export function showSkirmishWindow(commonOpeningPositions: CommonOpeningPosition[]): HTMLElement {
    const skirmishWindowBackground = <DoubleOpenScreen backgroundColor="black" zIndex={2000} />
+
+   const openingOptions = [
+      {
+         text: '起始局面',
+         value: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -',
+      }
+   ]
+
+   for (const openingPosition of commonOpeningPositions) {
+      openingOptions.push({
+         text: `${openingPosition.eco} ${openingPosition.name}`,
+         value: openingPosition.fen,
+      })
+   }
+
+   const openingSelection = <Select title="开局选择" options={openingOptions} />
+   const chess960Selection = <div class="skirmish-chess960-selection">
+      <span>局面编号</span>
+      <input type="text" placeholder="取值范围 1~960，默认 518" />
+   </div>
 
    const skirmishWindow = (
       <Window title="遭遇战" height="65vh" onClose={async () => {
@@ -29,22 +55,24 @@ export function showSkirmishWindow(): HTMLElement {
                />
                <Select title="玩家颜色"
                        options={[
-                        {text: '白色', value: ''},
-                        {text: '黑色', value: ''}
+                        {text: '白色', value: 'white'},
+                        {text: '黑色', value: 'black'}
                        ]}
                />
                <Select title="电脑难度"
                        options={[
-                        {text: '简单的电脑', value: ''},
-                        {text: '中等的电脑', value: ''},
-                        {text: '冷酷的电脑', value: ''}
+                        {text: '等级 1', value: '1'},
+                        {text: '等级 2', value: '2'},
+                        {text: '等级 3', value: '3'},
+                        {text: '等级 4', value: '4'},
+                        {text: '等级 5', value: '5'},
+                        {text: '等级 6', value: '6'},
+                        {text: '等级 7', value: '7'},
+                        {text: '等级 8', value: '8'},
                        ]}
                />
-               <Select title="开局选择"
-                       options={[
-                        {text: '起始局面', value: ''},
-                       ]}
-               />
+               { openingSelection }
+               { chess960Selection }
             </div>
             <div class="skirmish-map-preview" />
          </div>
