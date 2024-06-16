@@ -34,7 +34,7 @@ async function continueLoadingOperation() {
    $('load-item-title').innerText = '即将完成...'
 
    await sleep(500)
-   const startMenu = createStartMenu({ commonOpeningPositions })
+   createStartMenu({ commonOpeningPositions })
 }
 
 continueLoadingOperation()

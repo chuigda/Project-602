@@ -20,8 +20,20 @@
 
 .skirmish-map-preview {
    border: 1px solid greenyellow;
-   width: 50vh;
-   height: 50vh;
+   width: calc(65vh - 64px);
+   height: calc(65vh - 64px);
+
+   display: grid;
+   grid-template-columns: repeat(8, 1fr);
+   grid-template-rows: repeat(8, 1fr);
+}
+
+.skirmish-map-preview > div {
+   background-color: transparent;
+}
+
+.skirmish-map-preview > div.dark-square {
+   background-color: rgba(173, 255, 47, 0.33);
 }
 
 .skirmish-chess960-selection {

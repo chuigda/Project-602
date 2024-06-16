@@ -34,6 +34,7 @@ export function showSkirmishWindow(commonOpeningPositions: CommonOpeningPosition
       <span>局面编号</span>
       <input type="text" placeholder="取值范围 1~960，默认 518" />
    </div>
+   const skirmishMapPreview = <div class="skirmish-map-preview" />
 
    const skirmishWindow = (
       <Window title="遭遇战" height="65vh" onClose={async () => {
@@ -74,7 +75,7 @@ export function showSkirmishWindow(commonOpeningPositions: CommonOpeningPosition
                { openingSelection }
                { chess960Selection }
             </div>
-            <div class="skirmish-map-preview" />
+            { skirmishMapPreview }
          </div>
          <div class="skirmish-start-button-area">
             <span>[开始游戏]</span>
@@ -82,7 +83,37 @@ export function showSkirmishWindow(commonOpeningPositions: CommonOpeningPosition
       </Window>
    )
 
-   setTimeout(() => skirmishWindowBackground.appendChild(skirmishWindow), 500)
+   setTimeout(() => {
+      skirmishWindowBackground.appendChild(skirmishWindow)
+      skirmishMapPreview.append(...createChessboardFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -'))
+   }, 500)
    document.body.appendChild(skirmishWindowBackground)
    return skirmishWindowBackground
+}
+
+function createChessboardFromFen(fen: string): HTMLElement[] {
+   const elements = []
+   const layout = fen.split(' ')[0]
+   const ranks = layout.split('/')
+
+   for (let rank = 0; rank < ranks.length; rank++) {
+      const rankString = ranks[rank]
+      let file = 0
+      for (const char of rankString) {
+         if (char >= '1' && char <= '8') {
+            const spaceCount = parseInt(char)
+            for (let i = 0; i < spaceCount; i++) {
+               const color = (rank + file) % 2 === 0 ? 'light-square' : 'dark-square'
+               elements.push(<div class={`chessboard-square ${color}`} />)
+               file += 1
+            }
+         } else {
+            const color = (rank + file) % 2 === 0 ? 'light-square' : 'dark-square'
+            elements.push(<div class={`chessboard-square ${color}`} />)
+            file += 1
+         }
+      }
+   }
+
+   return elements
 }
