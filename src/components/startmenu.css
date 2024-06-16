@@ -34,8 +34,8 @@
 
 .start-menu-buttons > div {
    cursor: pointer;
-   font-size: 14pt;
-   font-family: dengxian, sans-serif;
+   font-size: 16pt;
+   font-family: Dengxian, sans-serif;
 }
 
 .start-menu-buttons > div:hover {
