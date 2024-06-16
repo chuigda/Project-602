@@ -33,7 +33,7 @@ export function Select<T>(props: {
       document.body.appendChild(popUpDiv)
       setTimeout(async () => {
          popUpDiv.focus()
-         popUpDiv.style.height = '12em'
+         popUpDiv.style.height = '10em'
          await sleep(200)
 
          const options = props.options.map(option => {

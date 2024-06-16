@@ -1,0 +1,277 @@
+[
+   {
+      "eco": "B00",
+      "name": "王兵开局",
+      "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq -"
+   },
+   {
+      "eco": "C20",
+      "name": "对王兵开局",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq -"
+   },
+   {
+      "eco": "B02",
+      "name": "阿廖欣防御",
+      "fen": "rnbqkb1r/pppppppp/5n2/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq -"
+   },
+   {
+      "eco": "C23",
+      "name": "飞象开局",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq -"
+   },
+   {
+      "eco": "B10",
+      "name": "卡罗康防御",
+      "fen": "rnbqkbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq -"
+   },
+   {
+      "eco": "C21",
+      "name": "丹麦弃兵",
+      "fen": "rnbqkbnr/pppp1ppp/8/8/3pP3/2P5/PP3PPP/RNBQKBNR b KQkq -"
+   },
+   {
+      "eco": "C47",
+      "name": "四马开局",
+      "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/4P3/2N2N2/PPPP1PPP/R1BQKB1R w KQkq -"
+   },
+   {
+      "eco": "C00",
+      "name": "法兰西防御",
+      "fen": "rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq -"
+   },
+   {
+      "eco": "C50",
+      "name": "意大利开局",
+      "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq -"
+   },
+   {
+      "eco": "C30",
+      "name": "王翼弃兵",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4PP2/8/PPPP2PP/RNBQKBNR b KQkq -"
+   },
+   {
+      "eco": "B06",
+      "name": "现代防御",
+      "fen": "rnbqkbnr/pppppp1p/6p1/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq -"
+   },
+   {
+      "eco": "C41",
+      "name": "菲利道尔防御",
+      "fen": "rnbqkbnr/ppp2ppp/3p4/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq -"
+   },
+   {
+      "eco": "B00",
+      "name": "皮尔茨防御",
+      "fen": "rnbqkb1r/ppp1pppp/3p1n2/8/3PP3/8/PPP2PPP/RNBQKBNR w KQkq -"
+   },
+   {
+      "eco": "C42",
+      "name": "俄罗斯防御",
+      "fen": "rnbqkb1r/pppp1ppp/5n2/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq -"
+   },
+   {
+      "eco": "C60",
+      "name": "西班牙开局",
+      "fen": "r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq -"
+   },
+   {
+      "eco": "B01",
+      "name": "斯堪的纳维亚防御",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq -"
+   },
+   {
+      "eco": "C44",
+      "name": "苏格兰开局",
+      "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq -"
+   },
+   {
+      "eco": "B20",
+      "name": "西西里防御",
+      "fen": "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq -"
+   },
+   {
+      "eco": "C25",
+      "name": "维也纳开局",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR b KQkq -"
+   },
+   {
+      "eco": "C20",
+      "name": "开局出后",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p2Q/4P3/8/PPPP1PPP/RNB1KBNR b KQkq -"
+   },
+   {
+      "eco": "C20",
+      "name": "御驾亲征",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPPKPPP/RNBQ1BNR b kq -"
+   },
+   {
+      "eco": "A40",
+      "name": "后兵开局",
+      "fen": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq -"
+   },
+   {
+      "eco": "E00",
+      "name": "卡塔兰开局",
+      "fen": "rnbqkb1r/pppp1ppp/4pn2/8/2PP4/6P1/PP2PP1P/RNBQKBNR b KQkq -"
+   },
+   {
+      "eco": "A80",
+      "name": "荷兰防御",
+      "fen": "rnbqkbnr/ppppp1pp/8/5p2/3P4/8/PPP1PPPP/RNBQKBNR w KQkq -"
+   },
+   {
+      "eco": "D80",
+      "name": "格林菲尔德防御",
+      "fen": "rnbqkb1r/ppp1pp1p/5np1/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq -"
+   },
+   {
+      "eco": "E60",
+      "name": "西印度防御",
+      "fen": "rnbqkb1r/pppppp1p/5np1/8/2PP4/8/PP2PPPP/RNBQKBNR w KQkq -"
+   },
+   {
+      "eco": "E70",
+      "name": "王翼印度防御 通常变例",
+      "fen": "rnbqk2r/ppp1ppbp/3p1np1/8/2PPP3/2N5/PP3PPP/R1BQKBNR w KQkq -"
+   },
+   {
+      "eco": "E76",
+      "name": "王翼印度防御 四兵进攻",
+      "fen": "rnbqk2r/ppp1ppbp/3p1np1/8/2PPPP2/2N5/PP4PP/R1BQKBNR b KQkq -"
+   },
+   {
+      "eco": "E91",
+      "name": "王翼印度防御 正统变例",
+      "fen": "rnbq1rk1/ppp1ppbp/3p1np1/8/2PPP3/2N2N2/PP2BPPP/R1BQK2R b KQ -"
+   },
+   {
+      "eco": "E80",
+      "name": "王翼印度防御 杰米什变例",
+      "fen": "rnbqk2r/ppp1ppbp/3p1np1/8/2PPP3/2N2P2/PP4PP/R1BQKBNR b KQkq -"
+   },
+   {
+      "eco": "A41",
+      "name": "现代防御",
+      "fen": "rnbqk1nr/ppp1ppbp/3p2p1/8/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq -"
+   },
+   {
+      "eco": "E20",
+      "name": "尼姆佐印度防御",
+      "fen": "rnbqk2r/pppp1ppp/4pn2/8/1bPP4/2N5/PP2PPPP/R1BQKBNR w KQkq -"
+   },
+   {
+      "eco": "A53",
+      "name": "古印度防御",
+      "fen": "rnbqkb1r/ppp1pppp/3p1n2/8/2PP4/8/PP2PPPP/RNBQKBNR w KQkq -"
+   },
+   {
+      "eco": "D06",
+      "name": "后翼弃兵",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq -"
+   },
+   {
+      "eco": "D20",
+      "name": "接受后翼弃兵",
+      "fen": "rnbqkbnr/ppp1pppp/8/8/2pP4/8/PP2PPPP/RNBQKBNR w KQkq -"
+   },
+   {
+      "eco": "D43",
+      "name": "半斯拉夫防御",
+      "fen": "rnbqkb1r/pp3ppp/2p1pn2/3p4/2PP4/2N2N2/PP2PPPP/R1BQKB1R w KQkq -"
+   },
+   {
+      "eco": "D10",
+      "name": "斯拉夫防御",
+      "fen": "rnbqkbnr/pp2pppp/2p5/3p4/2PP4/8/PP2PPPP/RNBQKBNR w KQkq -"
+   },
+   {
+      "eco": "D32",
+      "name": "塔拉什防御",
+      "fen": "rnbqkbnr/pp3ppp/4p3/2pp4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq -"
+   },
+   {
+      "eco": "D08",
+      "name": "阿尔宾反弃兵",
+      "fen": "rnbqkbnr/ppp2ppp/8/3pp3/2PP4/8/PP2PPPP/RNBQKBNR w KQkq -"
+   },
+   {
+      "eco": "E12",
+      "name": "后翼印度防御",
+      "fen": "rnbqkb1r/p1pp1ppp/1p2pn2/8/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq -"
+   },
+   {
+      "eco": "D02",
+      "name": "伦敦体系",
+      "fen": "rnbqkb1r/ppp1pppp/5n2/3p4/3P1B2/5N2/PPP1PPPP/RN1QKB1R b KQkq -"
+   },
+   {
+      "eco": "D00",
+      "name": "加速伦敦体系",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/3P1B2/8/PPP1PPPP/RN1QKBNR b KQkq -"
+   },
+   {
+      "eco": "D00",
+      "name": "后兵开局",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq -"
+   },
+   {
+      "eco": "A45",
+      "name": "特罗姆波夫斯基攻击",
+      "fen": "rnbqkb1r/pppppppp/5n2/6B1/3P4/8/PPP1PPPP/RN1QKBNR b KQkq -"
+   },
+   {
+      "eco": "A04",
+      "name": "祖尔科托特开局",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -"
+   },
+   {
+      "eco": "A07",
+      "name": "王翼印度进攻",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/8/5NP1/PPPPPP1P/RNBQKB1R b KQkq -"
+   },
+   {
+      "eco": "A09",
+      "name": "列蒂开局",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/2P5/5N2/PP1PPPPP/RNBQKB1R b KQkq -"
+   },
+   {
+      "eco": "A10",
+      "name": "英国式开局",
+      "fen": "rnbqkbnr/pppppppp/8/8/2P5/8/PP1PPPPP/RNBQKBNR b KQkq -"
+   },
+   {
+      "eco": "A20",
+      "name": "英国式开局 王翼英国式变例",
+      "fen": "rnbqkbnr/pppp1ppp/8/4p3/2P5/8/PP1PPPPP/RNBQKBNR w KQkq -"
+   },
+   {
+      "eco": "A30",
+      "name": "英国式开局 对称变例",
+      "fen": "rnbqkbnr/pp1ppppp/8/2p5/2P5/8/PP1PPPPP/RNBQKBNR w KQkq -"
+   },
+   {
+      "eco": "A01",
+      "name": "拉尔森攻击",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/1P6/P1PPPPPP/RNBQKBNR b KQkq -"
+   },
+   {
+      "eco": "A00",
+      "name": "波兰开局",
+      "fen": "rnbqkbnr/pppppppp/8/8/1P6/8/P1PPPPPP/RNBQKBNR b KQkq -"
+   },
+   {
+      "eco": "A02",
+      "name": "伯德开局",
+      "fen": "rnbqkbnr/pppppppp/8/8/5P2/8/PPPPP1PP/RNBQKBNR b KQkq -"
+   },
+   {
+      "eco": "A03",
+      "name": "伯德开局 荷兰变例",
+      "fen": "rnbqkbnr/ppp1pppp/8/3p4/5P2/8/PPPPP1PP/RNBQKBNR w KQkq -"
+   },
+   {
+      "eco": "A00",
+      "name": "匈牙利开局",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq -"
+   }
+]

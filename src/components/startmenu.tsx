@@ -2,9 +2,9 @@ import { h } from 'tsx-dom'
 import { sleep } from '../util/sleep'
 import { createCheckmateWindow } from './checkmate'
 import { DoubleOpenScreen } from '../widgets/double-open-screen'
-import { showTrainingWindow } from './training'
 
 import './startmenu.css'
+import { showSkirmishWindow } from './skirmish'
 
 export function createStartMenu(): HTMLElement {
    const startMenu = <DoubleOpenScreen backgroundColor="black" zIndex={1000} />
@@ -33,7 +33,7 @@ export function createStartMenu(): HTMLElement {
       startMenuButtons.appendChild(<div>载入储存游戏</div>)
       startMenuButtons.style.height = 'calc(14pt * 2 + 2px)'
       await sleep(125)
-      startMenuButtons.appendChild(<div>遭遇战</div>)
+      startMenuButtons.appendChild(<div onClick={showSkirmishWindow}>遭遇战</div>)
       startMenuButtons.style.height = 'calc(14pt * 3 + 4px)'
       // await sleep(125)
       // startMenuButtons.appendChild(<div onClick={showTrainingWindow}>主题训练</div>)

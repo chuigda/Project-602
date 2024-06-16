@@ -1,0 +1,23 @@
+.skirmish-content {
+   display: flex;
+   flex-direction: row;
+   column-gap: 1em;
+}
+
+.skirmish-start-button-area {
+   width: 100%;
+   display: flex;
+   flex-direction: row;
+   justify-content: right;
+}
+
+.skirmish-settings {
+   display: flex;
+   flex-direction: column;
+   row-gap: 0.5em;
+   flex: 1;
+}
+
+.skirmish-map-preview {
+   flex: 1;
+}
