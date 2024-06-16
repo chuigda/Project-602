@@ -1,0 +1,19 @@
+* {
+   scrollbar-width: thin;
+   scrollbar-color: greenyellow transparent;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+   width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+   background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+   background-color: greenyellow;
+   border-radius: 0px;
+   border: 0px none transparent;
+}

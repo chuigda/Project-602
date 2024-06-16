@@ -1,0 +1,12 @@
+[
+   {
+      "title": "基本对王",
+      "whitePlayable": true,
+      "blackPlayable": true,
+      "whiteFen": "8/8/8/4k3/8/4K3/4P3/8 b - - 0 1",
+      "blackFen": "8/8/8/4k3/8/4K3/4P3/8 w - - 0 1",
+      "whiteGoal": "win",
+      "blackGoal": "draw",
+      "description": "在王兵对单王的残局中，利用对王的知识取胜或者守和。\n此训练中可以选择执白或者执黑。若选择执白，则目标为取胜；若选择执黑，则目标为守和。"
+   }
+]

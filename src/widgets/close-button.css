@@ -1,0 +1,14 @@
+.close-button {
+   border: 1px solid greenyellow;
+   text-align: center;
+   color: greenyellow;
+}
+
+.close-button:hover {
+   border: 1px solid yellow;
+   background-color: yellow;
+   color: black;
+
+   transition: 0.125s ease;
+   cursor: pointer;
+}

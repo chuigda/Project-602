@@ -18,9 +18,6 @@ export function SingleOpenScreen(props: {
       </div>
    )
 
-   setTimeout(() => {
-      innerDiv.style.height = '100%'
-   }, 32)
-
+   setTimeout(() => innerDiv.style.height = '100%', 32)
    return ret
 }

@@ -3,7 +3,8 @@ import './double-open-screen.css'
 
 export function DoubleOpenScreen(props: {
    backgroundColor: string,
-   zIndex: number
+   zIndex: number,
+   children?: HTMLElement[]
 }): HTMLElement {
    const upperDiv = (
       <div class="double-open-screen-background-half"

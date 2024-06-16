@@ -1,0 +1,73 @@
+.select-container {
+   display: flex;
+   flex-direction: row;
+   column-gap: 1em;
+   align-items: center;
+
+   user-select: none;
+}
+
+.select {
+   width: 12em;
+   padding: 4px;
+   background-color: transparent;
+   color: greenyellow;
+   border: 1px solid greenyellow;
+   outline: none;
+   font-family: Dengxian, sans-serif;
+   font-size: 14pt;
+   cursor: pointer;
+
+   display: flex;
+   flex-direction: row;
+   justify-content: space-between;
+   align-items: center;
+}
+
+.select-popup {
+   height: 4px;
+   width: calc(12em + 8px);
+   background-color: black;
+   border: 1px solid greenyellow;
+   position: absolute;
+   font-family: Dengxian, sans-serif;
+   font-size: 14pt;
+   padding-top: 4px;
+   padding-bottom: 4px;
+
+   z-index: 9999;
+   transition: 0.2s ease;
+   font-family: Dengxian, sans-serif;
+   font-size: 14pt;
+
+   user-select: none;
+}
+
+.select-popup:focus {
+   outline: none;
+}
+
+.select-popup > div {
+   color: greenyellow;
+
+   display: flex;
+   flex-direction: column;
+
+   height: 100%;
+
+   overflow-y: auto;
+}
+
+.select-option {
+   padding-left: 4px;
+   padding-right: 4px;
+   padding-top: 1px;
+   padding-bottom: 1px;
+   cursor: pointer;
+}
+
+.select-option:hover {
+   background-color: greenyellow;
+   color: black;
+   transition: 0.1s ease;
+}

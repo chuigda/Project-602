@@ -3,6 +3,8 @@ import { createFairyStockfish, loadStockfishResource } from './fairy-stockfish/f
 import { sleep } from './util/sleep'
 import { createStartMenu } from './components/startmenu'
 
+import './index.css'
+
 async function continueLoadingOperation() {
    setItemLoadProgress(1)
 
@@ -14,11 +16,11 @@ async function continueLoadingOperation() {
    $('load-item-title').innerText = '载入泛用型对抗人工智能'
    const stockfishResource = await loadStockfishResource()
 
-   // setOverallLoadProgress(3 / 4)
-   // $('load-item-title').innerText = '人工智能系统初始化'
-   // setItemLoadProgress(0)
-   // await createFairyStockfish(stockfishResource)
-   // setItemLoadProgress(1)
+   setOverallLoadProgress(3 / 4)
+   $('load-item-title').innerText = '人工智能系统初始化'
+   setItemLoadProgress(0)
+   await createFairyStockfish(stockfishResource)
+   setItemLoadProgress(1)
 
    setOverallLoadProgress(1)
    $('load-item-title').innerText = '即将完成...'
