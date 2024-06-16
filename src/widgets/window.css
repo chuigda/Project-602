@@ -1,0 +1,37 @@
+.window {
+   position: fixed;
+   width: 75%;
+
+   left: 50%;
+   top: 50%;
+
+   transform: translateX(-200%) translateY(-50%);
+   transition: 0.5s ease;
+}
+
+.window > hr {
+   border-color: greenyellow;
+}
+
+.window-title-bar {
+   color: greenyellow;
+   font-size: 32px;
+   font-family: Dengxian, sans-serif;
+
+   display: flex;
+   justify-content: space-between;
+}
+
+.window-content {
+   padding: 4px;
+   height: 0;
+
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
+   transition: 0.5s ease;
+
+   color: greenyellow;
+   font-family: Dengxian, sans-serif;
+   font-size: 14pt;
+}

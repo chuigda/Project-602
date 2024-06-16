@@ -35,18 +35,18 @@ export function createStartMenu(): HTMLElement {
       await sleep(125)
       startMenuButtons.appendChild(<div>遭遇战</div>)
       startMenuButtons.style.height = 'calc(14pt * 3 + 4px)'
-      await sleep(125)
-      startMenuButtons.appendChild(<div onClick={showTrainingWindow}>主题训练</div>)
-      startMenuButtons.style.height = 'calc(14pt * 4 + 4px)'
+      // await sleep(125)
+      // startMenuButtons.appendChild(<div onClick={showTrainingWindow}>主题训练</div>)
+      // startMenuButtons.style.height = 'calc(14pt * 4 + 4px)'
       await sleep(125)
       startMenuButtons.appendChild(<div>系统设定</div>)
-      startMenuButtons.style.height = 'calc(14pt * 5 + 4px)'
+      startMenuButtons.style.height = 'calc(14pt * 4 + 4px)'
       await sleep(125)
       startMenuButtons.appendChild(<div>关于</div>)
-      startMenuButtons.style.height = 'calc(14pt * 6 + 6px)'
+      startMenuButtons.style.height = 'calc(14pt * 5 + 6px)'
       await sleep(125)
       startMenuButtons.appendChild(<div onClick={testCheckmate}>测试将死页面</div>)
-      startMenuButtons.style.height = 'calc(14pt * 7 + 6px)'
+      startMenuButtons.style.height = 'calc(14pt * 6 + 6px)'
       await sleep(125)
    }
    asyncUpdates()
