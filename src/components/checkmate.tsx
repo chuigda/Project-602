@@ -2,6 +2,7 @@ import { h } from 'tsx-dom'
 
 import './checkmate.css'
 import { sleep } from '../util/sleep'
+import { SingleOpenScreen } from '../widgets/single-open-screen'
 
 export interface CheckmateWindowData {
    startPos: string,
@@ -20,29 +21,24 @@ export interface CheckmateWindowData {
 export function createCheckmateWindow(
    data: CheckmateWindowData
 ): HTMLElement {
-   const element = <div class="checkmate-container">
-      <div class="checkmate-background" id="checkmate-background">
-      </div>
-   </div>
-
+   const checkmateWindow = <SingleOpenScreen backgroundColor='#cd0000' zIndex={5000} />
    const checkmateTitle = <div class="checkmate-title">CHECKMATE</div>
+   const checkmateDiagnose = <div class="checkmate-diagnose"></div>
 
-   const checkmateDiagnose = <div class="checkmate-diagnose"></div> as HTMLElement
+   document.body.appendChild(checkmateWindow)
 
-   document.body.appendChild(element)
+   const asyncUpdates = async () => {
+      console.log('hihihi?')
 
-   const startCheckmate = async () => {
-      await sleep(50)
-      $('checkmate-background').style.height = '100%'
-      await sleep(400)
-      $('checkmate-background').appendChild(checkmateTitle)
+      await sleep(300)
+      checkmateWindow.appendChild(checkmateTitle)
       await sleep(300)
       checkmateTitle.style.top = '20px';
       checkmateTitle.style.left = '20px';
       checkmateTitle.style.transform = 'none';
 
       await sleep(500)
-      $('checkmate-background').appendChild(checkmateDiagnose)
+      checkmateWindow.appendChild(checkmateDiagnose)
 
       await sleep(100)
       checkmateDiagnose.style.height = 'calc(100% - (20px + 24px + 2em + 4px) - 20px - 12px)';
@@ -83,13 +79,13 @@ export function createCheckmateWindow(
                await appendLine('REBOOTING...')
                await sleep(1000)
 
-               document.body.removeChild(element)
+               document.body.removeChild(checkmateWindow)
                window.location.reload()
             }}>[CLICK TO REBOOT]</a>
          </div>
       )
    }
-   startCheckmate()
+   asyncUpdates()
 
-   return element as HTMLElement
+   return checkmateWindow
 }

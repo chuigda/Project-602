@@ -2,17 +2,10 @@ import { h } from 'tsx-dom'
 import './startmenu.css'
 import { sleep } from '../util/sleep'
 import { createCheckmateWindow } from './checkmate'
+import { DoubleOpenScreen } from '../widgets/double-open-screen'
 
 export function createStartMenu(): HTMLElement {
-   const startMenu = (<div class="start-menu-container">
-      <div class="start-menu-background-half" id="start-menu-background-upper" />
-      <div class="start-menu-background-half" id="start-menu-background-lower" />
-   </div>) as HTMLElement
-
-   setTimeout(() => {
-      $('start-menu-background-upper').style.height = '50%'
-      $('start-menu-background-lower').style.height = '50%'
-   }, 50)
+   const startMenu = <DoubleOpenScreen backgroundColor="black" zIndex={1000} />
 
    const startMenuButtons = <div class="start-menu-buttons" />
 
@@ -54,6 +47,7 @@ export function createStartMenu(): HTMLElement {
    asyncUpdates()
 
    document.body.appendChild(startMenu)
+
    return startMenu
 }
 
