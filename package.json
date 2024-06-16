@@ -9,7 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "chess.js": "^1.0.0-beta.8"
+    "chess.js": "^1.0.0-beta.8",
+    "fischer960": "^1.0.0"
   },
   "devDependencies": {
     "tsx-dom": "^2.0.0",

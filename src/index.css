@@ -17,3 +17,9 @@
    border-radius: 0px;
    border: 0px none transparent;
 }
+
+.error-reporter {
+   color: orangered;
+   font-family: Dengxian, sans-serif;
+   font-size: 14pt;
+}

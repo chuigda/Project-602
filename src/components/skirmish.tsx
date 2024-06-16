@@ -1,4 +1,5 @@
 import { h } from 'tsx-dom'
+import * as fischer from 'fischer960'
 import { DoubleOpenScreen } from '../widgets/double-open-screen'
 import { Select } from '../widgets/select'
 import { Window } from '../widgets/window'
@@ -29,12 +30,64 @@ export function showSkirmishWindow(commonOpeningPositions: CommonOpeningPosition
       })
    }
 
-   const openingSelection = <Select title="开局选择" options={openingOptions} />
-   const chess960Selection = <div class="skirmish-chess960-selection">
-      <span>局面编号</span>
-      <input type="text" placeholder="取值范围 1~960，默认 518" />
-   </div>
+   const errorReporter = <span class="error-reporter" />
+
    const skirmishMapPreview = <div class="skirmish-map-preview" />
+   const createInitialPositionPreview = () => {
+      skirmishMapPreview.innerHTML = ''
+      skirmishMapPreview.append(...createChessboardFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -'))
+   }
+
+   const createSpecificPositionPreview = (positionFen: string) => {
+      skirmishMapPreview.innerHTML = ''
+      skirmishMapPreview.append(...createChessboardFromFen(positionFen))
+   }
+
+   const handleChess960Position = (event: Event) => {
+      const inputElement = event.target as HTMLInputElement
+      let positionId
+
+      if (inputElement.value.trim().length != 0) {
+         positionId = parseInt(inputElement.value)
+         if (isNaN(positionId) || positionId < 1 || positionId > 960) {
+            errorReporter.innerText = '错误：局面编号必须是 1~960 之间的整数'
+            return
+         }
+      } else {
+         positionId = 518
+      }
+
+      const positionString = fischer.decode(positionId).join('')
+      const positionStringW = positionString.toUpperCase()
+      const positionStringB = positionString.toLowerCase()
+
+      const fen = `${positionStringB}/pppppppp/8/8/8/8/PPPPPPPP/${positionStringW} w KQkq -`
+      createSpecificPositionPreview(fen)
+      errorReporter.innerText = ''
+   }
+
+   const openingSelection = <Select title="开局选择" options={openingOptions} onChange={createSpecificPositionPreview}/>
+   const chess960Selection = <div class="skirmish-chess960-selection" style="display: none">
+      <span>局面编号</span>
+      <input type="text"
+             placeholder="取值范围 1~960，默认 518"
+             onInput={handleChess960Position}
+             onChange={handleChess960Position}
+      />
+   </div>
+
+   const onChooseGameMode = (gamemode: string) => {
+      if (gamemode === 'chess960') {
+         chess960Selection.style.display = 'flex'
+         openingSelection.style.display = 'none'
+      }
+      else {
+         chess960Selection.style.display = 'none'
+         openingSelection.style.display = 'flex'
+      }
+
+      createInitialPositionPreview()
+   }
 
    const skirmishWindow = (
       <Window title="遭遇战" height="65vh" onClose={async () => {
@@ -47,9 +100,10 @@ export function showSkirmishWindow(commonOpeningPositions: CommonOpeningPosition
             <div class="skirmish-settings">
                <Select title="游戏模式"
                        options={[
-                        {text: '标准国际象棋', value: ''},
-                        {text: '国际象棋960', value: ''}
+                        {text: '标准国际象棋', value: 'chess'},
+                        {text: '国际象棋960', value: 'chess960'}
                        ]}
+                       onChange={onChooseGameMode}
                />
                <Select title="玩家颜色"
                        options={[
@@ -75,6 +129,7 @@ export function showSkirmishWindow(commonOpeningPositions: CommonOpeningPosition
             { skirmishMapPreview }
          </div>
          <div class="skirmish-start-button-area">
+            { errorReporter }
             <span>[开始游戏]</span>
          </div>
       </Window>
@@ -82,7 +137,7 @@ export function showSkirmishWindow(commonOpeningPositions: CommonOpeningPosition
 
    setTimeout(() => {
       skirmishWindowBackground.appendChild(skirmishWindow)
-      skirmishMapPreview.append(...createChessboardFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -'))
+      createInitialPositionPreview()
    }, 500)
    document.body.appendChild(skirmishWindowBackground)
    return skirmishWindowBackground
