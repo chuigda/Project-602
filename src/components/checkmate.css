@@ -23,7 +23,7 @@
    color: white;
 
    font-size: 12pt;
-   font-family: 'Lucida Console', 'Consolas', 'Courier New', Courier, monospace;
+   font-family: 'Lucida Console', 'Consolas', 'Courier New', Courier, Dengxian, monospace, sans-serif;
 
    position: fixed;
    top: calc(20px + 24px + 2em + 4px);

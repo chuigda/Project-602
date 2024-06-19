@@ -1,7 +1,7 @@
 .close-button {
-   border: 1px solid greenyellow;
+   border: 1px solid var(--theme-color);
    text-align: center;
-   color: greenyellow;
+   color: var(--theme-color);
 }
 
 .close-button:hover {

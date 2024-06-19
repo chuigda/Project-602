@@ -12,18 +12,18 @@
 }
 
 .start-menu-game-title {
-   color: greenyellow;
+   color: var(--theme-color);
    font-size: 32pt;
    font-family: 'Courier New', Courier, monospace;
 }
 
 .start-menu-split {
-   border: 1px solid greenyellow;
+   border: 1px solid var(--theme-color);
    width: 400px;
 }
 
 .start-menu-buttons {
-   color: greenyellow;
+   color: var(--theme-color);
    transition: 0.125s linear;
 
    display: flex;
@@ -40,7 +40,7 @@
 
 .start-menu-buttons > div:hover {
    color: black;
-   background-color: greenyellow;
+   background-color: var(--theme-color);
 
    transition: 0.05s ease;
 }

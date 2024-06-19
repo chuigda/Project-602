@@ -54,34 +54,34 @@ export function createCheckmateWindow(
          }
       }
 
-      await appendLine('SYSTEM DIAGNOSE')
-      await appendLine(`* Initial position: ${data.startPos}`)
-      await appendLine(`* Num moves played: ${data.moveCount}`)
+      await appendLine('系统诊断')
+      await appendLine(`* 起始局面: ${data.startPos}`)
+      await appendLine(`* 步着数: ${data.moveCount}`)
       await appendLine('')
-      await appendLine(`* Moves: ${data.movesPlayed}`)
+      await appendLine(`* 棋谱: ${data.movesPlayed}`)
       await appendLine('')
-      await appendLine(`* Brilliant moves: ${data.brilliantCount}`)
-      await appendLine(`* Excellent moves: ${data.excellentCount}`)
-      await appendLine(`* Good moves: ${data.goodCount}`)
-      await appendLine(`* Interesting moves: ${data.interestingCount}`)
-      await appendLine(`* Inaccuracies: ${data.inaccuracyCount}`)
-      await appendLine(`* Mistakes: ${data.mistakeCount}`)
-      await appendLine(`* Blunders: ${data.blunderCount}`)
+      await appendLine(`* 惊天妙手: ${data.brilliantCount}`)
+      await appendLine(`* 秒棋: ${data.excellentCount}`)
+      await appendLine(`* 好棋: ${data.goodCount}`)
+      await appendLine(`* 有趣: ${data.interestingCount}`)
+      await appendLine(`* 失准: ${data.inaccuracyCount}`)
+      await appendLine(`* 错误: ${data.mistakeCount}`)
+      await appendLine(`* 漏着: ${data.blunderCount}`)
       await appendLine('')
 
       checkmateDiagnose.appendChild(
          <div>
-            <a>[EXPORT DIAGNOSE]</a>
+            <a>[导出诊断]</a>
             &nbsp;
             <a onClick={async () => {
-               await appendLine('SYSTEM REBOOT IN 5 SECONDS!')
+               await appendLine('即将重启系统!')
                await sleep(300)
-               await appendLine('REBOOTING...')
+               await appendLine('重启中...')
                await sleep(1000)
 
                document.body.removeChild(checkmateWindow)
                window.location.reload()
-            }}>[CLICK TO REBOOT]</a>
+            }}>[重启系统]</a>
          </div>
       )
    }

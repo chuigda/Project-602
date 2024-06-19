@@ -161,7 +161,11 @@ function createChessboardFromFen(fen: string): HTMLElement[] {
             }
          } else {
             const color = (rank + file) % 2 === 0 ? 'light-square' : 'dark-square'
-            elements.push(<div class={`chessboard-square ${color} chesspiece-${char}`} />)
+            elements.push(
+               <div class={`chessboard-square ${color}`}>
+                  <span class={`chesspiece chesspiece-${char}`} />
+               </div>
+            )
             file += 1
          }
       }

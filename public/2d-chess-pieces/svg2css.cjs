@@ -14,7 +14,6 @@ for (const c of color) {
 
       resultString += `.${pieceClassName} {\n`
       resultString += `  background-image: url('data:image/svg+xml;base64,${base64}');\n`
-      resultString += `  background-size: contain;\n`
       resultString += `}\n`
    }
 }
