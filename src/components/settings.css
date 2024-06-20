@@ -1,7 +1,7 @@
 .settings-content {
    display: flex;
-   flex-direction: row;
-   column-gap: 1em;
+   flex-direction: column;
+   row-gap: 0.5em;
 }
 
 .settings-button-area {

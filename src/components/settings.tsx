@@ -30,7 +30,18 @@ export function showSettingsWindow(): HTMLElement {
             <Select title="颜色主题" options={[
                { text: "青色", value: "127, 255, 212" },
                { text: "绿色", value: "173, 255, 47" }
-            ]} onChange={setupThemeColor}/>
+            ]} onChange={setupThemeColor} />
+            <Select title="记谱格式" options={[
+               { text: "SAN (e4, Nf3)", value: "san" },
+               { text: "UCI (e2e4, g1f3)", value: "uci" },
+               { text: "LAN (e2-e4, Ng1-f3)", value: "lan" },
+               { text: "1900 (P-K4, N-KB3)", value: "1900" }
+            ]} />
+            <Select title="棋子标记" options={[
+               { text: "拉丁字母 (RNBQKP)", value: "latin" },
+               { text: "特殊符号 (♖♘♗♕♔♙)", value: "chess" },
+               { text: "汉字 (车马象后王兵)", value: "chinese" }
+            ]} />
          </div>
          <div class="settings-button-area">
             <span>[恢复默认]</span>

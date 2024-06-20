@@ -7,6 +7,7 @@ import './startmenu.css'
 import { CommonOpeningPosition, showSkirmishWindow } from './skirmish'
 import { showSettingsWindow } from './settings'
 import { showAboutWindow } from './about'
+import { createGameplayWindowDemo } from './gameplay'
 
 export function createStartMenu(data: { commonOpeningPositions: CommonOpeningPosition[] }): HTMLElement {
    const startMenu = <DoubleOpenScreen backgroundColor="black" zIndex={1000} />
@@ -47,8 +48,11 @@ export function createStartMenu(data: { commonOpeningPositions: CommonOpeningPos
       startMenuButtons.appendChild(<div onClick={showAboutWindow}>关于</div>)
       startMenuButtons.style.height = 'calc(16pt * 5 + 6px)'
       await sleep(125)
+      startMenuButtons.appendChild(<div onClick={createGameplayWindowDemo}>测试 3D 渲染</div>)
+      startMenuButtons.style.height = 'calc(16pt * 6 + 8px)'
+      await sleep(125)
       startMenuButtons.appendChild(<div onClick={testCheckmate}>测试将死页面</div>)
-      startMenuButtons.style.height = 'calc(16pt * 6 + 6px)'
+      startMenuButtons.style.height = 'calc(16pt * 7 + 10px)'
       await sleep(125)
    }
    asyncUpdates()
