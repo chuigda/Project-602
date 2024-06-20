@@ -1,0 +1,32 @@
+.about-content {
+   display: flex;
+   flex-direction: column;
+   row-gap: 0.25em;
+}
+
+.about-content-inner {
+   display: flex;
+   flex-direction: row;
+   column-gap: 1em;
+}
+
+.about-content-inner > div {
+   flex: 1 1 0px;
+   display: flex;
+   flex-direction: column;
+   row-gap: 0.25em;
+}
+
+.item::before {
+   content: '* ';
+   font-family: 'Courier New', Courier, Dengxian, 'sans-serif', monospace;
+}
+
+.about-content a {
+   color: var(--theme-color);
+   font-family: 'Courier New', Courier, Dengxian, 'sans-serif', monospace;
+}
+
+.about-content a:hover {
+   color: var(--theme-color-semi-transparent);
+}

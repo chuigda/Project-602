@@ -14,7 +14,7 @@ export interface CommonOpeningPosition {
 }
 
 export function showSkirmishWindow(commonOpeningPositions: CommonOpeningPosition[]): HTMLElement {
-   const skirmishWindowBackground = <DoubleOpenScreen backgroundColor="black" zIndex={2000} />
+   const windowBackground = <DoubleOpenScreen backgroundColor="black" zIndex={2000} />
 
    const openingOptions = [
       {
@@ -91,10 +91,10 @@ export function showSkirmishWindow(commonOpeningPositions: CommonOpeningPosition
 
    const skirmishWindow = (
       <Window title="遭遇战" height="65vh" onClose={async () => {
-         (skirmishWindowBackground.children[0] as HTMLElement).style.height = '0';
-         (skirmishWindowBackground.children[1] as HTMLElement).style.height = '0';
+         (windowBackground.children[0] as HTMLElement).style.height = '0';
+         (windowBackground.children[1] as HTMLElement).style.height = '0';
          await sleep(300)
-         skirmishWindowBackground.remove()
+         windowBackground.remove()
       }}>
          <div class="skirmish-content">
             <div class="skirmish-settings">
@@ -136,11 +136,11 @@ export function showSkirmishWindow(commonOpeningPositions: CommonOpeningPosition
    )
 
    setTimeout(() => {
-      skirmishWindowBackground.appendChild(skirmishWindow)
+      windowBackground.appendChild(skirmishWindow)
       createInitialPositionPreview()
    }, 500)
-   document.body.appendChild(skirmishWindowBackground)
-   return skirmishWindowBackground
+   document.body.appendChild(windowBackground)
+   return windowBackground
 }
 
 function createChessboardFromFen(fen: string): HTMLElement[] {

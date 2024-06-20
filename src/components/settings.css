@@ -1,0 +1,12 @@
+.settings-content {
+   display: flex;
+   flex-direction: row;
+   column-gap: 1em;
+}
+
+.settings-button-area {
+   width: 100%;
+   display: flex;
+   flex-direction: row;
+   justify-content: right;
+}

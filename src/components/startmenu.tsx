@@ -5,6 +5,8 @@ import { DoubleOpenScreen } from '../widgets/double-open-screen'
 
 import './startmenu.css'
 import { CommonOpeningPosition, showSkirmishWindow } from './skirmish'
+import { showSettingsWindow } from './settings'
+import { showAboutWindow } from './about'
 
 export function createStartMenu(data: { commonOpeningPositions: CommonOpeningPosition[] }): HTMLElement {
    const startMenu = <DoubleOpenScreen backgroundColor="black" zIndex={1000} />
@@ -39,10 +41,10 @@ export function createStartMenu(data: { commonOpeningPositions: CommonOpeningPos
       // startMenuButtons.appendChild(<div onClick={showTrainingWindow}>主题训练</div>)
       // startMenuButtons.style.height = 'calc(16pt * 4 + 4px)'
       await sleep(125)
-      startMenuButtons.appendChild(<div>系统设定</div>)
+      startMenuButtons.appendChild(<div onClick={showSettingsWindow}>系统设定</div>)
       startMenuButtons.style.height = 'calc(16pt * 4 + 4px)'
       await sleep(125)
-      startMenuButtons.appendChild(<div>关于</div>)
+      startMenuButtons.appendChild(<div onClick={showAboutWindow}>关于</div>)
       startMenuButtons.style.height = 'calc(16pt * 5 + 6px)'
       await sleep(125)
       startMenuButtons.appendChild(<div onClick={testCheckmate}>测试将死页面</div>)
