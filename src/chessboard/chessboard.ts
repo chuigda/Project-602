@@ -186,7 +186,7 @@ export function createChessboard3D(
          }
       }
 
-      self.program.uniform4fv(gl, 'u_ObjectColor', /* orangered */ [1.0, 0.3, 0.0, 1.0])
+      self.program.uniform4fv(gl, 'u_ObjectColor', /* orangered */ [1.0, 0.3, 0.1, 1.0])
       for (let rank = 6; rank < 8; rank++) {
          for (let file = 0; file < 8; file++) {
             const matrix = allMatrices[rank * 8 + file]
