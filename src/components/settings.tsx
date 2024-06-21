@@ -33,13 +33,11 @@ export function showSettingsWindow(): HTMLElement {
             ]} onChange={setupThemeColor} />
             <Select title="记谱格式" options={[
                { text: "SAN (e4, Nf3)", value: "san" },
-               { text: "UCI (e2e4, g1f3)", value: "uci" },
                { text: "LAN (e2-e4, Ng1-f3)", value: "lan" },
-               { text: "1900 (P-K4, N-KB3)", value: "1900" }
+               { text: "UCI (e2e4, g1f3)", value: "uci" }
             ]} />
             <Select title="棋子标记" options={[
                { text: "拉丁字母 (RNBQKP)", value: "latin" },
-               { text: "特殊符号 (♖♘♗♕♔♙)", value: "chess" },
                { text: "汉字 (车马象后王兵)", value: "chinese" }
             ]} />
          </div>
