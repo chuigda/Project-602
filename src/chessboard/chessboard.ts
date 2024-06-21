@@ -149,10 +149,15 @@ export function createChessboard3D(
       }
    }
 
+   let timer = 0
+
    function render() {
       if (!gl) {
          return
       }
+
+      timer += 1
+      const collapse = 0.5 + 0.5 * Math.sin(timer / 30)
 
       gl.clearColor(0.0, 0.0, 0.0, 1.0)
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
@@ -160,8 +165,10 @@ export function createChessboard3D(
       gl.viewport(0, 0, canvas.width, canvas.height)
       gl.enable(gl.DEPTH_TEST)
       gl.enable(gl.CULL_FACE)
+      // gl.disable(gl.BLEND)
 
       self.program.useProgram(gl)
+      self.program.uniform1f(gl, 'u_FadeOut', collapse)
       self.program.uniform4fv(gl, 'u_ObjectColor', /* black */ [0.0, 0.0, 0.0, 1.0])
       for (let rank = 0; rank < 8; rank++) {
          if (rank !== 0 && rank !== 1 && rank !== 6 && rank !== 7) {
