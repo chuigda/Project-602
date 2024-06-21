@@ -1,4 +1,4 @@
-precision highp float;
+precision lowp float;
 
 uniform vec4 u_ObjectColor;
 varying vec3 v_Position;
