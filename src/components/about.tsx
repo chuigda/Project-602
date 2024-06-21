@@ -51,8 +51,6 @@ export function showAboutWindow(): HTMLElement {
                      <a href="https://huajia.163.com/main/profile/YBPbpbqr" target="_blank">缸脑萝</a>
                   </div>
                   <br />
-               </div>
-               <div class="about-content-right">
                   <div>国际象棋</div>
                   <div class="item">
                      教学设计：
@@ -72,8 +70,25 @@ export function showAboutWindow(): HTMLElement {
                      <a href="https://commons.wikimedia.org/wiki/Category:SVG_chess_pieces" target="_blank">Wikimedia</a>
                   </div>
                </div>
+               <div class="about-content-right">
+                  <div>特别鸣谢</div>
+                  <div class="item">
+                     <a href="https://space.bilibili.com/14980676" target="_blank">快乐小凤w</a>
+                  </div>
+                  <div class="item">
+                     <a href="https://github.com/flaribbit" target="_blank">Flaribbit</a>
+                  </div>
+                  <div class="item">
+                     <a href="https://github.com/Shimogawa" target="_blank">Shimogawa</a>
+                  </div>
+                  <div class="item">
+                     <a href="https://github.com/eoiles" target="_blank">eoiles</a>
+                  </div>
+               </div>
             </div>
             <br />
+         </div>
+         <div class="about-content-bottom">
             <div>
                本程序是开源软件，源码托管在 <a href="https://github.com/chuigda/Project-602" target="_blank">chuigda/project602</a>
             </div>
@@ -82,7 +97,6 @@ export function showAboutWindow(): HTMLElement {
                美术素材除白后立绘外均以 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh-hans" target="_blank">CC-BY-SA 4.0</a> 协议发布
             </div>
          </div>
-         <div />
       </Window>
    )
 

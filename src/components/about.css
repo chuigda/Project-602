@@ -24,3 +24,14 @@
 .about-content a:hover {
    color: var(--theme-color-semi-transparent);
 }
+
+.about-content-bottom {
+   display: flex;
+   flex-direction: column;
+   row-gap: 0.25em;
+}
+
+.about-content-bottom a {
+   color: var(--theme-color);
+   font-family: 'Courier New', Courier, Dengxian, 'sans-serif', monospace;
+}
