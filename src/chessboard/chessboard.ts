@@ -107,7 +107,7 @@ export function createChessboard3D(
    canvas: HTMLCanvasElement,
    asset: Chessboard3DAsset
 ): Chessboard3D {
-   const gl = canvas.getContext('webgl')
+   const gl = canvas.getContext('webgl2')
    if (!gl) {
       throw new Error('无法创建 WebGL 上下文')
    }
@@ -177,7 +177,7 @@ export function createChessboard3D(
          }
       }
 
-      self.program.uniform4fv(gl, 'u_ObjectColor', /* cyan */ [0.0, 1.0, 1.0, 1.0])
+      self.program.uniform4fv(gl, 'u_ObjectColor', /* cyan */ [0.0, 0.85, 0.9, 1.0])
       for (let rank = 0; rank < 2; rank++) {
          for (let file = 0; file < 8; file++) {
             const matrix = allMatrices[rank * 8 + file]
@@ -186,7 +186,7 @@ export function createChessboard3D(
          }
       }
 
-      self.program.uniform4fv(gl, 'u_ObjectColor', /* orangered */ [1.0, 0.2, 0.0, 1.0])
+      self.program.uniform4fv(gl, 'u_ObjectColor', /* orangered */ [1.0, 0.3, 0.0, 1.0])
       for (let rank = 6; rank < 8; rank++) {
          for (let file = 0; file < 8; file++) {
             const matrix = allMatrices[rank * 8 + file]
