@@ -1,79 +1,12 @@
-import { Chess, Square } from 'chess.js'
+import { Chess } from 'chess.js'
 
 import { ShaderProgram, createShaderProgram } from './glx/shader_program'
-import { Object3D, VertexBufferObject, createVertexBufferObject, loadObject } from './glx/object'
-
+import { VertexBufferObject, createVertexBufferObject } from './glx/object'
 import './gl_matrix/types.d.ts'
 // @ts-ignore
 import * as mat4 from './gl_matrix/mat4.mjs'
-
-export interface Chessboard3DAsset {
-   vertexShader: string
-   fragmentShader: string
-
-   rookObj: Object3D
-   rookLineObj: Object3D
-   // knightObj: Object3D
-   // knightLineObj: Object3D
-   // bishopObj: Object3D
-   // bishopLineObj: Object3D
-   // queenObj: Object3D
-   // queenLineObj: Object3D
-   // kingObj: Object3D
-   // kingLineObj: Object3D
-   // pawnObj: Object3D
-   // pawnLineObj: Object3D
-   // squareObj: Object3D
-}
-
-export async function loadChessboardAsset(): Promise<Chessboard3DAsset> {
-   setItemLoadProgress(0)
-   const vertexShader = await $().get('/shader/opaque.vs')
-   setItemLoadProgress(1 / 5)
-   const fragmentShader = await $().get('/shader/opaque.fs')
-   setItemLoadProgress(2 / 5)
-
-   const objFile = await $().get('/chess-pieces/chess-pieces-3d.obj')
-   setItemLoadProgress(3 / 5)
-
-   const objects = loadObject('chess-pieces.obj', objFile)
-   const objectsMap: Record<string, Object3D> = {}
-   objects.forEach(obj => objectsMap[obj.objectName] = obj)
-   console.info(objectsMap)
-
-   const rookObj = objectsMap['2_rook']
-   const rookLineObj = objectsMap['2_rook_line']
-   setItemLoadProgress(4 / 5)
-
-   const fileref = document.createElement('link')
-   fileref.rel = 'stylesheet'
-   fileref.type = 'text/css'
-   fileref.href = '/chess-pieces/2d/svg2css.css'
-   document.getElementsByTagName('head')[0].appendChild(fileref)
-   await new Promise(resolve => fileref.onload = resolve)
-   setItemLoadProgress(5 / 5)
-
-   return {
-      vertexShader,
-      fragmentShader,
-
-      rookObj,
-      rookLineObj,
-   }
-}
-
 import { Framebuffer, createFrameBuffer } from './glx/framebuffer_object.ts'
-
-const ObjectIdToSquareMap: string[] = [
-   'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8',
-   'b1', 'b2', 'b3', 'b4', 'b5', 'b6', 'b7', 'b8',
-   'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8',
-   'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8',
-   'e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'e7', 'e8',
-   'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8',
-   'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8',
-   'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'h8'
-]
+import { GameAsset } from '../assetloader.ts'
 
 export interface Chessboard3D {
    program: ShaderProgram
@@ -105,7 +38,7 @@ export interface Chessboard3D {
 
 export function createChessboard3D(
    canvas: HTMLCanvasElement,
-   asset: Chessboard3DAsset
+   asset: GameAsset
 ): Chessboard3D {
    const gl = canvas.getContext('webgl2')
    if (!gl) {

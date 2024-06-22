@@ -1,17 +1,17 @@
-import { loadChessboardAsset } from './chessboard/chessboard'
 import { createFairyStockfish, loadStockfishResource } from './fairy-stockfish/fairy-stockfish'
 import { sleep } from './util/sleep'
 import { createStartMenu } from './components/startmenu'
 
 import './index.css'
 import { CommonOpeningPosition } from './components/skirmish'
+import { loadAsset } from './assetloader'
 
 async function continueLoadingOperation() {
    setItemLoadProgress(1)
 
    $('load-item-title').innerText = '载入图形化操作界面'
    setOverallLoadProgress(1 / 5)
-   const chessboard3DAsset = await loadChessboardAsset()
+   const gameAsset = await loadAsset()
 
    setOverallLoadProgress(2 / 5)
    $('load-item-title').innerText = '载入泛用型对抗人工智能'
@@ -20,7 +20,7 @@ async function continueLoadingOperation() {
    setOverallLoadProgress(3 / 5)
    $('load-item-title').innerText = '人工智能系统初始化'
    setItemLoadProgress(0)
-   // await createFairyStockfish(stockfishResource)
+   await createFairyStockfish(stockfishResource)
    setItemLoadProgress(1)
 
    setOverallLoadProgress(4 / 5)
@@ -35,7 +35,7 @@ async function continueLoadingOperation() {
    $('load-item-title').innerText = '即将完成...'
 
    await sleep(500)
-   createStartMenu({ commonOpeningPositions, chessboard3DAsset })
+   createStartMenu({ commonOpeningPositions, gameAsset })
 }
 
 continueLoadingOperation()

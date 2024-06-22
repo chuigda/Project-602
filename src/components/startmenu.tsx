@@ -7,12 +7,12 @@ import './startmenu.css'
 import { CommonOpeningPosition, showSkirmishWindow } from './skirmish'
 import { showSettingsWindow } from './settings'
 import { showAboutWindow } from './about'
-import { Chessboard3DAsset } from '../chessboard/chessboard'
 import { createRenderTest } from './rendertest'
+import { GameAsset } from '../assetloader'
 
 export function createStartMenu(data: {
    commonOpeningPositions: CommonOpeningPosition[],
-   chessboard3DAsset: Chessboard3DAsset
+   gameAsset: GameAsset
 }): HTMLElement {
    const startMenu = <DoubleOpenScreen backgroundColor="black" zIndex={1000} />
 
@@ -52,7 +52,7 @@ export function createStartMenu(data: {
       startMenuButtons.appendChild(<div onClick={showAboutWindow}>关于</div>)
       startMenuButtons.style.height = 'calc(16pt * 5 + 6px)'
       await sleep(125)
-      startMenuButtons.appendChild(<div onClick={() => createRenderTest(data.chessboard3DAsset)}>测试 3D 渲染</div>)
+      startMenuButtons.appendChild(<div onClick={() => createRenderTest(data.gameAsset)}>测试 3D 渲染</div>)
       startMenuButtons.style.height = 'calc(16pt * 6 + 8px)'
       await sleep(125)
       startMenuButtons.appendChild(<div onClick={testCheckmate}>测试将死页面</div>)
