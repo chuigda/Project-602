@@ -33,7 +33,7 @@ export async function loadChessboardAsset(): Promise<Chessboard3DAsset> {
    const fragmentShader = await $().get('/shader/opaque.fs')
    setItemLoadProgress(2 / 5)
 
-   const objFile = await $().get('/chess-pieces/chess-pieces.obj')
+   const objFile = await $().get('/chess-pieces/chess-pieces-3d.obj')
    setItemLoadProgress(3 / 5)
 
    const objects = loadObject('chess-pieces.obj', objFile)
@@ -48,7 +48,7 @@ export async function loadChessboardAsset(): Promise<Chessboard3DAsset> {
    const fileref = document.createElement('link')
    fileref.rel = 'stylesheet'
    fileref.type = 'text/css'
-   fileref.href = '/chess-pieces/svg2css.css'
+   fileref.href = '/chess-pieces/2d/svg2css.css'
    document.getElementsByTagName('head')[0].appendChild(fileref)
    await new Promise(resolve => fileref.onload = resolve)
    setItemLoadProgress(5 / 5)
