@@ -4,16 +4,13 @@ import { createCheckmateWindow } from './checkmate'
 import { DoubleOpenScreen } from '../widgets/double-open-screen'
 
 import './startmenu.css'
-import { CommonOpeningPosition, showSkirmishWindow } from './skirmish'
+import { showSkirmishWindow } from './skirmish'
 import { showSettingsWindow } from './settings'
 import { showAboutWindow } from './about'
 import { createRenderTest } from './rendertest'
-import { GameAsset } from '../assetloader'
+import { ChessData, GameAsset } from '../assetloader'
 
-export function createStartMenu(data: {
-   commonOpeningPositions: CommonOpeningPosition[],
-   gameAsset: GameAsset
-}): HTMLElement {
+export function createStartMenu(gameAsset: GameAsset, chessData: ChessData): HTMLElement {
    const startMenu = <DoubleOpenScreen backgroundColor="black" zIndex={1000} />
 
    const startMenuButtons = <div class="start-menu-buttons" />
@@ -40,7 +37,7 @@ export function createStartMenu(data: {
       startMenuButtons.appendChild(<div>载入储存游戏</div>)
       startMenuButtons.style.height = 'calc(16pt * 2 + 2px)'
       await sleep(125)
-      startMenuButtons.appendChild(<div onClick={() => showSkirmishWindow(data.commonOpeningPositions)}>遭遇战</div>)
+      startMenuButtons.appendChild(<div onClick={() => showSkirmishWindow(chessData.commonOpeningPositions)}>遭遇战</div>)
       startMenuButtons.style.height = 'calc(16pt * 3 + 4px)'
       // await sleep(125)
       // startMenuButtons.appendChild(<div onClick={showTrainingWindow}>主题训练</div>)
@@ -52,7 +49,7 @@ export function createStartMenu(data: {
       startMenuButtons.appendChild(<div onClick={showAboutWindow}>关于</div>)
       startMenuButtons.style.height = 'calc(16pt * 5 + 6px)'
       await sleep(125)
-      startMenuButtons.appendChild(<div onClick={() => createRenderTest(data.gameAsset)}>测试 3D 渲染</div>)
+      startMenuButtons.appendChild(<div onClick={() => createRenderTest(gameAsset)}>测试 3D 渲染</div>)
       startMenuButtons.style.height = 'calc(16pt * 6 + 8px)'
       await sleep(125)
       startMenuButtons.appendChild(<div onClick={testCheckmate}>测试将死页面</div>)

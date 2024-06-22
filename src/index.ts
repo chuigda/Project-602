@@ -3,8 +3,7 @@ import { sleep } from './util/sleep'
 import { createStartMenu } from './components/startmenu'
 
 import './index.css'
-import { CommonOpeningPosition } from './components/skirmish'
-import { loadAsset } from './assetloader'
+import { loadAsset, loadChessData } from './assetloader'
 
 async function continueLoadingOperation() {
    setItemLoadProgress(1)
@@ -26,16 +25,14 @@ async function continueLoadingOperation() {
    setOverallLoadProgress(4 / 5)
    $('load-item-title').innerText = '载入数据库'
    setItemLoadProgress(0)
-   let commonOpeningPositions =
-      (await $().get('/chessdata/common-opening-positions.json', undefined, resp => resp.json())) as CommonOpeningPosition[]
-   commonOpeningPositions = commonOpeningPositions.sort((a, b) => a.eco.localeCompare(b.eco))
+   const chessData = await loadChessData()
    setItemLoadProgress(1)
 
    setOverallLoadProgress(1)
    $('load-item-title').innerText = '即将完成...'
 
    await sleep(500)
-   createStartMenu({ commonOpeningPositions, gameAsset })
+   createStartMenu(gameAsset, chessData)
 }
 
 continueLoadingOperation()

@@ -1,9 +1,15 @@
+import { CommonOpeningPosition, OpeningPosition } from './chess/opening-book'
 import { Object3D, loadObject } from './chessboard/glx/object'
 
 export interface GameAsset {
+   // 2D chess piece CSS
+   svgCss: HTMLElement
+
+   // shader
    vertexShader: string
    fragmentShader: string
 
+   // 3D chess pieces (merged into 1 object file)
    rookObj: Object3D
    rookLineObj: Object3D
    // knightObj: Object3D
@@ -17,6 +23,13 @@ export interface GameAsset {
    // pawnObj: Object3D
    // pawnLineObj: Object3D
    // squareObj: Object3D
+}
+
+export interface ChessData {
+   // opening book
+   openingBook: Record<string, OpeningPosition[]>
+   // common opening book positions
+   commonOpeningPositions: CommonOpeningPosition[]
 }
 
 export async function loadAsset(): Promise<GameAsset> {
@@ -47,10 +60,33 @@ export async function loadAsset(): Promise<GameAsset> {
    setItemLoadProgress(5 / 5)
 
    return {
+      svgCss: fileref,
+
       vertexShader,
       fragmentShader,
 
       rookObj,
-      rookLineObj,
+      rookLineObj
+   }
+}
+
+export async function loadChessData(): Promise<ChessData> {
+   setItemLoadProgress(0)
+   const openingBookBlob = await $().getWithProgressReport(
+      '/chessdata/opening-book.json',
+      undefined,
+      (progress: ProgressEvent) => setItemLoadProgress((progress.loaded / progress.total) * 0.98)
+   ) as Blob
+   const openingBook = JSON.parse(await openingBookBlob.text()) as Record<string, OpeningPosition[]>
+   setItemLoadProgress(0.98)
+   console.info(openingBook)
+
+   const commonOpeningPositions = await $().get('/chessdata/common-opening-positions.json', undefined, resp => resp.json())
+   setItemLoadProgress(1)
+   console.info(commonOpeningPositions)
+
+   return {
+      openingBook,
+      commonOpeningPositions
    }
 }

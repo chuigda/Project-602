@@ -4,14 +4,9 @@ import { DoubleOpenScreen } from '../widgets/double-open-screen'
 import { Select } from '../widgets/select'
 import { Window } from '../widgets/window'
 import { sleep } from '../util/sleep'
+import { CommonOpeningPosition } from '../chess/opening-book'
 
 import './skirmish.css'
-
-export interface CommonOpeningPosition {
-   eco: string
-   name: string
-   fen: string
-}
 
 export function showSkirmishWindow(commonOpeningPositions: CommonOpeningPosition[]): HTMLElement {
    const windowBackground = <DoubleOpenScreen backgroundColor="black" zIndex={2000} />
