@@ -2,6 +2,8 @@ export type Piece = undefined |
    'r' | 'n' | 'b' | 'q' | 'k' | 'p' |
    'R' | 'N' | 'B' | 'Q' | 'K' | 'P' | 'W'
 
+export type PlayerSide = 'white' | 'black'
+
 export interface ChessGame {
    position: Piece[][]
    whiteCastling: { k: boolean, q: boolean }

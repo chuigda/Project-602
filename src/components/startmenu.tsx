@@ -9,8 +9,13 @@ import { showSettingsWindow } from './settings'
 import { showAboutWindow } from './about'
 import { createRenderTest } from './rendertest'
 import { ChessData, GameAsset } from '../assetloader'
+import { FairyStockfish } from '../fairy-stockfish/fairy-stockfish'
 
-export function createStartMenu(gameAsset: GameAsset, chessData: ChessData): HTMLElement {
+export function createStartMenu(
+   gameAsset: GameAsset,
+   chessData: ChessData,
+   fairyStockfish: FairyStockfish
+): HTMLElement {
    const startMenu = <DoubleOpenScreen backgroundColor="black" zIndex={1000} />
 
    const startMenuButtons = <div class="start-menu-buttons" />
@@ -37,7 +42,10 @@ export function createStartMenu(gameAsset: GameAsset, chessData: ChessData): HTM
       startMenuButtons.appendChild(<div>载入储存游戏</div>)
       startMenuButtons.style.height = 'calc(16pt * 2 + 2px)'
       await sleep(125)
-      startMenuButtons.appendChild(<div onClick={() => showSkirmishWindow(chessData.commonOpeningPositions)}>遭遇战</div>)
+      startMenuButtons.appendChild(<div onClick={() => showSkirmishWindow(
+         gameAsset,
+         chessData.commonOpeningPositions
+      )}>遭遇战</div>)
       startMenuButtons.style.height = 'calc(16pt * 3 + 4px)'
       // await sleep(125)
       // startMenuButtons.appendChild(<div onClick={showTrainingWindow}>主题训练</div>)

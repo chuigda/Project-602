@@ -3,10 +3,8 @@ import './button.css'
 
 export function Button(props: { text: string, onClick: () => void }) {
    return (
-      <button class="button" onClick={props.onClick}>
-         <b>[</b>
+      <div class="button" onClick={props.onClick}>
          {props.text}
-         <b>]</b>
-      </button>
+      </div>
    )
 }

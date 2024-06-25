@@ -121,6 +121,9 @@ export function createChessboard3D(
       resizing: false
    }
 
+   canvas.width = canvas.clientWidth * window.devicePixelRatio
+   canvas.height = canvas.clientHeight * window.devicePixelRatio
+
    const projection = mat4.create()
    mat4.perspective(projection, Math.PI / 7, canvas.width / canvas.height, 0.1, 100)
    self.program.useProgram(gl)
@@ -205,7 +208,7 @@ export function createChessboard3D(
 
       for (let rank = 0; rank < 8; rank++) {
          for (let file = 0; file < 8; file++) {
-            if ((file + rank) % 2 !== 0) {
+            if ((file + rank) % 2 === 0) {
                continue
             }
 

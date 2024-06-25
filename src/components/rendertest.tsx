@@ -18,7 +18,7 @@ export function createRenderTest(gameAsset: GameAsset): HTMLElement {
       const dpi = window.devicePixelRatio || 1
       canvas.width = canvas.clientWidth * dpi
       canvas.height = canvas.clientHeight * dpi
-      createChessboard3D(canvas, gameAsset)
+      createChessboard3D(canvas, gameAsset, 'white')
    }, 50);
 
    return canvas

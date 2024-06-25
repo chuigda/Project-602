@@ -1,2 +1,22 @@
 .button {
+   cursor: pointer;
+   font-size: 16pt;
+   font-family: Dengxian, sans-serif;
+   color: var(--theme-color);
+}
+
+.button:hover {
+   color: black;
+   background-color: var(--theme-color);
+   transition: 0.05s ease;
+}
+
+.button::before {
+   content: '[';
+   font-family: 'Courier New', 'Courier', monospace;
+}
+
+.button::after {
+   content: ']';
+   font-family: 'Courier New', 'Courier', monospace;
 }

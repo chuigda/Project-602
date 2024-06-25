@@ -5,10 +5,17 @@ import { Select } from '../widgets/select'
 import { Window } from '../widgets/window'
 import { sleep } from '../util/sleep'
 import { CommonOpeningPosition } from '../chess/opening-book'
+import { Button } from '../widgets/button'
+import { createSkirmishGameplayWindow } from './gameplay'
+import { GameAsset } from '../assetloader'
+import { Ref, ref } from '../util/ref'
 
 import './skirmish.css'
 
-export function showSkirmishWindow(commonOpeningPositions: CommonOpeningPosition[]): HTMLElement {
+export function showSkirmishWindow(
+   asset: GameAsset,
+   commonOpeningPositions: CommonOpeningPosition[]
+): HTMLElement {
    const windowBackground = <DoubleOpenScreen backgroundColor="black" zIndex={2000} />
 
    const openingOptions = [
@@ -25,6 +32,9 @@ export function showSkirmishWindow(commonOpeningPositions: CommonOpeningPosition
       })
    }
 
+   const startPosition: Ref<string> = ref('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -')
+   const playerSide: Ref<'white' | 'black'> = ref('white')
+
    const errorReporter = <span class="error-reporter" />
 
    const skirmishMapPreview = <div class="skirmish-map-preview" />
@@ -33,12 +43,14 @@ export function showSkirmishWindow(commonOpeningPositions: CommonOpeningPosition
       skirmishMapPreview.append(...createChessboardFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -'))
    }
 
-   const createSpecificPositionPreview = (positionFen: string) => {
+   const chooseSpecificPosition = (positionFen: string) => {
       skirmishMapPreview.innerHTML = ''
       skirmishMapPreview.append(...createChessboardFromFen(positionFen))
+
+      startPosition.value = positionFen
    }
 
-   const handleChess960Position = (event: Event) => {
+   const chooseChess960Position = (event: Event) => {
       const inputElement = event.target as HTMLInputElement
       let positionId
 
@@ -57,17 +69,17 @@ export function showSkirmishWindow(commonOpeningPositions: CommonOpeningPosition
       const positionStringB = positionString.toLowerCase()
 
       const fen = `${positionStringB}/pppppppp/8/8/8/8/PPPPPPPP/${positionStringW} w KQkq -`
-      createSpecificPositionPreview(fen)
+      chooseSpecificPosition(fen)
       errorReporter.innerText = ''
    }
 
-   const openingSelection = <Select title="开局选择" options={openingOptions} onChange={createSpecificPositionPreview}/>
+   const openingSelection = <Select title="开局选择" options={openingOptions} onChange={chooseSpecificPosition}/>
    const chess960Selection = <div class="skirmish-chess960-selection" style="display: none">
       <span>局面编号</span>
       <input type="text"
              placeholder="取值范围 1~960，默认 518"
-             onInput={handleChess960Position}
-             onChange={handleChess960Position}
+             onInput={chooseChess960Position}
+             onChange={chooseChess960Position}
       />
    </div>
 
@@ -83,6 +95,13 @@ export function showSkirmishWindow(commonOpeningPositions: CommonOpeningPosition
 
       createInitialPositionPreview()
    }
+
+   const startGame = () => createSkirmishGameplayWindow(
+      asset,
+      startPosition.value,
+      playerSide.value,
+      false
+   )
 
    const skirmishWindow = (
       <Window title="遭遇战" height="65vh" onClose={async () => {
@@ -125,7 +144,7 @@ export function showSkirmishWindow(commonOpeningPositions: CommonOpeningPosition
          </div>
          <div class="skirmish-start-button-area">
             { errorReporter }
-            <span>[开始游戏]</span>
+            <Button onClick={startGame} text="开始游戏" />
          </div>
       </Window>
    )
