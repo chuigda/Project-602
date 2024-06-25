@@ -57,9 +57,6 @@ export function createSkirmishGameplayWindow(
       validMoves.value = await fairyStockfish.getValidMoves()
    }
 
-   const computerPlayMove = async () => {
-   }
-
    const asyncUpdates = async () => {
       await Promise.all([sleep(300), getValidMoves()])
 
@@ -80,8 +77,6 @@ export function createSkirmishGameplayWindow(
 
          console.info(currentFen.value)
          const openingBookPosition = globalResource.value.chessData.openingBook[currentFen.value]
-         console.info(openingBookPosition)
-
          const startSquare = fileChars[file] + (rank + 1)
          for (const validMove of validMoves.value) {
             if (validMove.startsWith(startSquare)) {
@@ -109,17 +104,48 @@ export function createSkirmishGameplayWindow(
       const playMove = async (startRank: number, startFile: number, targetRank: number, targetFile: number) => {
          chessGame.position[targetRank][targetFile] = chessGame.position[startRank][startFile]
          chessGame.position[startRank][startFile] = undefined
-         chessGame.turn = playerSide === 'white' ? 'black' : 'white'
+         chessGame.turn = chessGame.turn === 'white' ? 'black' : 'white'
 
          gamePositionToChessboard(chessGame, chessboard)
-         await getValidMoves()
          chessboard.highlightSquares = []
          selectedSquare.value = undefined
          currentFen.value = chessGameToFen(chessGame)
+         await getValidMoves()
 
          if (chessGame.turn !== playerSide) {
             computerPlayMove()
          }
+      }
+
+      const computerPlayMove = async () => {
+         const openingBookPosition = globalResource.value.chessData.openingBook[currentFen.value]
+         console.info(openingBookPosition)
+         if (openingBookPosition) {
+            const bookMove = openingBookPosition.moves[Math.floor(Math.random() * openingBookPosition.moves.length)]
+            const move = bookMove[0]
+            const srcSquare = move.slice(0, 2)
+            const targetSquare = move.slice(2, 4)
+            const srcRank = parseInt(srcSquare[1]) - 1
+            const srcFile = fileChars.indexOf(srcSquare[0])
+            const targetRank = parseInt(targetSquare[1]) - 1
+            const targetFile = fileChars.indexOf(targetSquare[0])
+
+            await sleep(5000)
+            await playMove(srcRank, srcFile, targetRank, targetFile)
+            return
+         }
+
+         await fairyStockfish.setPosition(currentFen.value)
+         await fairyStockfish.setElo(500 + aiLevel * 200)
+         const bestMove = await fairyStockfish.findBestMove(5000)
+         const srcSquare = bestMove.slice(0, 2)
+         const targetSquare = bestMove.slice(2, 4)
+         const srcRank = parseInt(srcSquare[1]) - 1
+         const srcFile = fileChars.indexOf(srcSquare[0])
+         const targetRank = parseInt(targetSquare[1]) - 1
+         const targetFile = fileChars.indexOf(targetSquare[0])
+
+         await playMove(srcRank, srcFile, targetRank, targetFile)
       }
 
       chessboard.onClickSquare = async (rank: number, file: number) => {
@@ -127,8 +153,8 @@ export function createSkirmishGameplayWindow(
             if (chessGame.position[rank][file]) {
                if (isPlayerPiece(chessGame.position[rank][file]!, playerSide)) {
                   selectSquare(rank, file)
+                  return
                }
-               return
             }
 
             if (selectedSquare.value) {
