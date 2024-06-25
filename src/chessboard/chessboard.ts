@@ -87,7 +87,7 @@ export function createChessboard3D(
    canvas: HTMLCanvasElement,
    asset: GameAsset
 ): Chessboard3D {
-   const gl = canvas.getContext('webgl2')
+   const gl = canvas.getContext('webgl')
    if (!gl) {
       throw new Error('无法创建 WebGL 上下文')
    }
