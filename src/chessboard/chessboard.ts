@@ -39,7 +39,11 @@ export interface Chessboard3D {
       queenLine: VertexBufferObject
       king: VertexBufferObject
       kingLine: VertexBufferObject
-      // square: VertexBufferObject
+
+      square: VertexBufferObject
+      squareFrame: VertexBufferObject
+
+      boardFrame: VertexBufferObject
    },
 
    staticPieces: StaticPiece[]
@@ -94,7 +98,7 @@ export function createChessboard3D(
 
    const self: Chessboard3D = {
       program: createShaderProgram(gl, asset.vertexShader, asset.fragmentShader),
-      clickTestingFramebuffer: createFrameBuffer(gl, canvas.width, canvas.height, true),
+      clickTestingFramebuffer: createFrameBuffer(gl, canvas.clientWidth, canvas.clientHeight, true),
 
       vbo: {
          pawn: createVertexBufferObject(gl, asset.pawnObj),
@@ -109,6 +113,11 @@ export function createChessboard3D(
          queenLine: createVertexBufferObject(gl, asset.queenLineObj),
          king: createVertexBufferObject(gl, asset.kingObj),
          kingLine: createVertexBufferObject(gl, asset.kingLineObj),
+
+         square: createVertexBufferObject(gl, asset.squareObj),
+         squareFrame: createVertexBufferObject(gl, asset.squareFrameObj),
+
+         boardFrame: createVertexBufferObject(gl, asset.boardFrameObj)
       },
 
       staticPieces: createInitialPosition(),
@@ -124,13 +133,16 @@ export function createChessboard3D(
    self.program.uniformMatrix4fv(gl, 'u_ProjectionMatrix', false, projection)
 
    const viewMatrix = mat4.create()
-   mat4.lookAt(viewMatrix, [0, 15, 15], [0, 0, 0], [0, 1, 0])
+   mat4.lookAt(viewMatrix, [0, 17, 13], [0, 0, 0], [0, 1, 0])
+
+   const centreMatrix = mat4.create()
+   mat4.copy(centreMatrix, viewMatrix)
 
    const mvMatrics: any[] = []
    for (let file = 0; file < 8; file++) {
       for (let rank = 0; rank < 8; rank++) {
          const x = (file - 3.5) * 1.1
-         const z = (4.0 - rank) * 1.1
+         const z = (3.5 - rank) * 1.1
 
          const thisMatrix = mat4.create()
          mat4.copy(thisMatrix, viewMatrix)
@@ -156,13 +168,50 @@ export function createChessboard3D(
       gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
 
       self.program.useProgram(gl)
-      self.program.uniform4fv(gl, 'u_ObjectColor', /* black */ [0.0, 0.0, 0.0, 1.0])
+
+      self.program.uniform4fv(gl, 'u_ObjectColor', /*aquamarine, 33%*/ [0.498, 1.0, 0.831, 0.33])
+      self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, centreMatrix)
+      self.vbo.boardFrame.draw(gl)
+
+      for (let rank = 0; rank < 8; rank++) {
+         for (let file = 0; file < 8; file++) {
+            if ((file + rank) % 2 !== 0) {
+               continue
+            }
+
+            const mvMatrix = mvMatrics[file * 8 + rank]
+            self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, mvMatrix)
+            self.vbo.square.draw(gl)
+         }
+      }
+
+      if (self.currentObjectId !== undefined) {
+         const rank = Math.floor(self.currentObjectId / 8)
+         const file = self.currentObjectId % 8
+         const mvMatrix = mvMatrics[file * 8 + rank]
+         self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, mvMatrix)
+         self.program.uniform4fv(gl, 'u_ObjectColor', /*aquamarine, 66%*/ [0.498, 1.0, 0.831, 0.66])
+         self.vbo.squareFrame.draw(gl)
+      }
 
       for (const staticPiece of self.staticPieces) {
          const mvMatrix = mvMatrics[staticPiece.file * 8 +staticPiece.rank]
          self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, mvMatrix)
 
-         self.program.uniform4fv(gl, 'u_ObjectColor', /* black */ [0.0, 0.0, 0.0, 1.0])
+         const linearIndex = staticPiece.rank * 8 + staticPiece.file
+         let color = [0.0, 0.0, 0.0, 1.0]
+         if (self.currentObjectId !== undefined && self.currentObjectId === linearIndex) {
+            if (staticPiece.color === 'white') {
+               // cyan * 0.2
+               color = [0.0, 0.17, 0.16, 1.0]
+            }
+            else {
+               // orangered * 0.2
+               color = [0.2, 0.06, 0.02, 1.0]
+            }
+         }
+
+         self.program.uniform4fv(gl, 'u_ObjectColor', color)
          const vbo = self.vbo[staticPiece.piece]
          vbo.draw(gl)
 
@@ -177,9 +226,29 @@ export function createChessboard3D(
       }
 
       self.clickTestingFramebuffer.bind(gl)
+      gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight)
       gl.clearColor(0, 0, 1, 1)
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
       gl.disable(gl.BLEND)
+
+      for (let rank = 0; rank < 8; rank++) {
+         for (let file = 0; file < 8; file++) {
+            const mvMatrix = mvMatrics[file * 8 + rank]
+            const linearIndex = rank * 8 + file
+            self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, mvMatrix)
+            self.program.uniform4fv(gl, 'u_ObjectColor', [linearIndex / 64.0, 0, 0, 1])
+            self.vbo.square.draw(gl)
+         }
+      }
+
+      for (const staticPiece of self.staticPieces) {
+         const mvMatrix = mvMatrics[staticPiece.file * 8 + staticPiece.rank]
+         const linearIndex = staticPiece.rank * 8 + staticPiece.file
+         self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, mvMatrix)
+         self.program.uniform4fv(gl, 'u_ObjectColor', [linearIndex / 64.0, 0, 0, 1])
+         self.vbo[staticPiece.piece].draw(gl)
+      }
+
       self.clickTestingFramebuffer.release(gl)
 
       requestAnimationFrame(render)
@@ -187,15 +256,15 @@ export function createChessboard3D(
    render()
 
    canvas.addEventListener('mousemove', event => {
-      const x = event.offsetX * 2
-      const y = canvas.height - event.offsetY * 2
+      const x = event.offsetX
+      const y = canvas.clientHeight - event.offsetY
 
       const pixel = new Uint8Array(4)
       self.clickTestingFramebuffer.bind(gl)
       gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel)
       self.clickTestingFramebuffer.release(gl)
 
-      if (pixel[2] < 1.0) {
+      if (pixel[2] < 1) {
          self.currentObjectId = Math.round(pixel[0] / 4.0)
          canvas.style.cursor = 'pointer'
       } else {

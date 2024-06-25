@@ -22,7 +22,9 @@ export interface GameAsset {
    queenLineObj: Object3D
    kingObj: Object3D
    kingLineObj: Object3D
-   // squareObj: Object3D
+   squareObj: Object3D
+   squareFrameObj: Object3D
+   boardFrameObj: Object3D
 }
 
 export interface ChessData {
@@ -75,6 +77,9 @@ export async function loadAsset(): Promise<GameAsset> {
       queenLineObj: objectsMap['5_queen_line'],
       kingObj: objectsMap['6_king'],
       kingLineObj: objectsMap['6_king_line'],
+      squareObj: objectsMap['square'],
+      squareFrameObj: objectsMap['square_frame'],
+      boardFrameObj: objectsMap['boardframe']
    }
 }
 
