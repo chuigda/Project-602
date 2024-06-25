@@ -57,6 +57,7 @@ export class FairyStockfish {
    }
 
    setElo(elo: number): Promise<void> {
+      console.info(`Setting ELO to ${elo}`)
       const self = this
       self.instance.postMessage(`setoption name UCI_Elo value ${elo}`)
       self.instance.postMessage(`setoption name UCI_LimitStrength value true`)

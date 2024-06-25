@@ -13,6 +13,7 @@
     "fischer960": "^1.0.0"
   },
   "devDependencies": {
+    "fairy-stockfish-nnue.wasm": "^1.1.8",
     "tsx-dom": "^2.0.0",
     "typescript": "^5.0.2",
     "vite": "^5.0.0"

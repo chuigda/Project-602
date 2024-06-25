@@ -68,6 +68,7 @@ export function createSkirmishGameplayWindow(
    const selectedSquare: Ref<[number, number] | undefined> = ref(undefined)
    const validMoves: Ref<string[]> = ref([])
    const currentFen: Ref<string> = ref(chessGameToFen(chessGame))
+   const checkers: Ref<string[]> = ref([])
 
    const getValidMoves = async () => {
       await fairyStockfish.setPosition(currentFen.value)
@@ -87,6 +88,7 @@ export function createSkirmishGameplayWindow(
 
       const selectSquare = async (rank: number, file: number) => {
          selectedSquare.value = [rank, file]
+         highlightCheckers()
          chessboard.highlightSquares = [
             {
                rank, file, color: [1.0, 1.0, 0.0, 0.66]
@@ -115,6 +117,39 @@ export function createSkirmishGameplayWindow(
                   })
                }
             }
+         }
+      }
+
+      const highlightCheckers = () => {
+         if (checkers.value.length === 0) {
+            return
+         }
+
+         for (const checker of checkers.value) {
+            const rank = parseInt(checker[1]) - 1
+            const file = fileChars.indexOf(checker[0])
+            chessboard.highlightSquares.push({
+               rank,
+               file,
+               color: chessboardColor.red
+            })
+         }
+
+         // find the king under check
+         const kingPiece = getPieceOfSide('k', chessGame.turn)
+         const kingSquare = chessGame.position
+            .flatMap((r, rank) => r.map((p, file) => ({ p, rank, file })))
+            .find(({ p }) => p === kingPiece)
+         console.info('kingSquare=', kingSquare)
+
+         if (kingSquare) {
+            chessboard.highlightSquares.push({
+               rank: kingSquare.rank,
+               file: kingSquare.file,
+               color: chessboardColor.red
+            })
+
+            console.info(chessboard.highlightSquares)
          }
       }
 
@@ -155,13 +190,9 @@ export function createSkirmishGameplayWindow(
          currentFen.value = chessGameToFen(chessGame)
          await getValidMoves()
 
-         const checkers = await fairyStockfish.getCheckers()
-         for (const checker of checkers) {
-            console.info("checkers: ", checkers)
-            const rank = parseInt(checker[1]) - 1
-            const file = fileChars.indexOf(checker[0])
-            chessboard.highlightSquares.push({ rank, file, color: chessboardColor.red })
-         }
+         checkers.value = await fairyStockfish.getCheckers()
+         console.info(checkers.value)
+         highlightCheckers()
 
          if (chessGame.turn !== playerSide) {
             computerPlayMove()
@@ -186,7 +217,7 @@ export function createSkirmishGameplayWindow(
 
          await fairyStockfish.setPosition(currentFen.value)
          await fairyStockfish.setElo(500 + aiLevel * 200)
-         const bestMove = await fairyStockfish.findBestMove(5000)
+         const [_unused, bestMove] = await Promise.all([sleep(1000), fairyStockfish.findBestMove(5000)])
          if (bestMove === '(none)') {
             if ((await fairyStockfish.getCheckers()).length > 0) {
                // TODO
