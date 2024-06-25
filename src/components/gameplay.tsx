@@ -2,12 +2,11 @@ import { h } from 'tsx-dom'
 import { DoubleOpenScreen } from '../widgets/double-open-screen'
 import { sleep } from '../util/sleep'
 import { createChessboard3D } from '../chessboard/chessboard'
-import { GameAsset } from '../assetloader'
 
 import './gameplay.css'
+import { globalResource } from '..'
 
 export function createSkirmishGameplayWindow(
-   asset: GameAsset,
    startingPosition: string,
    playerSide: 'white' | 'black',
    chess960: boolean
@@ -21,11 +20,10 @@ export function createSkirmishGameplayWindow(
       skirmishGameplayWindow.appendChild(gameplayCanvas)
 
       await sleep(100)
-      const chessboard = createChessboard3D(gameplayCanvas, asset, playerSide)
+      const chessboard = createChessboard3D(gameplayCanvas, globalResource.value.gameAsset, playerSide)
    }
    asyncUpdates()
 
    document.body.appendChild(skirmishGameplayWindow)
-
    return skirmishGameplayWindow
 }

@@ -1,9 +1,18 @@
-import { createFairyStockfish, loadStockfishResource } from './fairy-stockfish/fairy-stockfish'
-import { sleep } from './util/sleep'
+import { FairyStockfish, createFairyStockfish, loadStockfishResource } from './fairy-stockfish/fairy-stockfish'
 import { createStartMenu } from './components/startmenu'
+import { loadAsset, loadChessData, GameAsset, ChessData } from './assetloader'
+import { Ref, ref } from './util/ref'
+import { sleep } from './util/sleep'
 
 import './index.css'
-import { loadAsset, loadChessData } from './assetloader'
+
+export interface GlobalResource {
+   gameAsset: GameAsset
+   fairyStockfish: FairyStockfish
+   chessData: ChessData
+}
+
+export const globalResource: Ref<GlobalResource> = <Ref<GlobalResource>>(<any>ref(undefined))
 
 async function continueLoadingOperation() {
    setItemLoadProgress(1)
@@ -31,8 +40,14 @@ async function continueLoadingOperation() {
    setOverallLoadProgress(1)
    $('load-item-title').innerText = '即将完成...'
 
+   globalResource.value = {
+      gameAsset,
+      fairyStockfish,
+      chessData
+   }
+
    await sleep(500)
-   createStartMenu(gameAsset, chessData, fairyStockfish)
+   createStartMenu()
 }
 
 continueLoadingOperation()

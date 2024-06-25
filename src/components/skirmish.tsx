@@ -11,11 +11,9 @@ import { GameAsset } from '../assetloader'
 import { Ref, ref } from '../util/ref'
 
 import './skirmish.css'
+import { globalResource } from '..'
 
-export function showSkirmishWindow(
-   asset: GameAsset,
-   commonOpeningPositions: CommonOpeningPosition[]
-): HTMLElement {
+export function showSkirmishWindow(): HTMLElement {
    const windowBackground = <DoubleOpenScreen backgroundColor="black" zIndex={2000} />
 
    const openingOptions = [
@@ -25,7 +23,7 @@ export function showSkirmishWindow(
       }
    ]
 
-   for (const openingPosition of commonOpeningPositions) {
+   for (const openingPosition of globalResource.value.chessData.commonOpeningPositions) {
       openingOptions.push({
          text: `${openingPosition.eco} ${openingPosition.name}`,
          value: openingPosition.fen,
@@ -97,7 +95,6 @@ export function showSkirmishWindow(
    }
 
    const startGame = () => createSkirmishGameplayWindow(
-      asset,
       startPosition.value,
       playerSide.value,
       false

@@ -1,8 +1,8 @@
 import { h } from 'tsx-dom'
 import { createChessboard3D } from '../chessboard/chessboard';
-import { GameAsset } from '../assetloader';
+import { globalResource } from '..';
 
-export function createRenderTest(gameAsset: GameAsset): HTMLElement {
+export function createRenderTest(): HTMLElement {
    const canvas = <canvas style={{
       position: 'absolute',
       left: '0',
@@ -10,15 +10,14 @@ export function createRenderTest(gameAsset: GameAsset): HTMLElement {
       width: '100vw',
       height: '100vh',
       zIndex: '2000'
-   }}>
-   </canvas> as HTMLCanvasElement
+   }} /> as HTMLCanvasElement
 
    document.body.appendChild(canvas)
    setTimeout(() => {
       const dpi = window.devicePixelRatio || 1
       canvas.width = canvas.clientWidth * dpi
       canvas.height = canvas.clientHeight * dpi
-      createChessboard3D(canvas, gameAsset, 'white')
+      createChessboard3D(canvas, globalResource.value.gameAsset, 'white')
    }, 50);
 
    return canvas
