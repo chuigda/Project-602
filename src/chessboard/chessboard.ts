@@ -100,7 +100,8 @@ function createInitialPosition(): StaticPiece[] {
 
 export function createChessboard3D(
    canvas: HTMLCanvasElement,
-   asset: GameAsset
+   asset: GameAsset,
+   orientation: 'white' | 'black'
 ): Chessboard3D {
    const gl = canvas.getContext('webgl')
    if (!gl) {
@@ -131,8 +132,8 @@ export function createChessboard3D(
          boardFrame: createVertexBufferObject(gl, asset.boardFrameObj)
       },
 
-      orientation: 'black',
-      staticPieces: createInitialPosition(),
+      orientation,
+      staticPieces: [],
       animatingPieces: [],
       highlightSquares: [],
 
