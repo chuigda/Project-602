@@ -10,18 +10,18 @@ export interface GameAsset {
    fragmentShader: string
 
    // 3D chess pieces (merged into 1 object file)
+   pawnObj: Object3D
+   pawnLineObj: Object3D
    rookObj: Object3D
    rookLineObj: Object3D
-   // knightObj: Object3D
-   // knightLineObj: Object3D
-   // bishopObj: Object3D
-   // bishopLineObj: Object3D
-   // queenObj: Object3D
-   // queenLineObj: Object3D
-   // kingObj: Object3D
-   // kingLineObj: Object3D
-   // pawnObj: Object3D
-   // pawnLineObj: Object3D
+   knightObj: Object3D
+   knightLineObj: Object3D
+   bishopObj: Object3D
+   bishopLineObj: Object3D
+   queenObj: Object3D
+   queenLineObj: Object3D
+   kingObj: Object3D
+   kingLineObj: Object3D
    // squareObj: Object3D
 }
 
@@ -47,8 +47,6 @@ export async function loadAsset(): Promise<GameAsset> {
    objects.forEach(obj => objectsMap[obj.objectName] = obj)
    console.info(objectsMap)
 
-   const rookObj = objectsMap['2_rook']
-   const rookLineObj = objectsMap['2_rook_line']
    setItemLoadProgress(4 / 5)
 
    const fileref = document.createElement('link')
@@ -65,8 +63,18 @@ export async function loadAsset(): Promise<GameAsset> {
       vertexShader,
       fragmentShader,
 
-      rookObj,
-      rookLineObj
+      pawnObj: objectsMap['1_pawn'],
+      pawnLineObj: objectsMap['1_pawn_line'],
+      rookObj: objectsMap['2_rook'],
+      rookLineObj: objectsMap['2_rook_line'],
+      knightObj: objectsMap['3_knight'],
+      knightLineObj: objectsMap['3_knight_line'],
+      bishopObj: objectsMap['4_bishop'],
+      bishopLineObj: objectsMap['4_bishop_line'],
+      queenObj: objectsMap['5_queen'],
+      queenLineObj: objectsMap['5_queen_line'],
+      kingObj: objectsMap['6_king'],
+      kingLineObj: objectsMap['6_king_line'],
    }
 }
 

@@ -13,18 +13,18 @@ export interface Chessboard3D {
    clickTestingFramebuffer: Framebuffer
 
    vbo: {
+      pawn: VertexBufferObject
+      pawnLine: VertexBufferObject
       rook: VertexBufferObject
-      rook_line: VertexBufferObject
-      // knight: VertexBufferObject
-      // knight_line: VertexBufferObject
-      // bishop: VertexBufferObject,
-      // bishop_line: VertexBufferObject
-      // queen: VertexBufferObject
-      // queen_line: VertexBufferObject
-      // king: VertexBufferObject
-      // king_line: VertexBufferObject
-      // pawn: VertexBufferObject
-      // pawn_line: VertexBufferObject
+      rookLine: VertexBufferObject
+      knight: VertexBufferObject
+      knightLine: VertexBufferObject
+      bishop: VertexBufferObject,
+      bishopLine: VertexBufferObject
+      queen: VertexBufferObject
+      queenLine: VertexBufferObject
+      king: VertexBufferObject
+      kingLine: VertexBufferObject
       // square: VertexBufferObject
    },
 
@@ -50,11 +50,20 @@ export function createChessboard3D(
       clickTestingFramebuffer: createFrameBuffer(gl, canvas.width, canvas.height, true),
 
       vbo: {
+         pawn: createVertexBufferObject(gl, asset.pawnObj),
+         pawnLine: createVertexBufferObject(gl, asset.pawnLineObj),
          rook: createVertexBufferObject(gl, asset.rookObj),
-         rook_line: createVertexBufferObject(gl, asset.rookLineObj)
+         rookLine: createVertexBufferObject(gl, asset.rookLineObj),
+         knight: createVertexBufferObject(gl, asset.knightObj),
+         knightLine: createVertexBufferObject(gl, asset.knightLineObj),
+         bishop: createVertexBufferObject(gl, asset.bishopObj),
+         bishopLine: createVertexBufferObject(gl, asset.bishopLineObj),
+         queen: createVertexBufferObject(gl, asset.queenObj),
+         queenLine: createVertexBufferObject(gl, asset.queenLineObj),
+         king: createVertexBufferObject(gl, asset.kingObj),
+         kingLine: createVertexBufferObject(gl, asset.kingLineObj),
       },
 
-      game: new Chess(),
       currentObjectId: undefined,
       selectedObjectId: undefined
    }
@@ -114,7 +123,7 @@ export function createChessboard3D(
          for (let file = 0; file < 8; file++) {
             const matrix = allMatrices[rank * 8 + file]
             self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, matrix)
-            self.vbo.rook_line.draw(gl)
+            self.vbo.rookLine.draw(gl)
          }
       }
 
@@ -123,7 +132,7 @@ export function createChessboard3D(
          for (let file = 0; file < 8; file++) {
             const matrix = allMatrices[rank * 8 + file]
             self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, matrix)
-            self.vbo.rook_line.draw(gl)
+            self.vbo.rookLine.draw(gl)
          }
       }
 
