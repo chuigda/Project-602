@@ -130,7 +130,7 @@ export function createChessboard3D(
    for (let file = 0; file < 8; file++) {
       for (let rank = 0; rank < 8; rank++) {
          const x = (file - 3.5) * 1.1
-         const z = (3.5 - rank) * 1.1
+         const z = (4.0 - rank) * 1.1
 
          const thisMatrix = mat4.create()
          mat4.copy(thisMatrix, viewMatrix)
@@ -152,6 +152,7 @@ export function createChessboard3D(
       gl.enable(gl.DEPTH_TEST)
       gl.enable(gl.CULL_FACE)
       gl.enable(gl.BLEND)
+      gl.depthFunc(gl.LEQUAL)
       gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
 
       self.program.useProgram(gl)
