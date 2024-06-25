@@ -6,6 +6,16 @@ import * as mat4 from './gl_matrix/mat4.mjs'
 import { Framebuffer, createFrameBuffer } from './glx/framebuffer_object.ts'
 import { GameAsset } from '../assetloader.ts'
 
+export const chessboardColor: Record<string, [number, number, number, number]> = {
+   cyan: [0.0, 0.85, 0.8, 1.0],
+   cyan_20: [0.0, 0.17, 0.16, 1.0],
+   orangered: [1.0, 0.3, 0.1, 1.0],
+   orangered_20: [0.2, 0.06, 0.02, 1.0],
+   aquamarine: [0.498, 1.0, 0.831, 1.0],
+   aquamarine_33: [0.498, 1.0, 0.831, 0.33],
+   aquamarine_66: [0.498, 1.0, 0.831, 0.66],
+}
+
 export interface StaticPiece {
    rank: number
    file: number
@@ -65,37 +75,6 @@ export interface Chessboard3D {
    onRightclick?: () => void
 
    resizing: boolean
-}
-
-function createInitialPosition(): StaticPiece[] {
-   const ret: StaticPiece[] = []
-   // white pieces
-   ret.push({ rank: 0, file: 0, color: 'white', piece: 'rook' })
-   ret.push({ rank: 0, file: 1, color: 'white', piece: 'knight' })
-   ret.push({ rank: 0, file: 2, color: 'white', piece: 'bishop' })
-   ret.push({ rank: 0, file: 3, color: 'white', piece: 'queen' })
-   ret.push({ rank: 0, file: 4, color: 'white', piece: 'king' })
-   ret.push({ rank: 0, file: 5, color: 'white', piece: 'bishop' })
-   ret.push({ rank: 0, file: 6, color: 'white', piece: 'knight' })
-   ret.push({ rank: 0, file: 7, color: 'white', piece: 'rook' })
-   for (let file = 0; file < 8; file++) {
-      ret.push({ rank: 1, file, color: 'white', piece: 'pawn' })
-   }
-
-   // black pieces
-   ret.push({ rank: 7, file: 0, color: 'black', piece: 'rook' })
-   ret.push({ rank: 7, file: 1, color: 'black', piece: 'knight' })
-   ret.push({ rank: 7, file: 2, color: 'black', piece: 'bishop' })
-   ret.push({ rank: 7, file: 3, color: 'black', piece: 'queen' })
-   ret.push({ rank: 7, file: 4, color: 'black', piece: 'king' })
-   ret.push({ rank: 7, file: 5, color: 'black', piece: 'bishop' })
-   ret.push({ rank: 7, file: 6, color: 'black', piece: 'knight' })
-   ret.push({ rank: 7, file: 7, color: 'black', piece: 'rook' })
-   for (let file = 0; file < 8; file++) {
-      ret.push({ rank: 6, file, color: 'black', piece: 'pawn' })
-   }
-
-   return ret
 }
 
 export function createChessboard3D(
@@ -188,10 +167,8 @@ export function createChessboard3D(
       canvas.width = canvas.clientWidth * window.devicePixelRatio
       canvas.height = canvas.clientHeight * window.devicePixelRatio
 
-      // recreate framebuffer
       self.clickTestingFramebuffer = createFrameBuffer(gl, canvas.clientWidth, canvas.clientHeight, true)
 
-      // update projection matrix
       self.program.useProgram(gl)
       const neueProjection = mat4.create()
       mat4.perspective(neueProjection, Math.PI / 7, canvas.width / canvas.height, 0.1, 100)
@@ -220,7 +197,7 @@ export function createChessboard3D(
 
       self.program.useProgram(gl)
 
-      self.program.uniform4fv(gl, 'u_ObjectColor', /*aquamarine, 33%*/ [0.498, 1.0, 0.831, 0.33])
+      self.program.uniform4fv(gl, 'u_ObjectColor', chessboardColor.aquamarine_33)
       self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, centreMatrix)
       self.vbo.boardFrame.draw(gl)
 
@@ -243,7 +220,7 @@ export function createChessboard3D(
          const file = self.currentObjectId % 8
          const mvMatrix = mvMatrics[file * 8 + rank]
          self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, mvMatrix)
-         self.program.uniform4fv(gl, 'u_ObjectColor', /*aquamarine, 66%*/ [0.498, 1.0, 0.831, 0.66])
+         self.program.uniform4fv(gl, 'u_ObjectColor', chessboardColor.aquamarine_66)
          self.vbo.squareFrame.draw(gl)
       }
 
@@ -255,12 +232,10 @@ export function createChessboard3D(
          let color = [0.0, 0.0, 0.0, 1.0]
          if (self.currentObjectId !== undefined && self.currentObjectId === linearIndex) {
             if (staticPiece.color === 'white') {
-               // cyan * 0.2
-               color = [0.0, 0.17, 0.16, 1.0]
+               color = chessboardColor.cyan_20
             }
             else {
-               // orangered * 0.2
-               color = [0.2, 0.06, 0.02, 1.0]
+               color = chessboardColor.orangered_20
             }
          }
 
@@ -269,10 +244,10 @@ export function createChessboard3D(
          vbo.draw(gl)
 
          if (staticPiece.color === 'white') {
-            self.program.uniform4fv(gl, 'u_ObjectColor', /* cyan */ [0.0, 0.85, 0.8, 1.0])
+            self.program.uniform4fv(gl, 'u_ObjectColor', chessboardColor.cyan)
          }
          else {
-            self.program.uniform4fv(gl, 'u_ObjectColor', /* orangered */ [1.0, 0.3, 0.1, 1.0])
+            self.program.uniform4fv(gl, 'u_ObjectColor', chessboardColor.orangered)
          }
          const vboLine = self.vbo[`${staticPiece.piece}Line`]
          vboLine.draw(gl)

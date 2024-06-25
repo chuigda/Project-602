@@ -39,6 +39,105 @@ export class FairyStockfish {
    constructor(instance: StockfishInstance) {
       this.instance = instance
    }
+
+   setPosition(fen: string): Promise<void> {
+      const self = this
+      self.instance.postMessage(`position fen ${fen}`)
+      const r = new Promise<void>(resolve => {
+         self.messageHandler = line => {
+            if (line.includes('readyok')) {
+               self.messageHandler = () => {}
+               resolve()
+            }
+         }
+      })
+
+      self.instance.postMessage('isready')
+      return r
+   }
+
+   setElo(elo: number): Promise<void> {
+      const self = this
+      self.instance.postMessage(`setoption name UCI_Elo value ${elo}`)
+      self.instance.postMessage(`setoption name UCI_LimitStrength value true`)
+
+      const r = new Promise<void>(resolve => {
+         self.messageHandler = line => {
+            if (line.includes('readyok')) {
+               self.messageHandler = () => {}
+               resolve()
+            }
+         }
+      })
+
+      self.instance.postMessage('isready')
+      return r
+   }
+
+   getCurrentFen(): Promise<string> {
+      const self = this
+      const r = new Promise<string>(resolve => {
+         self.messageHandler = line => {
+            if (line.startsWith('Fen:')) {
+               self.messageHandler = () => {}
+               resolve(line.split(' ', 2)[1])
+            }
+         }
+      })
+
+      self.instance.postMessage('d')
+      return r
+   }
+
+   getValidMoves(): Promise<string[]> {
+      const self = this
+
+      const r = new Promise<string[]>(resolve => {
+         const collectedMoves: string[] = []
+         self.messageHandler = line => {
+            if (line.startsWith('Nodes searched')) {
+               self.messageHandler = () => {}
+               resolve(collectedMoves)
+               return
+            }
+
+            line = line.trim()
+            if (line.length === 0 || !line.includes(':')) {
+               return
+            }
+
+            const parts = line.split(':')
+            if (parts.length !== 2) {
+               return
+            }
+
+            const move = parts[0].trim()
+            if (move.length === 0) {
+               return
+            }
+
+            collectedMoves.push(move)
+         }
+      })
+
+      self.instance.postMessage('go perft 1')
+      return r
+   }
+
+   findBestMove(time: number): Promise<string> {
+      const self = this
+      const r = new Promise<string>(resolve => {
+         self.messageHandler = line => {
+            if (line.startsWith('bestmove')) {
+               self.messageHandler = () => {}
+               resolve(line.split(' ')[1])
+            }
+         }
+      })
+
+      self.instance.postMessage(`go movetime ${time}`)
+      return r
+   }
 }
 
 export async function createFairyStockfish(stockfishResource: StockfishResource): Promise<FairyStockfish> {
