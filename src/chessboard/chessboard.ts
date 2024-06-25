@@ -1,5 +1,3 @@
-import { Chess } from 'chess.js'
-
 import { ShaderProgram, createShaderProgram } from './glx/shader_program'
 import { VertexBufferObject, createVertexBufferObject } from './glx/object'
 import './gl_matrix/types.d.ts'
@@ -7,6 +5,22 @@ import './gl_matrix/types.d.ts'
 import * as mat4 from './gl_matrix/mat4.mjs'
 import { Framebuffer, createFrameBuffer } from './glx/framebuffer_object.ts'
 import { GameAsset } from '../assetloader.ts'
+
+export interface StaticPiece {
+   rank: number
+   file: number
+   color: 'white' | 'black'
+   piece: 'pawn' | 'rook' | 'knight' | 'bishop' | 'queen' | 'king'
+}
+
+export interface AnimatingPiece {
+   startRank: number
+   startFile: number
+   endRank?: number
+   endFile?: number
+
+   fade?: number
+}
 
 export interface Chessboard3D {
    program: ShaderProgram
@@ -28,11 +42,45 @@ export interface Chessboard3D {
       // square: VertexBufferObject
    },
 
+   staticPieces: StaticPiece[]
+   animatingPieces: AnimatingPiece[]
+
    currentObjectId?: number,
    selectedObjectId?: number,
 
    onMovePlayed?: () => void
    onInvalidMove?: () => void
+}
+
+function createInitialPosition(): StaticPiece[] {
+   const ret: StaticPiece[] = []
+   // white pieces
+   ret.push({ rank: 0, file: 0, color: 'white', piece: 'rook' })
+   ret.push({ rank: 0, file: 1, color: 'white', piece: 'knight' })
+   ret.push({ rank: 0, file: 2, color: 'white', piece: 'bishop' })
+   ret.push({ rank: 0, file: 3, color: 'white', piece: 'queen' })
+   ret.push({ rank: 0, file: 4, color: 'white', piece: 'king' })
+   ret.push({ rank: 0, file: 5, color: 'white', piece: 'bishop' })
+   ret.push({ rank: 0, file: 6, color: 'white', piece: 'knight' })
+   ret.push({ rank: 0, file: 7, color: 'white', piece: 'rook' })
+   for (let file = 0; file < 8; file++) {
+      ret.push({ rank: 1, file, color: 'white', piece: 'pawn' })
+   }
+
+   // black pieces
+   ret.push({ rank: 7, file: 0, color: 'black', piece: 'rook' })
+   ret.push({ rank: 7, file: 1, color: 'black', piece: 'knight' })
+   ret.push({ rank: 7, file: 2, color: 'black', piece: 'bishop' })
+   ret.push({ rank: 7, file: 3, color: 'black', piece: 'queen' })
+   ret.push({ rank: 7, file: 4, color: 'black', piece: 'king' })
+   ret.push({ rank: 7, file: 5, color: 'black', piece: 'bishop' })
+   ret.push({ rank: 7, file: 6, color: 'black', piece: 'knight' })
+   ret.push({ rank: 7, file: 7, color: 'black', piece: 'rook' })
+   for (let file = 0; file < 8; file++) {
+      ret.push({ rank: 6, file, color: 'black', piece: 'pawn' })
+   }
+
+   return ret
 }
 
 export function createChessboard3D(
@@ -46,7 +94,6 @@ export function createChessboard3D(
 
    const self: Chessboard3D = {
       program: createShaderProgram(gl, asset.vertexShader, asset.fragmentShader),
-
       clickTestingFramebuffer: createFrameBuffer(gl, canvas.width, canvas.height, true),
 
       vbo: {
@@ -64,29 +111,32 @@ export function createChessboard3D(
          kingLine: createVertexBufferObject(gl, asset.kingLineObj),
       },
 
+      staticPieces: createInitialPosition(),
+      animatingPieces: [],
+
       currentObjectId: undefined,
       selectedObjectId: undefined
    }
 
    const projection = mat4.create()
-   mat4.perspective(projection, Math.PI / 3, canvas.width / canvas.height, 0.1, 100)
+   mat4.perspective(projection, Math.PI / 7, canvas.width / canvas.height, 0.1, 100)
    self.program.useProgram(gl)
    self.program.uniformMatrix4fv(gl, 'u_ProjectionMatrix', false, projection)
 
-   const modelMatrix = mat4.create()
-   mat4.lookAt(modelMatrix, [0, 8, 5], [0, 0, 0], [0, 1, 0])
+   const viewMatrix = mat4.create()
+   mat4.lookAt(viewMatrix, [0, 15, 15], [0, 0, 0], [0, 1, 0])
 
-   const allMatrices: any[] = []
+   const mvMatrics: any[] = []
    for (let file = 0; file < 8; file++) {
       for (let rank = 0; rank < 8; rank++) {
-         const x = (file - 3.5)
-         const z = (rank - 3.5)
+         const x = (file - 3.5) * 1.1
+         const z = (3.5 - rank) * 1.1
 
          const thisMatrix = mat4.create()
-         mat4.copy(thisMatrix, modelMatrix)
+         mat4.copy(thisMatrix, viewMatrix)
          mat4.translate(thisMatrix, thisMatrix, [x, 0, z])
-         mat4.rotate(thisMatrix, thisMatrix, Math.PI / 6, [0, 1, 0])
-         allMatrices.push(thisMatrix)
+         mat4.rotate(thisMatrix, thisMatrix, -Math.PI / 2, [0, 1, 0])
+         mvMatrics.push(thisMatrix)
       }
    }
 
@@ -106,34 +156,23 @@ export function createChessboard3D(
 
       self.program.useProgram(gl)
       self.program.uniform4fv(gl, 'u_ObjectColor', /* black */ [0.0, 0.0, 0.0, 1.0])
-      for (let rank = 0; rank < 8; rank++) {
-         if (rank !== 0 && rank !== 1 && rank !== 6 && rank !== 7) {
-            continue
-         }
 
-         for (let file = 0; file < 8; file++) {
-            const matrix = allMatrices[rank * 8 + file]
-            self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, matrix)
-            self.vbo.rook.draw(gl)
-         }
-      }
+      for (const staticPiece of self.staticPieces) {
+         const mvMatrix = mvMatrics[staticPiece.file * 8 +staticPiece.rank]
+         self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, mvMatrix)
 
-      self.program.uniform4fv(gl, 'u_ObjectColor', /* cyan */ [0.0, 0.85, 0.8, 1.0])
-      for (let rank = 0; rank < 2; rank++) {
-         for (let file = 0; file < 8; file++) {
-            const matrix = allMatrices[rank * 8 + file]
-            self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, matrix)
-            self.vbo.rookLine.draw(gl)
-         }
-      }
+         self.program.uniform4fv(gl, 'u_ObjectColor', /* black */ [0.0, 0.0, 0.0, 1.0])
+         const vbo = self.vbo[staticPiece.piece]
+         vbo.draw(gl)
 
-      self.program.uniform4fv(gl, 'u_ObjectColor', /* orangered */ [1.0, 0.3, 0.1, 1.0])
-      for (let rank = 6; rank < 8; rank++) {
-         for (let file = 0; file < 8; file++) {
-            const matrix = allMatrices[rank * 8 + file]
-            self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, matrix)
-            self.vbo.rookLine.draw(gl)
+         if (staticPiece.color === 'white') {
+            self.program.uniform4fv(gl, 'u_ObjectColor', /* cyan */ [0.0, 0.85, 0.8, 1.0])
          }
+         else {
+            self.program.uniform4fv(gl, 'u_ObjectColor', /* orangered */ [1.0, 0.3, 0.1, 1.0])
+         }
+         const vboLine = self.vbo[`${staticPiece.piece}Line`]
+         vboLine.draw(gl)
       }
 
       self.clickTestingFramebuffer.bind(gl)
