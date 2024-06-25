@@ -15,6 +15,8 @@ export const chessboardColor: Record<string, [number, number, number, number]> =
    aquamarine: [0.498, 1.0, 0.831, 1.0],
    aquamarine_33: [0.498, 1.0, 0.831, 0.33],
    aquamarine_66: [0.498, 1.0, 0.831, 0.66],
+
+   red: [0.9, 0.0, 0.0, 1.0],
 }
 
 export interface StaticPiece {

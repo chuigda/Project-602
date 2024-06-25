@@ -147,6 +147,26 @@ export class FairyStockfish {
       self.instance.postMessage(`go movetime ${time}`)
       return r
    }
+
+   getCheckers(): Promise<string[]> {
+      const self = this
+      const r = new Promise<string[]>(resolve => {
+         self.messageHandler = line => {
+            if (line.startsWith('Checkers:')) {
+               const checkersLine = line.replace('Checkers:', '').trim()
+               self.messageHandler = () => {}
+               if (checkersLine.length === 0) {
+                  resolve([])
+               } else {
+                  resolve(checkersLine.split(' '))
+               }
+            }
+         }
+      })
+
+      self.instance.postMessage('d')
+      return r
+   }
 }
 
 export async function createFairyStockfish(stockfishResource: StockfishResource): Promise<FairyStockfish> {
