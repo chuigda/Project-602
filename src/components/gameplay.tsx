@@ -8,6 +8,7 @@ import { OpeningPosition } from '../chess/opening-book'
 import { globalResource } from '..'
 
 import './gameplay.css'
+import { openPromotionWindow } from '../widgets/promote'
 
 const fileChars = 'abcdefgh'
 
@@ -131,8 +132,8 @@ export function createSkirmishGameplayWindow(
                chessGame.position[targetRank][targetFile] = getPieceOfSide(uci[4] as Piece, chessGame.turn)
             }
             else {
-               console.info(chessGame.turn)
-               chessGame.position[targetRank][targetFile] = getPieceOfSide('q', chessGame.turn)
+               const promotionPiece = await openPromotionWindow(chessGame.turn, 4000)
+               chessGame.position[targetRank][targetFile] = promotionPiece
             }
             chessGame.position[startRank][startFile] = undefined
          }
