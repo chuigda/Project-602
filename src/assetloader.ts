@@ -29,7 +29,7 @@ export interface GameAsset {
 
 export interface ChessData {
    // opening book
-   openingBook: Record<string, OpeningPosition[]>
+   openingBook: Record<string, OpeningPosition>
    // common opening book positions
    commonOpeningPositions: CommonOpeningPosition[]
 }
@@ -47,7 +47,6 @@ export async function loadAsset(): Promise<GameAsset> {
    const objects = loadObject('chess-pieces.obj', objFile)
    const objectsMap: Record<string, Object3D> = {}
    objects.forEach(obj => objectsMap[obj.objectName] = obj)
-   console.info(objectsMap)
 
    setItemLoadProgress(4 / 5)
 
@@ -90,13 +89,11 @@ export async function loadChessData(): Promise<ChessData> {
       undefined,
       (progress: ProgressEvent) => setItemLoadProgress((progress.loaded / progress.total) * 0.98)
    ) as Blob
-   const openingBook = JSON.parse(await openingBookBlob.text()) as Record<string, OpeningPosition[]>
+   const openingBook = JSON.parse(await openingBookBlob.text()) as Record<string, OpeningPosition>
    setItemLoadProgress(0.98)
-   console.info(openingBook)
 
    const commonOpeningPositions = await $().get('/chessdata/common-opening-positions.json', undefined, resp => resp.json())
    setItemLoadProgress(1)
-   console.info(commonOpeningPositions)
 
    return {
       openingBook,

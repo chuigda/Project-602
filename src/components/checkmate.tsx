@@ -28,8 +28,6 @@ export function createCheckmateWindow(
    document.body.appendChild(checkmateWindow)
 
    const asyncUpdates = async () => {
-      console.log('hihihi?')
-
       await sleep(300)
       checkmateWindow.appendChild(checkmateTitle)
       await sleep(300)

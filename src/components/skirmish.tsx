@@ -12,6 +12,7 @@ import { Ref, ref } from '../util/ref'
 
 import './skirmish.css'
 import { globalResource } from '..'
+import { PlayerSide } from '../chess/chessgame'
 
 export function showSkirmishWindow(): HTMLElement {
    const windowBackground = <DoubleOpenScreen backgroundColor="black" zIndex={2000} />
@@ -31,7 +32,8 @@ export function showSkirmishWindow(): HTMLElement {
    }
 
    const startPosition: Ref<string> = ref('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -')
-   const playerSide: Ref<'white' | 'black'> = ref('white')
+   const playerSide: Ref<PlayerSide> = ref('white')
+   const aiLevel: Ref<number> = ref(1)
 
    const errorReporter = <span class="error-reporter" />
 
@@ -94,9 +96,18 @@ export function showSkirmishWindow(): HTMLElement {
       createInitialPositionPreview()
    }
 
+   const onChoosePlayerSide = (side: PlayerSide) => {
+      playerSide.value = side
+   }
+
+   const onChooseAILevel = (level: number) => {
+      aiLevel.value = level
+   }
+
    const startGame = () => createSkirmishGameplayWindow(
       startPosition.value,
       playerSide.value,
+      aiLevel.value,
       false
    )
 
@@ -121,18 +132,20 @@ export function showSkirmishWindow(): HTMLElement {
                         {text: '白色', value: 'white'},
                         {text: '黑色', value: 'black'}
                        ]}
+                       onChange={onChoosePlayerSide}
                />
                <Select title="电脑难度"
                        options={[
-                        {text: '等级 1', value: '1'},
-                        {text: '等级 2', value: '2'},
-                        {text: '等级 3', value: '3'},
-                        {text: '等级 4', value: '4'},
-                        {text: '等级 5', value: '5'},
-                        {text: '等级 6', value: '6'},
-                        {text: '等级 7', value: '7'},
-                        {text: '等级 8', value: '8'},
+                        {text: '等级 1', value: 1},
+                        {text: '等级 2', value: 2},
+                        {text: '等级 3', value: 3},
+                        {text: '等级 4', value: 4},
+                        {text: '等级 5', value: 5},
+                        {text: '等级 6', value: 6},
+                        {text: '等级 7', value: 7},
+                        {text: '等级 8', value: 8},
                        ]}
+                       onChange={onChooseAILevel}
                />
                { openingSelection }
                { chess960Selection }

@@ -5,6 +5,7 @@ import './gl_matrix/types.d.ts'
 import * as mat4 from './gl_matrix/mat4.mjs'
 import { Framebuffer, createFrameBuffer } from './glx/framebuffer_object.ts'
 import { GameAsset } from '../assetloader.ts'
+import { PieceName, PlayerSide } from '../chess/chessgame.ts'
 
 export const chessboardColor: Record<string, [number, number, number, number]> = {
    cyan: [0.0, 0.85, 0.8, 1.0],
@@ -19,8 +20,8 @@ export const chessboardColor: Record<string, [number, number, number, number]> =
 export interface StaticPiece {
    rank: number
    file: number
-   color: 'white' | 'black'
-   piece: 'pawn' | 'rook' | 'knight' | 'bishop' | 'queen' | 'king'
+   color: PlayerSide
+   piece: PieceName
 }
 
 export interface AnimatingPiece {
@@ -56,6 +57,8 @@ export interface Chessboard3D {
       queenLine: VertexBufferObject
       king: VertexBufferObject
       kingLine: VertexBufferObject
+      wgc: VertexBufferObject
+      wgcLine: VertexBufferObject
 
       square: VertexBufferObject
       squareFrame: VertexBufferObject
@@ -63,7 +66,7 @@ export interface Chessboard3D {
       boardFrame: VertexBufferObject
    },
 
-   orientation: 'white' | 'black'
+   orientation: PlayerSide
    staticPieces: StaticPiece[]
    animatingPieces: AnimatingPiece[]
    highlightSquares: HighlightSquare[]
@@ -80,7 +83,7 @@ export interface Chessboard3D {
 export function createChessboard3D(
    canvas: HTMLCanvasElement,
    asset: GameAsset,
-   orientation: 'white' | 'black'
+   orientation: PlayerSide
 ): Chessboard3D {
    const gl = canvas.getContext('webgl')
    if (!gl) {
@@ -104,6 +107,9 @@ export function createChessboard3D(
          queenLine: createVertexBufferObject(gl, asset.queenLineObj),
          king: createVertexBufferObject(gl, asset.kingObj),
          kingLine: createVertexBufferObject(gl, asset.kingLineObj),
+         // TODO WGC modelling
+         wgc: createVertexBufferObject(gl, asset.rookObj),
+         wgcLine: createVertexBufferObject(gl, asset.rookLineObj),
 
          square: createVertexBufferObject(gl, asset.squareObj),
          squareFrame: createVertexBufferObject(gl, asset.squareFrameObj),
@@ -254,6 +260,13 @@ export function createChessboard3D(
          }
          const vboLine = self.vbo[`${staticPiece.piece}Line`]
          vboLine.draw(gl)
+      }
+
+      for (const highlightSquare of self.highlightSquares) {
+         const mvMatrix = mvMatrics[highlightSquare.file * 8 + highlightSquare.rank]
+         self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, mvMatrix)
+         self.program.uniform4fv(gl, 'u_ObjectColor', highlightSquare.color)
+         self.vbo.squareFrame.draw(gl)
       }
 
       self.clickTestingFramebuffer.bind(gl)

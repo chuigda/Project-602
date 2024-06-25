@@ -36,10 +36,10 @@ export function Select<T>(props: {
          popUpDiv.style.height = '10em'
          await sleep(200)
 
-         const options = props.options.map(option => {
+         const options = props.options.map((option, idx) => {
             return <div class="select-option" onClick={() => {
                if (props.onChange) {
-                  props.onChange(option.value)
+                  props.onChange(props.options[idx].value)
                }
                (selectDiv.querySelector('.select-current') as HTMLElement).innerText = option.text
                closePopUpDiv()
