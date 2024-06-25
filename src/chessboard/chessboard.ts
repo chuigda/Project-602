@@ -19,7 +19,14 @@ export interface AnimatingPiece {
    endRank?: number
    endFile?: number
 
+   fading: boolean
    fade?: number
+}
+
+export interface HighlightSquare {
+   rank: number,
+   file: number,
+   color: [number, number, number, number]
 }
 
 export interface Chessboard3D {
@@ -46,14 +53,18 @@ export interface Chessboard3D {
       boardFrame: VertexBufferObject
    },
 
+   orientation: 'white' | 'black'
    staticPieces: StaticPiece[]
    animatingPieces: AnimatingPiece[]
+   highlightSquares: HighlightSquare[]
 
    currentObjectId?: number,
    selectedObjectId?: number,
 
-   onMovePlayed?: () => void
-   onInvalidMove?: () => void
+   onClickSquare?: (rank: number, file: number) => void
+   onRightclick?: () => void
+
+   resizing: boolean
 }
 
 function createInitialPosition(): StaticPiece[] {
@@ -120,11 +131,14 @@ export function createChessboard3D(
          boardFrame: createVertexBufferObject(gl, asset.boardFrameObj)
       },
 
+      orientation: 'black',
       staticPieces: createInitialPosition(),
       animatingPieces: [],
+      highlightSquares: [],
 
       currentObjectId: undefined,
-      selectedObjectId: undefined
+
+      resizing: false
    }
 
    const projection = mat4.create()
@@ -132,25 +146,61 @@ export function createChessboard3D(
    self.program.useProgram(gl)
    self.program.uniformMatrix4fv(gl, 'u_ProjectionMatrix', false, projection)
 
-   const viewMatrix = mat4.create()
-   mat4.lookAt(viewMatrix, [0, 17, 13], [0, 0, 0], [0, 1, 0])
+   const whiteViewMatrix = mat4.create()
+   mat4.lookAt(whiteViewMatrix, [0, 17, 13], [0, 0, 0], [0, 1, 0])
 
    const centreMatrix = mat4.create()
-   mat4.copy(centreMatrix, viewMatrix)
+   mat4.copy(centreMatrix, whiteViewMatrix)
 
-   const mvMatrics: any[] = []
+   const whiteMvMatrics: any[] = []
    for (let file = 0; file < 8; file++) {
       for (let rank = 0; rank < 8; rank++) {
          const x = (file - 3.5) * 1.1
          const z = (3.5 - rank) * 1.1
 
          const thisMatrix = mat4.create()
-         mat4.copy(thisMatrix, viewMatrix)
+         mat4.copy(thisMatrix, whiteViewMatrix)
          mat4.translate(thisMatrix, thisMatrix, [x, 0, z])
          mat4.rotate(thisMatrix, thisMatrix, -Math.PI / 2, [0, 1, 0])
-         mvMatrics.push(thisMatrix)
+         whiteMvMatrics.push(thisMatrix)
       }
    }
+
+   const blackViewMatrix = mat4.create()
+   mat4.lookAt(blackViewMatrix, [0, 17, -13], [0, 0, 0], [0, 1, 0])
+
+   const blackMvMatrics: any[] = []
+   for (let file = 0; file < 8; file++) {
+      for (let rank = 0; rank < 8; rank++) {
+         const x = (file - 3.5) * 1.1
+         const z = (3.5 - rank) * 1.1
+
+         const thisMatrix = mat4.create()
+         mat4.copy(thisMatrix, blackViewMatrix)
+         mat4.translate(thisMatrix, thisMatrix, [x, 0, z])
+         mat4.rotate(thisMatrix, thisMatrix, Math.PI / 2, [0, 1, 0])
+         blackMvMatrics.push(thisMatrix)
+      }
+   }
+
+   const windowResizeHandler = () => {
+      canvas.width = canvas.clientWidth * window.devicePixelRatio
+      canvas.height = canvas.clientHeight * window.devicePixelRatio
+
+      // recreate framebuffer
+      self.clickTestingFramebuffer = createFrameBuffer(gl, canvas.clientWidth, canvas.clientHeight, true)
+
+      // update projection matrix
+      self.program.useProgram(gl)
+      const neueProjection = mat4.create()
+      mat4.perspective(neueProjection, Math.PI / 7, canvas.width / canvas.height, 0.1, 100)
+      self.program.uniformMatrix4fv(gl, 'u_ProjectionMatrix', false, neueProjection)
+   }
+
+   window.addEventListener('resize', () => {
+      self.resizing = true
+      windowResizeHandler()
+   })
 
    function render() {
       if (!gl) {
@@ -172,6 +222,8 @@ export function createChessboard3D(
       self.program.uniform4fv(gl, 'u_ObjectColor', /*aquamarine, 33%*/ [0.498, 1.0, 0.831, 0.33])
       self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, centreMatrix)
       self.vbo.boardFrame.draw(gl)
+
+      const mvMatrics = self.orientation === 'white' ? whiteMvMatrics : blackMvMatrics
 
       for (let rank = 0; rank < 8; rank++) {
          for (let file = 0; file < 8; file++) {
@@ -275,10 +327,18 @@ export function createChessboard3D(
 
    canvas.addEventListener('contextmenu', event => {
       event.preventDefault()
-      self.selectedObjectId = undefined
+
+      if (self.onRightclick) {
+         self.onRightclick()
+      }
    })
 
    canvas.addEventListener('click', () => {
+      if (self.onClickSquare && self.currentObjectId !== undefined) {
+         const rank = Math.floor(self.currentObjectId / 8)
+         const file = self.currentObjectId % 8
+         self.onClickSquare(rank, file)
+      }
    })
 
    return self
