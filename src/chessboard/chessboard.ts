@@ -28,7 +28,6 @@ export interface Chessboard3D {
       // square: VertexBufferObject
    },
 
-   game: Chess,
    currentObjectId?: number,
    selectedObjectId?: number,
 
