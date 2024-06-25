@@ -28,8 +28,8 @@ export function showSettingsWindow(): HTMLElement {
       }}>
          <div class="settings-content">
             <Select title="颜色主题" options={[
+               { text: "青色", value: "127, 255, 212" },
                { text: "绿色", value: "173, 255, 47" },
-               { text: "青色", value: "127, 255, 212" }
             ]} onChange={setupThemeColor} />
             <Select title="记谱格式" options={[
                { text: "SAN (e4, Nf3)", value: "san" },
