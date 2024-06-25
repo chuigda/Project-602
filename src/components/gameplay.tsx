@@ -315,10 +315,6 @@ function isCastlingMove(game: ChessGame, startRank: number, startFile: number, t
       return true
    }
 
-   if (startFile === 4 && (targetFile === 2 || targetFile === 6)) {
-      return true
-   }
-
    return false
 }
 

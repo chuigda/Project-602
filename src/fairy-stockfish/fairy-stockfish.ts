@@ -41,6 +41,7 @@ export class FairyStockfish {
    }
 
    setPosition(fen: string): Promise<void> {
+      console.info(`setting position to ${fen}`)
       const self = this
       self.instance.postMessage(`position fen ${fen}`)
       const r = new Promise<void>(resolve => {
