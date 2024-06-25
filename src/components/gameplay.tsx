@@ -1,13 +1,13 @@
 import { h } from 'tsx-dom'
 import { DoubleOpenScreen } from '../widgets/double-open-screen'
 import { Chessboard3D, chessboardColor, createChessboard3D } from '../chessboard/chessboard'
-import { ChessGame, PlayerSide, chessGameToFen, createChessGameFromFen, getPieceName, getPieceSide, isPlayerPiece } from '../chess/chessgame'
+import { ChessGame, Piece, PlayerSide, chessGameToFen, createChessGameFromFen, getPieceName, getPieceOfSide, getPieceSide, isPlayerPiece } from '../chess/chessgame'
 import { Ref, ref } from '../util/ref'
 import { sleep } from '../util/sleep'
+import { OpeningPosition } from '../chess/opening-book'
 import { globalResource } from '..'
 
 import './gameplay.css'
-import { OpeningPosition } from '../chess/opening-book'
 
 const fileChars = 'abcdefgh'
 
@@ -70,6 +70,7 @@ export function createSkirmishGameplayWindow(
    const getValidMoves = async () => {
       await fairyStockfish.setPosition(currentFen.value)
       validMoves.value = await fairyStockfish.getValidMoves()
+      console.info('valid moves: ', validMoves.value)
    }
 
    const asyncUpdates = async () => {
@@ -90,7 +91,6 @@ export function createSkirmishGameplayWindow(
             }
          ]
 
-         console.info(currentFen.value)
          const openingBookPosition = globalResource.value.chessData.openingBook[currentFen.value]
          const startSquare = fileChars[file] + (rank + 1)
          for (const validMove of validMoves.value) {
@@ -116,9 +116,35 @@ export function createSkirmishGameplayWindow(
          }
       }
 
-      const playMove = async (startRank: number, startFile: number, targetRank: number, targetFile: number) => {
-         chessGame.position[targetRank][targetFile] = chessGame.position[startRank][startFile]
-         chessGame.position[startRank][startFile] = undefined
+      const playMove = async (startRank: number, startFile: number, targetRank: number, targetFile: number, uci?: string) => {
+         if (isCastlingMove(chessGame, startRank, startFile, targetRank, targetFile)) {
+            const rookFile = targetFile === 2 ? 0 : 7
+            const rookTargetFile = targetFile === 2 ? 3 : 5
+
+            chessGame.position[targetRank][targetFile] = chessGame.position[startRank][startFile]
+            chessGame.position[startRank][startFile] = undefined
+            chessGame.position[targetRank][rookTargetFile] = chessGame.position[targetRank][rookFile]
+            chessGame.position[targetRank][rookFile] = undefined
+         }
+         else if (isPromoteMove(chessGame, startRank, startFile, targetRank, targetFile)) {
+            if (uci) {
+               chessGame.position[targetRank][targetFile] = getPieceOfSide(uci[4] as Piece, chessGame.turn)
+            }
+            else {
+               console.info(chessGame.turn)
+               chessGame.position[targetRank][targetFile] = getPieceOfSide('q', chessGame.turn)
+            }
+            chessGame.position[startRank][startFile] = undefined
+         }
+         else if (isEnpassantMove(chessGame, startRank, startFile, targetRank, targetFile)) {
+            chessGame.position[targetRank][targetFile] = chessGame.position[startRank][startFile]
+            chessGame.position[startRank][startFile] = undefined
+            chessGame.position[startRank][targetFile] = undefined
+         }
+         else {
+            chessGame.position[targetRank][targetFile] = chessGame.position[startRank][startFile]
+            chessGame.position[startRank][startFile] = undefined
+         }
          chessGame.turn = chessGame.turn === 'white' ? 'black' : 'white'
 
          gamePositionToChessboard(chessGame, chessboard)
@@ -134,7 +160,6 @@ export function createSkirmishGameplayWindow(
 
       const computerPlayMove = async () => {
          const openingBookPosition = globalResource.value.chessData.openingBook[currentFen.value]
-         console.info(openingBookPosition)
          if (openingBookPosition && openingBookPosition.moves.length > 0) {
             const move = pickBookMove(aiLevel, openingBookPosition)
             const srcSquare = move.slice(0, 2)
@@ -144,7 +169,7 @@ export function createSkirmishGameplayWindow(
             const targetRank = parseInt(targetSquare[1]) - 1
             const targetFile = fileChars.indexOf(targetSquare[0])
 
-            await sleep(1000)
+            await sleep(2000)
             await playMove(srcRank, srcFile, targetRank, targetFile)
             return
          }
@@ -152,6 +177,7 @@ export function createSkirmishGameplayWindow(
          await fairyStockfish.setPosition(currentFen.value)
          await fairyStockfish.setElo(500 + aiLevel * 200)
          const bestMove = await fairyStockfish.findBestMove(5000)
+         console.info('bestmove', bestMove)
          const srcSquare = bestMove.slice(0, 2)
          const targetSquare = bestMove.slice(2, 4)
          const srcRank = parseInt(srcSquare[1]) - 1
@@ -159,7 +185,7 @@ export function createSkirmishGameplayWindow(
          const targetRank = parseInt(targetSquare[1]) - 1
          const targetFile = fileChars.indexOf(targetSquare[0])
 
-         await playMove(srcRank, srcFile, targetRank, targetFile)
+         await playMove(srcRank, srcFile, targetRank, targetFile, bestMove)
       }
 
       chessboard.onClickSquare = async (rank: number, file: number) => {
@@ -197,4 +223,51 @@ export function createSkirmishGameplayWindow(
 
    document.body.appendChild(skirmishGameplayWindow)
    return skirmishGameplayWindow
+}
+
+function isCastlingMove(game: ChessGame, startRank: number, startFile: number, targetRank: number, targetFile: number) {
+   const piece = game.position[startRank][startFile]
+   if (piece !== 'k' && piece !== 'K') {
+      return false
+   }
+
+   if (startRank !== targetRank || startRank !== 0 && startRank !== 7) {
+      return false
+   }
+
+   if (startFile === 4 && (targetFile === 2 || targetFile === 6)) {
+      return true
+   }
+
+   if (startFile === 4 && (targetFile === 2 || targetFile === 6)) {
+      return true
+   }
+
+   return false
+}
+
+function isPromoteMove(game: ChessGame, startRank: number, startFile: number, targetRank: number, targetFile: number) {
+   const piece = game.position[startRank][startFile]
+   if (piece !== 'p' && piece !== 'P') {
+      return false
+   }
+
+   if (targetRank === 0 || targetRank === 7) {
+      return true
+   }
+
+   return false
+}
+
+function isEnpassantMove(game: ChessGame, startRank: number, startFile: number, targetRank: number, targetFile: number) {
+   const piece = game.position[startRank][startFile]
+   if (piece !== 'p' && piece !== 'P') {
+      return false
+   }
+
+   if (targetFile === game.enPassantSquare?.[0] && targetRank === game.enPassantSquare?.[1]) {
+      return true
+   }
+
+   return false
 }

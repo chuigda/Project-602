@@ -29,6 +29,14 @@ export function isPlayerPiece(piece: Piece, side: PlayerSide): boolean {
    return getPieceSide(piece) === side
 }
 
+export function getPieceOfSide(piece: Piece, side: PlayerSide): Piece {
+   if (side === 'white') {
+      return piece.toUpperCase() as Piece
+   } else {
+      return piece.toLowerCase() as Piece
+   }
+}
+
 export interface ChessGame {
    position: (Piece | undefined)[][]
    whiteCastling: { k: boolean, q: boolean }

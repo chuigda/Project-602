@@ -138,7 +138,7 @@ export class FairyStockfish {
 
             if (line.startsWith('bestmove')) {
                self.messageHandler = () => {}
-               console.info(`Max depth searched: ${maxDepth}`)
+               console.info(`Max depth searched: ${maxDepth}, bestmove line: ${line}`)
                resolve(line.split(' ')[1])
             }
          }

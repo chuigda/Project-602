@@ -92,7 +92,8 @@ export async function loadChessData(): Promise<ChessData> {
    const openingBook = JSON.parse(await openingBookBlob.text()) as Record<string, OpeningPosition>
    setItemLoadProgress(0.98)
 
-   const commonOpeningPositions = await $().get('/chessdata/common-opening-positions.json', undefined, resp => resp.json())
+   const commonOpeningPositions = (await $().get('/chessdata/common-opening-positions.json', undefined, resp => resp.json()) as CommonOpeningPosition[])
+      .sort((a, b) => a.eco.localeCompare(b.eco))
    setItemLoadProgress(1)
 
    return {
