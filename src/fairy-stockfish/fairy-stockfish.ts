@@ -126,10 +126,19 @@ export class FairyStockfish {
 
    findBestMove(time: number): Promise<string> {
       const self = this
+      let maxDepth = 0
       const r = new Promise<string>(resolve => {
          self.messageHandler = line => {
+            if (line.startsWith('info depth')) {
+               const depth = parseInt(line.split(' ')[2])
+               if (depth > maxDepth) {
+                  maxDepth = depth
+               }
+            }
+
             if (line.startsWith('bestmove')) {
                self.messageHandler = () => {}
+               console.info(`Max depth searched: ${maxDepth}`)
                resolve(line.split(' ')[1])
             }
          }

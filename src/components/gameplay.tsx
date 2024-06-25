@@ -32,6 +32,21 @@ function gamePositionToChessboard(game: ChessGame, chessboard: Chessboard3D) {
    }
 }
 
+function pickBookMove(aiLevel: number, openingPosition: OpeningPosition): string {
+   const allowedCPL = [200, 150, 100, 75, 50, 40, 40, 40]
+   const possibleMoves = openingPosition.moves
+      .filter(move => move[1] <= allowedCPL[aiLevel])
+      .sort((a, b) => a[1] - b[1])
+
+   if (possibleMoves.length === 0) {
+      // just pick a random move
+      return openingPosition.moves[Math.floor(Math.random() * openingPosition.moves.length)][0]
+   }
+
+   const moveIndex = Math.floor(Math.pow(Math.random(), 2) * possibleMoves.length)
+   return possibleMoves[moveIndex][0]
+}
+
 function isBookMove(openingPosition: OpeningPosition, uciMove: string) {
    const move4chars = uciMove.slice(0, 4)
    return openingPosition.moves.some(move => move[0].startsWith(move4chars))
@@ -120,9 +135,8 @@ export function createSkirmishGameplayWindow(
       const computerPlayMove = async () => {
          const openingBookPosition = globalResource.value.chessData.openingBook[currentFen.value]
          console.info(openingBookPosition)
-         if (openingBookPosition) {
-            const bookMove = openingBookPosition.moves[Math.floor(Math.random() * openingBookPosition.moves.length)]
-            const move = bookMove[0]
+         if (openingBookPosition && openingBookPosition.moves.length > 0) {
+            const move = pickBookMove(aiLevel, openingBookPosition)
             const srcSquare = move.slice(0, 2)
             const targetSquare = move.slice(2, 4)
             const srcRank = parseInt(srcSquare[1]) - 1
@@ -130,7 +144,7 @@ export function createSkirmishGameplayWindow(
             const targetRank = parseInt(targetSquare[1]) - 1
             const targetFile = fileChars.indexOf(targetSquare[0])
 
-            await sleep(5000)
+            await sleep(1000)
             await playMove(srcRank, srcFile, targetRank, targetFile)
             return
          }
