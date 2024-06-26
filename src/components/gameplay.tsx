@@ -58,7 +58,7 @@ export function createSkirmishGameplayWindow(
    startingPosition: string,
    playerSide: PlayerSide,
    aiLevel: number,
-   chess960: boolean
+   _chess960: boolean
 ) {
    const fairyStockfish = globalResource.value.fairyStockfish
 
