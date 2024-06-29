@@ -46,7 +46,10 @@ export interface ChessGame {
 }
 
 export function createChessGameFromFen(fen: string): ChessGame {
+   console.info('input fen = ', fen)
+   console.info('fen.split = ', fen.split(' '))
    const [position, turn, castling, enPassant] = fen.split(' ')
+   console.info(position, turn, castling, enPassant)
    const [whiteCastling, blackCastling] = [
       {
          k: castling.includes('K'),
@@ -57,6 +60,7 @@ export function createChessGameFromFen(fen: string): ChessGame {
          q: castling.includes('q')
       }
    ]
+
    const enPassantSquare = enPassant === '-' ? null : [enPassant.charCodeAt(0) - 97, parseInt(enPassant[1])]
 
    const chessGame: ChessGame = {

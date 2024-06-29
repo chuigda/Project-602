@@ -57,6 +57,23 @@ export class FairyStockfish {
       return r
    }
 
+   setPositionWithMoves(fen: string, moves: string[]): Promise<void> {
+      console.info(`setting position to ${fen} with moves ${moves.join(' ')}`)
+      const self = this
+      self.instance.postMessage(`position fen ${fen} moves ${moves.join(' ')}`)
+      const r = new Promise<void>(resolve => {
+         self.messageHandler = line => {
+            if (line.includes('readyok')) {
+               self.messageHandler = () => {}
+               resolve()
+            }
+         }
+      })
+
+      self.instance.postMessage('isready')
+      return r
+   }
+
    setElo(elo: number): Promise<void> {
       console.info(`Setting ELO to ${elo}`)
       const self = this
@@ -82,7 +99,7 @@ export class FairyStockfish {
          self.messageHandler = line => {
             if (line.startsWith('Fen:')) {
                self.messageHandler = () => {}
-               resolve(line.split(' ', 2)[1])
+               resolve(line.split(':')[1].trim())
             }
          }
       })

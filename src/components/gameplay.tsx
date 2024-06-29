@@ -63,7 +63,7 @@ export function createSkirmishGameplayWindow(
    const fairyStockfish = globalResource.value.fairyStockfish
 
    const skirmishGameplayWindow = <DoubleOpenScreen backgroundColor="black" zIndex={3000} />
-   const chessGame = createChessGameFromFen(startingPosition)
+   let chessGame = createChessGameFromFen(startingPosition)
 
    const selectedSquare: Ref<[number, number] | undefined> = ref(undefined)
    const validMoves: Ref<string[]> = ref([])
@@ -154,40 +154,18 @@ export function createSkirmishGameplayWindow(
       }
 
       const playMove = async (startRank: number, startFile: number, targetRank: number, targetFile: number, uci?: string) => {
-         if (isCastlingMove(chessGame, startRank, startFile, targetRank, targetFile)) {
-            const rookFile = targetFile === 2 ? 0 : 7
-            const rookTargetFile = targetFile === 2 ? 3 : 5
-
-            chessGame.position[targetRank][targetFile] = chessGame.position[startRank][startFile]
-            chessGame.position[startRank][startFile] = undefined
-            chessGame.position[targetRank][rookTargetFile] = chessGame.position[targetRank][rookFile]
-            chessGame.position[targetRank][rookFile] = undefined
+         // TODO this is just for correct board status update,
+         // TODO for animation we still need to some manual check
+         if (!uci) {
+            uci = fileChars[startFile] + (startRank + 1) + fileChars[targetFile] + (targetRank + 1)
          }
-         else if (isPromoteMove(chessGame, startRank, startFile, targetRank)) {
-            if (uci) {
-               chessGame.position[targetRank][targetFile] = getPieceOfSide(uci[4] as Piece, chessGame.turn)
-            }
-            else {
-               const promotionPiece = await openPromotionWindow(chessGame.turn, 4000)
-               chessGame.position[targetRank][targetFile] = promotionPiece
-            }
-            chessGame.position[startRank][startFile] = undefined
-         }
-         else if (isEnpassantMove(chessGame, startRank, startFile, targetRank, targetFile)) {
-            chessGame.position[targetRank][targetFile] = chessGame.position[startRank][startFile]
-            chessGame.position[startRank][startFile] = undefined
-            chessGame.position[startRank][targetFile] = undefined
-         }
-         else {
-            chessGame.position[targetRank][targetFile] = chessGame.position[startRank][startFile]
-            chessGame.position[startRank][startFile] = undefined
-         }
-         chessGame.turn = chessGame.turn === 'white' ? 'black' : 'white'
-
+         await fairyStockfish.setPositionWithMoves(currentFen.value, [uci])
+         currentFen.value = await fairyStockfish.getCurrentFen()
+         chessGame = createChessGameFromFen(currentFen.value)
          gamePositionToChessboard(chessGame, chessboard)
+
          chessboard.highlightSquares = []
          selectedSquare.value = undefined
-         currentFen.value = chessGameToFen(chessGame)
          await getValidMoves()
 
          checkers.value = await fairyStockfish.getCheckers()
