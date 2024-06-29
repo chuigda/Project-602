@@ -199,8 +199,8 @@ export function createSkirmishGameplayWindow(
          }
 
          await fairyStockfish.setPosition(currentFen.value)
-         await fairyStockfish.setElo(500 + aiLevel * 200)
-         const [_unused, bestMove] = await Promise.all([sleep(1000), fairyStockfish.findBestMove(5000)])
+         await fairyStockfish.setElo(500 + (aiLevel - 1) * 200)
+         const [_unused, bestMove] = await Promise.all([sleep(1000), fairyStockfish.findBestMove(2000)])
          if (bestMove === '(none)') {
             if ((await fairyStockfish.getCheckers()).length > 0) {
                // TODO
