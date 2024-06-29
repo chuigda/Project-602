@@ -48,8 +48,9 @@ export function showAboutWindow(): HTMLElement {
                   <div class="item">
                      角色设计与立绘：
                      <a>昏睡白糖</a>，
-                     <a href="https://huajia.163.com/main/profile/YBPbpbqr" target="_blank">缸脑</a>
-                     <a href="https://space.bilibili.com/4962592" target="_blank">禾几木</a>
+                     <a href="https://huajia.163.com/main/profile/YBPbpbqr" target="_blank">缸脑</a>，
+                     <a href="https://space.bilibili.com/4962592" target="_blank">禾几木</a>，
+                     <a href="https://huajia.163.com/main/profile/1Bym5M3B" target="_black">木火kika</a>
                   </div>
                   <br />
                   <div>国际象棋</div>

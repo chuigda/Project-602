@@ -158,7 +158,12 @@ export function createSkirmishGameplayWindow(
          // TODO for animation we still need to some manual check
          if (!uci) {
             uci = fileChars[startFile] + (startRank + 1) + fileChars[targetFile] + (targetRank + 1)
+            if (isPromoteMove(chessGame, startRank, startFile, targetRank)) {
+               const promotionPiece = await openPromotionWindow(chessGame.turn, 4000)
+               uci += promotionPiece.toLowerCase()
+            }
          }
+
          await fairyStockfish.setPositionWithMoves(currentFen.value, [uci])
          currentFen.value = await fairyStockfish.getCurrentFen()
          chessGame = createChessGameFromFen(currentFen.value)
