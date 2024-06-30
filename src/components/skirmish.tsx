@@ -102,12 +102,17 @@ export function showSkirmishWindow(): HTMLElement {
       aiLevel.value = level
    }
 
-   const startGame = () => createSkirmishGameplayWindow(
-      startPosition.value,
-      playerSide.value,
-      aiLevel.value,
-      false
-   )
+   const startGame = async () => {
+      createSkirmishGameplayWindow(
+         startPosition.value,
+         playerSide.value,
+         aiLevel.value,
+         false
+      )
+
+      await sleep(300)
+      windowBackground.remove()
+   }
 
    const skirmishWindow = (
       <Window title="遭遇战" height="65vh" onClose={async () => {
