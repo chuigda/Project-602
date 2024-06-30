@@ -76,6 +76,7 @@ export function createSkirmishGameplayWindow(
 
    const asyncUpdates = async () => {
       await Promise.all([sleep(300), getValidMoves()])
+      await fairyStockfish.setElo(500 + (aiLevel - 1) * 200)
 
       const gameplayCanvas = <canvas class="gameplay-canvas" /> as HTMLCanvasElement
       skirmishGameplayWindow.appendChild(gameplayCanvas)
@@ -190,7 +191,6 @@ export function createSkirmishGameplayWindow(
          }
 
          await fairyStockfish.setPosition(currentFen.value)
-         await fairyStockfish.setElo(500 + (aiLevel - 1) * 200)
          const [_unused, bestMove] = await Promise.all([sleep(1000), fairyStockfish.findBestMove(2000)])
          if (bestMove === '(none)') {
             if ((await fairyStockfish.getCheckers()).length > 0) {
