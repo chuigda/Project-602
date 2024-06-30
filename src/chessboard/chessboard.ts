@@ -129,8 +129,8 @@ export function createChessboard3D(
       resizing: false
    }
 
-   canvas.width = canvas.clientWidth * window.devicePixelRatio
-   canvas.height = canvas.clientHeight * window.devicePixelRatio
+   canvas.width = canvas.clientWidth * (window.devicePixelRatio || 1.0)
+   canvas.height = canvas.clientHeight * (window.devicePixelRatio || 1.0)
 
    const projection = mat4.create()
    mat4.perspective(projection, Math.PI / 7, canvas.width / canvas.height, 0.1, 100)
@@ -175,8 +175,8 @@ export function createChessboard3D(
    }
 
    const windowResizeHandler = () => {
-      canvas.width = canvas.clientWidth * window.devicePixelRatio
-      canvas.height = canvas.clientHeight * window.devicePixelRatio
+      canvas.width = canvas.clientWidth * (window.devicePixelRatio || 1.0)
+      canvas.height = canvas.clientHeight * (window.devicePixelRatio || 1.0)
 
       self.clickTestingFramebuffer = createFrameBuffer(gl, canvas.clientWidth, canvas.clientHeight, true)
 
