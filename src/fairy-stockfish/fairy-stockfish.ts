@@ -40,6 +40,22 @@ export class FairyStockfish {
       this.instance = instance
    }
 
+   uciNewGame(): Promise<void> {
+      const self = this
+      const r = new Promise<void>(resolve => {
+         self.messageHandler = line => {
+            if (line.includes('readyok')) {
+               self.messageHandler = () => {}
+               resolve()
+            }
+         }
+      })
+
+      self.instance.postMessage('ucinewgame')
+      self.instance.postMessage('isready')
+      return r
+   }
+
    setPosition(fen: string): Promise<void> {
       console.info(`stockfish: setting position to ${fen}`)
       const self = this

@@ -76,6 +76,7 @@ export function createSkirmishGameplayWindow(
 
    const asyncUpdates = async () => {
       await Promise.all([sleep(300), getValidMoves()])
+      await fairyStockfish.uciNewGame()
       await fairyStockfish.setElo(500 + (aiLevel - 1) * 200)
 
       const gameplayCanvas = <canvas class="gameplay-canvas" /> as HTMLCanvasElement
