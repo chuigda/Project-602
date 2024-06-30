@@ -7,6 +7,25 @@ export type PieceName =
 
 export type PlayerSide = 'white' | 'black'
 
+export const FileChars = 'abcdefgh'
+
+export function square2rankfileZeroBased(square: string): [number, number] {
+   return [square.charCodeAt(1) - 49, square.charCodeAt(0) - 97]
+}
+
+export function square2rankfile(square: string): [number, number] {
+   const [rank, file] = square2rankfileZeroBased(square)
+   return [rank + 1, file + 1]
+}
+
+export function rankfile2squareZeroBased(rank: number, file: number): string {
+   return String.fromCharCode(file + 97) + (rank + 1)
+}
+
+export function rankfile2square(rank: number, file: number): string {
+   return String.fromCharCode(file + 97) + (rank + 1)
+}
+
 export function getPieceSide(piece: Piece): PlayerSide {
    return 'PNBRQKW'.includes(piece) ? 'white' : 'black'
 }

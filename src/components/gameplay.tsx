@@ -1,7 +1,7 @@
 import { h } from 'tsx-dom'
 import { DoubleOpenScreen } from '../widgets/double-open-screen'
 import { Chessboard3D, chessboardColor, createChessboard3D } from '../chessboard/chessboard'
-import { ChessGame, Piece, PlayerSide, chessGameToFen, createChessGameFromFen, getPieceName, getPieceOfSide, getPieceSide, isPlayerPiece } from '../chess/chessgame'
+import { ChessGame, PlayerSide, chessGameToFen, createChessGameFromFen, getPieceName, getPieceOfSide, getPieceSide, isPlayerPiece, rankfile2squareZeroBased, square2rankfileZeroBased } from '../chess/chessgame'
 import { Ref, ref } from '../util/ref'
 import { sleep } from '../util/sleep'
 import { OpeningPosition } from '../chess/opening-book'
@@ -11,8 +11,6 @@ import './gameplay.css'
 import { openPromotionWindow } from '../widgets/promote'
 import { createCheckmateWindow } from './checkmate'
 import { trimFEN } from '../chess/trimfen'
-
-const fileChars = 'abcdefgh'
 
 function gamePositionToChessboard(game: ChessGame, chessboard: Chessboard3D) {
    chessboard.staticPieces = []
@@ -96,12 +94,11 @@ export function createSkirmishGameplayWindow(
          ]
 
          const openingBookPosition = globalResource.value.chessData.openingBook[currentFen.value]
-         const startSquare = fileChars[file] + (rank + 1)
+         const startSquare = rankfile2squareZeroBased(rank, file)
          for (const validMove of validMoves.value) {
             if (validMove.startsWith(startSquare)) {
                const targetSquare = validMove.slice(2, 4)
-               const targetRank = parseInt(targetSquare[1]) - 1
-               const targetFile = fileChars.indexOf(targetSquare[0])
+               const [targetRank, targetFile] = square2rankfileZeroBased(targetSquare)
 
                if (openingBookPosition && isBookMove(openingBookPosition, validMove)) {
                   chessboard.highlightSquares.push({
@@ -126,8 +123,7 @@ export function createSkirmishGameplayWindow(
          }
 
          for (const checker of checkers.value) {
-            const rank = parseInt(checker[1]) - 1
-            const file = fileChars.indexOf(checker[0])
+            const [rank, file] = square2rankfileZeroBased(checker)
             chessboard.highlightSquares.push({
                rank,
                file,
@@ -154,7 +150,7 @@ export function createSkirmishGameplayWindow(
          // TODO this is just for correct board status update,
          // TODO for animation we still need to some manual check
          if (!uci) {
-            uci = fileChars[startFile] + (startRank + 1) + fileChars[targetFile] + (targetRank + 1)
+            uci = rankfile2squareZeroBased(startRank, startFile) + rankfile2squareZeroBased(targetRank, targetFile)
             if (isPromoteMove(chessGame, startRank, startFile, targetRank)) {
                const promotionPiece = await openPromotionWindow(chessGame.turn, 4000)
                uci += promotionPiece.toLowerCase()
@@ -184,10 +180,9 @@ export function createSkirmishGameplayWindow(
             const move = pickBookMove(aiLevel, openingBookPosition)
             const srcSquare = move.slice(0, 2)
             const targetSquare = move.slice(2, 4)
-            const srcRank = parseInt(srcSquare[1]) - 1
-            const srcFile = fileChars.indexOf(srcSquare[0])
-            const targetRank = parseInt(targetSquare[1]) - 1
-            const targetFile = fileChars.indexOf(targetSquare[0])
+
+            const [srcRank, srcFile] = square2rankfileZeroBased(srcSquare)
+            const [targetRank, targetFile] = square2rankfileZeroBased(targetSquare)
 
             await sleep(2000)
             await playMove(srcRank, srcFile, targetRank, targetFile)
@@ -211,10 +206,8 @@ export function createSkirmishGameplayWindow(
 
          const srcSquare = bestMove.slice(0, 2)
          const targetSquare = bestMove.slice(2, 4)
-         const srcRank = parseInt(srcSquare[1]) - 1
-         const srcFile = fileChars.indexOf(srcSquare[0])
-         const targetRank = parseInt(targetSquare[1]) - 1
-         const targetFile = fileChars.indexOf(targetSquare[0])
+         const [srcRank, srcFile] = square2rankfileZeroBased(srcSquare)
+         const [targetRank, targetFile] = square2rankfileZeroBased(targetSquare)
 
          await playMove(srcRank, srcFile, targetRank, targetFile, bestMove)
 
@@ -253,8 +246,8 @@ export function createSkirmishGameplayWindow(
             }
 
             if (selectedSquare.value) {
-               const startSquare = fileChars[selectedSquare.value[1]] + (selectedSquare.value[0] + 1)
-               const targetSquare = fileChars[file] + (rank + 1)
+               const startSquare = rankfile2squareZeroBased(selectedSquare.value[0], selectedSquare.value[1])
+               const targetSquare = rankfile2squareZeroBased(rank, file)
 
                const move = startSquare + targetSquare
                const isValidMove = validMoves.value.find(m => m.startsWith(move)) !== undefined
