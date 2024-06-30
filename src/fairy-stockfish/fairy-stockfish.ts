@@ -41,7 +41,7 @@ export class FairyStockfish {
    }
 
    setPosition(fen: string): Promise<void> {
-      console.info(`setting position to ${fen}`)
+      console.info(`stockfish: setting position to ${fen}`)
       const self = this
       self.instance.postMessage(`position fen ${fen}`)
       const r = new Promise<void>(resolve => {
@@ -58,7 +58,7 @@ export class FairyStockfish {
    }
 
    setPositionWithMoves(fen: string, moves: string[]): Promise<void> {
-      console.info(`setting position to ${fen} with moves ${moves.join(' ')}`)
+      console.info(`stockfish: setting position to ${fen} with moves ${moves.join(' ')}`)
       const self = this
       self.instance.postMessage(`position fen ${fen} moves ${moves.join(' ')}`)
       const r = new Promise<void>(resolve => {
@@ -75,7 +75,7 @@ export class FairyStockfish {
    }
 
    setElo(elo: number): Promise<void> {
-      console.info(`Setting ELO to ${elo}`)
+      console.info(`stockfish: setting ELO to ${elo}`)
       const self = this
       self.instance.postMessage(`setoption name UCI_Elo value ${elo}`)
       self.instance.postMessage(`setoption name UCI_LimitStrength value true`)
@@ -157,7 +157,7 @@ export class FairyStockfish {
 
             if (line.startsWith('bestmove')) {
                self.messageHandler = () => {}
-               console.info(`Max depth searched: ${maxDepth}, bestmove line: ${line}`)
+               console.info(`stockfish: max depth searched: ${maxDepth}, bestmove line: ${line}`)
                resolve(line.split(' ')[1])
             }
          }

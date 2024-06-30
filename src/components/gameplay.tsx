@@ -10,6 +10,7 @@ import { globalResource } from '..'
 import './gameplay.css'
 import { openPromotionWindow } from '../widgets/promote'
 import { createCheckmateWindow } from './checkmate'
+import { trimFEN } from '../chess/trimfen'
 
 const fileChars = 'abcdefgh'
 
@@ -73,7 +74,6 @@ export function createSkirmishGameplayWindow(
    const getValidMoves = async () => {
       await fairyStockfish.setPosition(currentFen.value)
       validMoves.value = await fairyStockfish.getValidMoves()
-      console.info('valid moves: ', validMoves.value)
    }
 
    const asyncUpdates = async () => {
@@ -91,7 +91,7 @@ export function createSkirmishGameplayWindow(
          highlightCheckers()
          chessboard.highlightSquares = [
             {
-               rank, file, color: [1.0, 1.0, 0.0, 0.66]
+               rank, file, color: chessboardColor.aquamarine_66
             }
          ]
 
@@ -140,7 +140,6 @@ export function createSkirmishGameplayWindow(
          const kingSquare = chessGame.position
             .flatMap((r, rank) => r.map((p, file) => ({ p, rank, file })))
             .find(({ p }) => p === kingPiece)
-         console.info('kingSquare=', kingSquare)
 
          if (kingSquare) {
             chessboard.highlightSquares.push({
@@ -148,8 +147,6 @@ export function createSkirmishGameplayWindow(
                file: kingSquare.file,
                color: chessboardColor.red
             })
-
-            console.info(chessboard.highlightSquares)
          }
       }
 
@@ -165,7 +162,7 @@ export function createSkirmishGameplayWindow(
          }
 
          await fairyStockfish.setPositionWithMoves(currentFen.value, [uci])
-         currentFen.value = await fairyStockfish.getCurrentFen()
+         currentFen.value = trimFEN(await fairyStockfish.getCurrentFen())
          chessGame = createChessGameFromFen(currentFen.value)
          gamePositionToChessboard(chessGame, chessboard)
 
@@ -174,7 +171,6 @@ export function createSkirmishGameplayWindow(
          await getValidMoves()
 
          checkers.value = await fairyStockfish.getCheckers()
-         console.info(checkers.value)
          highlightCheckers()
 
          if (chessGame.turn !== playerSide) {
