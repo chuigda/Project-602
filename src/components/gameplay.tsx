@@ -274,22 +274,22 @@ export function createSkirmishGameplayWindow(
    return skirmishGameplayWindow
 }
 
-function isCastlingMove(game: ChessGame, startRank: number, startFile: number, targetRank: number, targetFile: number) {
-   const piece = game.position[startRank][startFile]
-   if (piece !== 'k' && piece !== 'K') {
-      return false
-   }
+// function isCastlingMove(game: ChessGame, startRank: number, startFile: number, targetRank: number, targetFile: number) {
+//    const piece = game.position[startRank][startFile]
+//    if (piece !== 'k' && piece !== 'K') {
+//       return false
+//    }
 
-   if (startRank !== targetRank || startRank !== 0 && startRank !== 7) {
-      return false
-   }
+//    if (startRank !== targetRank || startRank !== 0 && startRank !== 7) {
+//       return false
+//    }
 
-   if (startFile === 4 && (targetFile === 2 || targetFile === 6)) {
-      return true
-   }
+//    if (startFile === 4 && (targetFile === 2 || targetFile === 6)) {
+//       return true
+//    }
 
-   return false
-}
+//    return false
+// }
 
 function isPromoteMove(game: ChessGame, startRank: number, startFile: number, targetRank: number) {
    const piece = game.position[startRank][startFile]
@@ -304,15 +304,15 @@ function isPromoteMove(game: ChessGame, startRank: number, startFile: number, ta
    return false
 }
 
-function isEnpassantMove(game: ChessGame, startRank: number, startFile: number, targetRank: number, targetFile: number) {
-   const piece = game.position[startRank][startFile]
-   if (piece !== 'p' && piece !== 'P') {
-      return false
-   }
+// function isEnpassantMove(game: ChessGame, startRank: number, startFile: number, targetRank: number, targetFile: number) {
+//    const piece = game.position[startRank][startFile]
+//    if (piece !== 'p' && piece !== 'P') {
+//       return false
+//    }
 
-   if (targetFile === game.enPassantSquare?.[0] && targetRank === game.enPassantSquare?.[1]) {
-      return true
-   }
+//    if (targetFile === game.enPassantSquare?.[0] && targetRank === game.enPassantSquare?.[1]) {
+//       return true
+//    }
 
-   return false
-}
+//    return false
+// }
