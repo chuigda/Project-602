@@ -62,11 +62,11 @@ export function createSkirmishGameplayWindow(
    const fairyStockfish = globalResource.value.fairyStockfish
 
    const skirmishGameplayWindow = <DoubleOpenScreen backgroundColor="black" zIndex={3000} />
-   let chessGame = createChessGameFromFen(startingPosition)
+   const chessGame: Ref<ChessGame> = ref(createChessGameFromFen(startingPosition))
 
    const selectedSquare: Ref<[number, number] | undefined> = ref(undefined)
    const validMoves: Ref<string[]> = ref([])
-   const currentFen: Ref<string> = ref(chessGameToFen(chessGame))
+   const currentFen: Ref<string> = ref(chessGameToFen(chessGame.value))
    const checkers: Ref<string[]> = ref([])
 
    const getValidMoves = async () => {
@@ -84,7 +84,7 @@ export function createSkirmishGameplayWindow(
 
       await sleep(100)
       const chessboard = createChessboard3D(gameplayCanvas, globalResource.value.gameAsset, playerSide)
-      gamePositionToChessboard(chessGame, chessboard)
+      gamePositionToChessboard(chessGame.value, chessboard)
 
       const selectSquare = async (rank: number, file: number) => {
          selectedSquare.value = [rank, file]
@@ -134,8 +134,8 @@ export function createSkirmishGameplayWindow(
          }
 
          // find the king under check
-         const kingPiece = getPieceOfSide('k', chessGame.turn)
-         const kingSquare = chessGame.position
+         const kingPiece = getPieceOfSide('k', chessGame.value.turn)
+         const kingSquare = chessGame.value.position
             .flatMap((r, rank) => r.map((p, file) => ({ p, rank, file })))
             .find(({ p }) => p === kingPiece)
 
@@ -153,16 +153,16 @@ export function createSkirmishGameplayWindow(
          // TODO for animation we still need to some manual check
          if (!uci) {
             uci = rankfile2squareZeroBased(startRank, startFile) + rankfile2squareZeroBased(targetRank, targetFile)
-            if (isPromoteMove(chessGame, startRank, startFile, targetRank)) {
-               const promotionPiece = await openPromotionWindow(chessGame.turn, 4000)
+            if (isPromoteMove(chessGame.value, startRank, startFile, targetRank)) {
+               const promotionPiece = await openPromotionWindow(chessGame.value.turn, 4000)
                uci += promotionPiece.toLowerCase()
             }
          }
 
          await fairyStockfish.setPositionWithMoves(currentFen.value, [uci])
          currentFen.value = trimFEN(await fairyStockfish.getCurrentFen())
-         chessGame = createChessGameFromFen(currentFen.value)
-         gamePositionToChessboard(chessGame, chessboard)
+         chessGame.value = createChessGameFromFen(currentFen.value)
+         gamePositionToChessboard(chessGame.value, chessboard)
 
          chessboard.highlightSquares = []
          selectedSquare.value = undefined
@@ -171,7 +171,7 @@ export function createSkirmishGameplayWindow(
          checkers.value = await fairyStockfish.getCheckers()
          highlightCheckers()
 
-         if (chessGame.turn !== playerSide) {
+         if (chessGame.value.turn !== playerSide) {
             computerPlayMove()
          }
       }
@@ -238,9 +238,9 @@ export function createSkirmishGameplayWindow(
       }
 
       chessboard.onClickSquare = async (rank: number, file: number) => {
-         if (chessGame.turn === playerSide) {
-            if (chessGame.position[rank][file]) {
-               if (isPlayerPiece(chessGame.position[rank][file]!, playerSide)) {
+         if (chessGame.value.turn === playerSide) {
+            if (chessGame.value.position[rank][file]) {
+               if (isPlayerPiece(chessGame.value.position[rank][file]!, playerSide)) {
                   selectSquare(rank, file)
                   return
                }
@@ -264,7 +264,7 @@ export function createSkirmishGameplayWindow(
          chessboard.highlightSquares = []
       }
 
-      if (chessGame.turn !== playerSide) {
+      if (chessGame.value.turn !== playerSide) {
          computerPlayMove()
       }
    }
