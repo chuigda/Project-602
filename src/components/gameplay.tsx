@@ -40,8 +40,8 @@ function pickBookMove(aiLevel: number, openingPosition: OpeningPosition): string
       .sort((a, b) => a[1] - b[1])
 
    if (possibleMoves.length === 0) {
-      // just pick a random move
-      return openingPosition.moves[Math.floor(Math.random() * openingPosition.moves.length)][0]
+      // pick the best move
+      return openingPosition.moves.sort((a, b) => a[1] - b[1])[0][0]
    }
 
    const moveIndex = Math.floor(Math.pow(Math.random(), 2) * possibleMoves.length)
