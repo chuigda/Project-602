@@ -12,6 +12,7 @@ import { openPromotionWindow } from '../widgets/promote'
 import { createCheckmateWindow } from './checkmate'
 import { trimFEN } from '../chess/trimfen'
 import { uci2san } from '../chess/notation'
+import { create2DChessboardFromFen } from './skirmish'
 
 function gamePositionToChessboard(game: ChessGame, chessboard: Chessboard3D) {
    chessboard.staticPieces = []
@@ -69,6 +70,7 @@ export function createSkirmishGameplayWindow(
    const validMoves: Ref<string[]> = ref([])
    const currentFen: Ref<string> = ref(chessGameToFen(chessGame.value))
    const checkers: Ref<string[]> = ref([])
+   const recordedMoves: Ref<string[]> = ref([])
 
    const getValidMoves = async () => {
       await fairyStockfish.setPosition(currentFen.value)
@@ -80,12 +82,30 @@ export function createSkirmishGameplayWindow(
       await fairyStockfish.uciNewGame()
       await fairyStockfish.setElo(500 + (aiLevel - 1) * 200)
 
-      const gameplayCanvas = <canvas class="gameplay-canvas" /> as HTMLCanvasElement
-      skirmishGameplayWindow.appendChild(gameplayCanvas)
+      const minimap = <div class="skirmish-minimap" />
+      const scoreSheet = <div class="skirmish-scoresheet" />
+      const scoreSheetContainer = <div class="scoresheet-container">{scoreSheet}</div>
+      const gameplayCanvas = <canvas class="gameplay-canvas" style={{ opacity: '0%' }} /> as HTMLCanvasElement
+      const gameplayHud = <div class="gameplay-hud" />
+
+      skirmishGameplayWindow.appendChild(
+         <div class="gameplay-container">
+            {gameplayHud}
+            {gameplayCanvas}
+         </div>
+      )
 
       await sleep(100)
+      gameplayHud.style.flex = '0 0 320px'
+      await sleep(300)
+      gameplayHud.appendChild(minimap)
+      gameplayHud.appendChild(scoreSheetContainer)
+      await sleep(200)
       const chessboard = createChessboard3D(gameplayCanvas, globalResource.value.gameAsset, playerSide)
       gamePositionToChessboard(chessGame.value, chessboard)
+      await sleep(200)
+      gameplayCanvas.style.opacity = '100%'
+      minimap.append(...create2DChessboardFromFen(startingPosition))
 
       const selectSquare = async (rank: number, file: number) => {
          selectedSquare.value = [rank, file]
@@ -162,6 +182,8 @@ export function createSkirmishGameplayWindow(
 
          await fairyStockfish.setPositionWithMoves(currentFen.value, [uci])
          currentFen.value = trimFEN(await fairyStockfish.getCurrentFen())
+         minimap.innerHTML = ''
+         minimap.append(...create2DChessboardFromFen(currentFen.value))
          const prevGame = chessGame.value
          chessGame.value = createChessGameFromFen(currentFen.value)
          gamePositionToChessboard(chessGame.value, chessboard)
@@ -179,7 +201,12 @@ export function createSkirmishGameplayWindow(
             checkers.value.length !== 0,
             validMoves.value.length === 0
          )
-         console.info('SAN: ', sanMove)
+         recordedMoves.value.push(sanMove)
+         if (recordedMoves.value.length % 2 !== 0) {
+            scoreSheet.appendChild(<div>{Math.ceil(recordedMoves.value.length / 2)}.</div>)
+         }
+         scoreSheet.appendChild(<div>{sanMove}</div>)
+         scoreSheetContainer.scrollTop = scoreSheetContainer.scrollHeight
 
          if (chessGame.value.turn !== playerSide) {
             computerPlayMove()
@@ -272,6 +299,12 @@ export function createSkirmishGameplayWindow(
       chessboard.onRightclick = () => {
          selectedSquare.value = undefined
          chessboard.highlightSquares = []
+      }
+
+      if (chessGame.value.turn !== 'white') {
+         scoreSheet.appendChild(<div>1.</div>)
+         scoreSheet.appendChild(<div>...</div>)
+         recordedMoves.value.push('...')
       }
 
       if (chessGame.value.turn !== playerSide) {

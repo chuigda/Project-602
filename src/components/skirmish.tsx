@@ -38,12 +38,12 @@ export function showSkirmishWindow(): HTMLElement {
    const skirmishMapPreview = <div class="skirmish-map-preview" />
    const createInitialPositionPreview = () => {
       skirmishMapPreview.innerHTML = ''
-      skirmishMapPreview.append(...createChessboardFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -'))
+      skirmishMapPreview.append(...create2DChessboardFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -'))
    }
 
    const chooseSpecificPosition = (positionFen: string) => {
       skirmishMapPreview.innerHTML = ''
-      skirmishMapPreview.append(...createChessboardFromFen(positionFen))
+      skirmishMapPreview.append(...create2DChessboardFromFen(positionFen))
 
       startPosition.value = positionFen
    }
@@ -170,7 +170,7 @@ export function showSkirmishWindow(): HTMLElement {
    return windowBackground
 }
 
-function createChessboardFromFen(fen: string): HTMLElement[] {
+export function create2DChessboardFromFen(fen: string): HTMLElement[] {
    const elements = []
    const layout = fen.split(' ')[0]
    const ranks = layout.split('/')
