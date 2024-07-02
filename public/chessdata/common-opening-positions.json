@@ -15,6 +15,11 @@
       "fen": "5k2/3K4/8/8/5N2/8/8/5Q2 w - - 0 1"
    },
    {
+      "eco": "003",
+      "name": "消歧义测试",
+      "fen": "rnb1k2r/1pq1bppp/p2ppn2/6B1/3NPP2/2N2Q2/PPP3PP/2KR1B1R b - - 0 1"
+   },
+   {
       "eco": "B00",
       "name": "王兵开局",
       "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq -"

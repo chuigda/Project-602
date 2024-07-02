@@ -61,109 +61,69 @@ export function uci2san(
 
    const capture = dstPiece ? 'x' : ''
 
+   let reachable: string[]
    if (srcPiece === 'Q' || srcPiece === 'q') {
-      const reachable = [
-         ...findReachablePiece(game, toRank, toFile, 1, 1, srcPiece, fromRank, fromFile),
-         ...findReachablePiece(game, toRank, toFile, 1, -1, srcPiece, fromRank, fromFile),
-         ...findReachablePiece(game, toRank, toFile, -1, 1, srcPiece, fromRank, fromFile),
-         ...findReachablePiece(game, toRank, toFile, -1, -1, srcPiece, fromRank, fromFile),
-         ...findReachablePiece(game, toRank, toFile, 1, 0, srcPiece, fromRank, fromFile),
-         ...findReachablePiece(game, toRank, toFile, -1, 0, srcPiece, fromRank, fromFile),
-         ...findReachablePiece(game, toRank, toFile, 0, 1, srcPiece, fromRank, fromFile),
-         ...findReachablePiece(game, toRank, toFile, 0, -1, srcPiece, fromRank, fromFile)
+      reachable = [
+         ...findReachablePiece(game, toRank, toFile, 1, 1, srcPiece),
+         ...findReachablePiece(game, toRank, toFile, 1, -1, srcPiece),
+         ...findReachablePiece(game, toRank, toFile, -1, 1, srcPiece),
+         ...findReachablePiece(game, toRank, toFile, -1, -1, srcPiece),
+         ...findReachablePiece(game, toRank, toFile, 1, 0, srcPiece),
+         ...findReachablePiece(game, toRank, toFile, -1, 0, srcPiece),
+         ...findReachablePiece(game, toRank, toFile, 0, 1, srcPiece),
+         ...findReachablePiece(game, toRank, toFile, 0, -1, srcPiece)
       ]
-
-      const sameRankReachable = reachable.filter(square => square[0] === from[0])
-      const sameFileReachable = reachable.filter(square => square[1] === from[1])
-      const otherReachable = reachable.filter(square => square[0] !== from[0] && square[1] !== from[1])
-
-      if (otherReachable.length !== 0 || (sameRankReachable.length !== 0 && sameFileReachable.length !== 0)) {
-         return `Q${from}${capture}${to}${tail}`
-      }
-      else if (sameRankReachable.length !== 0) {
-         return `Q${from[0]}${capture}${to}${tail}`
-      }
-      else if (sameFileReachable.length !== 0) {
-         return `Q${from[1]}${capture}${to}${tail}`
-      }
-      else
-      {
-         return `Q${capture}${to}${tail}`
-      }
    }
-   if (srcPiece === 'R' || srcPiece === 'r') {
-      const sameRankReachable = [
-         ...findReachablePiece(game, toRank, toFile, 0, 1, srcPiece, fromRank, fromFile),
-         ...findReachablePiece(game, toRank, toFile, 0, -1, srcPiece, fromRank, fromFile)
+   else if (srcPiece === 'R' || srcPiece === 'r') {
+      reachable = [
+         ...findReachablePiece(game, toRank, toFile, 0, 1, srcPiece),
+         ...findReachablePiece(game, toRank, toFile, 0, -1, srcPiece),
+         ...findReachablePiece(game, toRank, toFile, 1, 0, srcPiece),
+         ...findReachablePiece(game, toRank, toFile, -1, 0, srcPiece)
       ]
-      const sameFileReachable = [
-         ...findReachablePiece(game, toRank, toFile, 1, 0, srcPiece, fromRank, fromFile),
-         ...findReachablePiece(game, toRank, toFile, -1, 0, srcPiece, fromRank, fromFile)
-      ]
-
-      if (sameRankReachable.length !== 0 && sameFileReachable.length !== 0) {
-         return `R${from}${capture}${to}${tail}`
-      }
-      else if (sameRankReachable.length !== 0) {
-         return `R${from[0]}${capture}${to}${tail}`
-      }
-      else if (sameFileReachable.length !== 0) {
-         return `R${from[1]}${capture}${to}${tail}`
-      }
-      else {
-         return `R${capture}${to}${tail}`
-      }
    }
    else if (srcPiece === 'B' || srcPiece === 'b') {
-      const reachable = [
-         ...findReachablePiece(game, toRank, toFile, 1, 1, srcPiece, fromRank, fromFile),
-         ...findReachablePiece(game, toRank, toFile, 1, -1, srcPiece, fromRank, fromFile),
-         ...findReachablePiece(game, toRank, toFile, -1, 1, srcPiece, fromRank, fromFile),
-         ...findReachablePiece(game, toRank, toFile, -1, -1, srcPiece, fromRank, fromFile)
+      reachable = [
+         ...findReachablePiece(game, toRank, toFile, 1, 1, srcPiece),
+         ...findReachablePiece(game, toRank, toFile, 1, -1, srcPiece),
+         ...findReachablePiece(game, toRank, toFile, -1, 1, srcPiece),
+         ...findReachablePiece(game, toRank, toFile, -1, -1, srcPiece)
       ]
-
-      if (reachable.length !== 0) {
-         return `B${from}${capture}${to}${tail}`
-      }
-      else {
-         return `B${capture}${to}${tail}`
-      }
    }
    else if (srcPiece === 'N' || srcPiece === 'n') {
-      const reachable = findReachableKnights(game, toRank, toFile, srcPiece, fromRank, fromFile)
-      if (reachable.length !== 0) {
-         const sameRankReachable = reachable.filter(square => square[0] === from[0])
-         const sameFileReachable = reachable.filter(square => square[1] === from[1])
-         const otherReachable = reachable.filter(square => square[0] !== from[0] && square[1] !== from[1])
-
-         if (otherReachable.length !== 0 || (sameRankReachable.length !== 0 && sameFileReachable.length !== 0)) {
-            return `N${from}${capture}${to}${tail}`
-         }
-         else if (sameRankReachable.length !== 0) {
-            return `N${from[0]}${capture}${to}${tail}`
-         }
-         else if (sameFileReachable.length !== 0) {
-            return `N${from[1]}${capture}${to}${tail}`
-         }
-      }
-      else {
-         return `N${capture}${to}${tail}`
-      }
+      reachable = findReachableKnights(game, toRank, toFile, srcPiece)
+   }
+   else {
+      reachable = []
    }
 
-   return `${srcPiece.toUpperCase()}${capture}${to}${tail}`
+   const srcPieceUpper = srcPiece.toUpperCase()
+
+   const hasSameFile_ = hasSameFile(reachable)
+   const hasSameRank_ = hasSameRank(reachable)
+   if (reachable.length >= 2) {
+      if (hasSameFile_ && hasSameRank_) {
+         return `${srcPieceUpper}${from}${capture}${to}${tail}`
+      }
+      else if (hasSameFile_) {
+         return `${srcPieceUpper}${from[1]}${capture}${to}${tail}`
+      }
+      else {
+         return `${srcPieceUpper}${from[0]}${capture}${to}${tail}`
+      }
+   }
+   else {
+      return `${srcPieceUpper}${capture}${to}${tail}`
+   }
 }
 
-// find squares of all pieces that can reach a specific square
 function findReachablePiece(
    game: ChessGame,
    startRank: number,
    startFile: number,
    dRank: number,
    dFile: number,
-   specificPiece: Piece,
-   excludeRank: number,
-   excludeFile: number
+   specificPiece: Piece
 ): string[] {
    const squares: string[] = []
 
@@ -173,9 +133,7 @@ function findReachablePiece(
       const piece = game.position[rank][file]
       if (piece) {
          if (piece === specificPiece) {
-            if (rank !== excludeRank || file !== excludeFile) {
-               squares.push(rankfile2squareZeroBased(rank, file))
-            }
+            squares.push(rankfile2squareZeroBased(rank, file))
             break
          }
          else {
@@ -205,9 +163,7 @@ function findReachableKnights(
    game: ChessGame,
    startRank: number,
    startFile: number,
-   piece: Piece,
-   excludeRank: number,
-   excludeFile: number
+   piece: Piece
 ): string[] {
    const ret = []
    for (const [dRank, dFile] of knightDistance) {
@@ -215,11 +171,33 @@ function findReachableKnights(
       const file = startFile + dFile
       if (rank >= 0 && rank < 8 && file >= 0 && file < 8) {
          const dstPiece = game.position[rank][file]
-         if (dstPiece === piece && (rank !== excludeRank || file !== excludeFile)) {
+         if (dstPiece === piece) {
             ret.push(rankfile2squareZeroBased(rank, file))
          }
       }
    }
 
    return ret
+}
+
+function hasSameRank(squares: string[]): boolean {
+   const ranks = new Set<string>()
+   for (const square of squares) {
+      if (ranks.has(square[0])) {
+         return true
+      }
+      ranks.add(square[0])
+   }
+   return false
+}
+
+function hasSameFile(squares: string[]): boolean {
+   const files = new Set<string>()
+   for (const square of squares) {
+      if (files.has(square[1])) {
+         return true
+      }
+      files.add(square[1])
+   }
+   return false
 }
