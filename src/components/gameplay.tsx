@@ -363,16 +363,15 @@ function allMovesIntoOneLine(moves: string[]): string {
    let halfMove = 0
    let ret = ''
 
-   if (moves.length % 2 !== 0) {
-      ret += `${Math.ceil(moves.length / 2)}. ...`
-      halfMove++
+   if (moves[0] === '...') {
+      ret += `1... ${moves[1]} `
+      halfMove = 2
    }
 
-   for (let i = 0; i < moves.length; i++) {
-      if (i % 2 === 0) {
-         ret += `${Math.ceil((i + halfMove) / 2)}. ${moves[i]}`
-      } else {
-         ret += ` ${moves[i]}`
+   for (; halfMove < moves.length; halfMove += 2) {
+      ret += `${Math.round(halfMove / 2) + 1}. ${moves[halfMove]} `
+      if (halfMove + 1 < moves.length) {
+         ret += `${moves[halfMove + 1]} `
       }
    }
 
