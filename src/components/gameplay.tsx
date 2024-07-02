@@ -90,8 +90,8 @@ export function createSkirmishGameplayWindow(
 
       skirmishGameplayWindow.appendChild(
          <div class="gameplay-container">
-            {gameplayHud}
             {gameplayCanvas}
+            {gameplayHud}
          </div>
       )
 
@@ -100,10 +100,9 @@ export function createSkirmishGameplayWindow(
       await sleep(300)
       gameplayHud.appendChild(minimap)
       gameplayHud.appendChild(scoreSheetContainer)
-      await sleep(200)
+      await sleep(300)
       const chessboard = createChessboard3D(gameplayCanvas, globalResource.value.gameAsset, playerSide)
       gamePositionToChessboard(chessGame.value, chessboard)
-      await sleep(200)
       gameplayCanvas.style.opacity = '100%'
       minimap.append(...create2DChessboardFromFen(startingPosition))
 
