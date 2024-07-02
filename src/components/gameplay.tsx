@@ -11,6 +11,7 @@ import './gameplay.css'
 import { openPromotionWindow } from '../widgets/promote'
 import { createCheckmateWindow } from './checkmate'
 import { trimFEN } from '../chess/trimfen'
+import { uci2san } from '../chess/notation'
 
 function gamePositionToChessboard(game: ChessGame, chessboard: Chessboard3D) {
    chessboard.staticPieces = []
@@ -161,6 +162,7 @@ export function createSkirmishGameplayWindow(
 
          await fairyStockfish.setPositionWithMoves(currentFen.value, [uci])
          currentFen.value = trimFEN(await fairyStockfish.getCurrentFen())
+         const prevGame = chessGame.value
          chessGame.value = createChessGameFromFen(currentFen.value)
          gamePositionToChessboard(chessGame.value, chessboard)
 
@@ -170,6 +172,14 @@ export function createSkirmishGameplayWindow(
 
          checkers.value = await fairyStockfish.getCheckers()
          highlightCheckers()
+
+         const sanMove = uci2san(
+            prevGame,
+            uci,
+            checkers.value.length !== 0,
+            validMoves.value.length === 0
+         )
+         console.info('SAN: ', sanMove)
 
          if (chessGame.value.turn !== playerSide) {
             computerPlayMove()
