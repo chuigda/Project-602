@@ -254,8 +254,8 @@ export function createSkirmishGameplayWindow(
                await sleep(1000)
                createCheckmateWindow({
                   startPos: startingPosition,
-                  movesPlayed: '1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. Bg5 e6 7. f4 Qb6 8. Qd2 Qxb2 9. Rb1 Qa3 10. Rb3 Qa5 11. Be2 Nc6 12. Bxf6 gxf6 13. O-O Qc5 14. Kh1 Qxd4 15. Rd1 Qxd2 16. Rxd2 Be7 17. f5 Ne5 18. Na4 b5 19. Nb2 Bb7 20. fxe6 fxe6 21. Bh5+ Kf8 22. Re2 Rg8 23. c4 Rg5 24. Bf3 Bc6 25. cxb5 axb5 26. h4 Rg6 27. Nd3 Nxf3 28. gxf3 Rg3 29. Nf4 Kf7 30. Kh2 Rgg8 31. Rbe3 e5 32. Nd5 Bxd5 33. exd5 Ra4 34. Kh3 f5 0-1',
-                  moveCount: 34,
+                  movesPlayed: allMovesIntoOneLine(recordedMoves.value),
+                  moveCount: Math.ceil(recordedMoves.value.length / 2.0),
 
                   brilliantCount: 0,
                   excellentCount: 1,
@@ -358,3 +358,23 @@ function isPromoteMove(game: ChessGame, startRank: number, startFile: number, ta
 
 //    return false
 // }
+
+function allMovesIntoOneLine(moves: string[]): string {
+   let halfMove = 0
+   let ret = ''
+
+   if (moves.length % 2 !== 0) {
+      ret += `${Math.ceil(moves.length / 2)}. ...`
+      halfMove++
+   }
+
+   for (let i = 0; i < moves.length; i++) {
+      if (i % 2 === 0) {
+         ret += `${Math.ceil((i + halfMove) / 2)}. ${moves[i]}`
+      } else {
+         ret += ` ${moves[i]}`
+      }
+   }
+
+   return ret
+}
