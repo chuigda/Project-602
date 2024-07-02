@@ -81,6 +81,8 @@ export function createSkirmishGameplayWindow(
       await Promise.all([sleep(300), getValidMoves()])
       await fairyStockfish.uciNewGame()
       await fairyStockfish.setElo(500 + (aiLevel - 1) * 200)
+      // await fairyStockfish.setThreadCount(4)
+      // await fairyStockfish.setHashSize(256)
 
       const minimap = <div class="skirmish-minimap" />
       const scoreSheet = <div class="skirmish-scoresheet" />
@@ -228,7 +230,7 @@ export function createSkirmishGameplayWindow(
          }
 
          await fairyStockfish.setPosition(currentFen.value)
-         const [_unused, bestMove] = await Promise.all([sleep(1000), fairyStockfish.findBestMove(2000)])
+         const [_unused, bestMove] = await Promise.all([sleep(1000), fairyStockfish.findBestMoveByDepth(20, 5000)])
          if (bestMove === '(none)') {
             if ((await fairyStockfish.getCheckers()).length > 0) {
                // TODO

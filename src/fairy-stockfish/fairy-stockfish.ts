@@ -40,7 +40,7 @@ export class FairyStockfish {
       this.instance = instance
    }
 
-   uciNewGame(): Promise<void> {
+   private sendCommandAndWaitReadyOk(command: string): Promise<void> {
       const self = this
       const r = new Promise<void>(resolve => {
          self.messageHandler = line => {
@@ -51,43 +51,31 @@ export class FairyStockfish {
          }
       })
 
-      self.instance.postMessage('ucinewgame')
+      self.instance.postMessage(command)
       self.instance.postMessage('isready')
       return r
+   }
+
+   setThreadCount(threadCount: number): Promise<void> {
+      return this.sendCommandAndWaitReadyOk(`setoption name Threads value ${threadCount}`)
+   }
+
+   setHashSize(hashSize: number): Promise<void> {
+      return this.sendCommandAndWaitReadyOk(`setoption name Hash value ${hashSize}`)
+   }
+
+   uciNewGame(): Promise<void> {
+      return this.sendCommandAndWaitReadyOk('ucinewgame')
    }
 
    setPosition(fen: string): Promise<void> {
       console.info(`stockfish: setting position to ${fen}`)
-      const self = this
-      self.instance.postMessage(`position fen ${fen}`)
-      const r = new Promise<void>(resolve => {
-         self.messageHandler = line => {
-            if (line.includes('readyok')) {
-               self.messageHandler = () => {}
-               resolve()
-            }
-         }
-      })
-
-      self.instance.postMessage('isready')
-      return r
+      return this.sendCommandAndWaitReadyOk(`position fen ${fen}`)
    }
 
    setPositionWithMoves(fen: string, moves: string[]): Promise<void> {
       console.info(`stockfish: setting position to ${fen} with moves ${moves.join(' ')}`)
-      const self = this
-      self.instance.postMessage(`position fen ${fen} moves ${moves.join(' ')}`)
-      const r = new Promise<void>(resolve => {
-         self.messageHandler = line => {
-            if (line.includes('readyok')) {
-               self.messageHandler = () => {}
-               resolve()
-            }
-         }
-      })
-
-      self.instance.postMessage('isready')
-      return r
+      return this.sendCommandAndWaitReadyOk(`position fen ${fen} moves ${moves.join(' ')}`)
    }
 
    setElo(elo: number): Promise<void> {
@@ -107,6 +95,11 @@ export class FairyStockfish {
 
       self.instance.postMessage('isready')
       return r
+   }
+
+   unsetElo(): Promise<void> {
+      console.info(`stockfish: unsetting ELO`)
+      return this.sendCommandAndWaitReadyOk(`setoption name UCI_LimitStrength value false`)
    }
 
    getCurrentFen(): Promise<string> {
@@ -180,6 +173,39 @@ export class FairyStockfish {
       })
 
       self.instance.postMessage(`go movetime ${time}`)
+      return r
+   }
+
+   findBestMoveByDepth(depth: number, timeLimit?: number): Promise<string> {
+      const self = this
+      let maxDepth = 0
+      const startTime = new Date()
+      const r = new Promise<string>(resolve => {
+         self.messageHandler = line => {
+            if (line.startsWith('info depth')) {
+               const depth = parseInt(line.split(' ')[2])
+               if (depth > maxDepth) {
+                  maxDepth = depth
+               }
+            }
+
+            if (line.startsWith('bestmove')) {
+               self.messageHandler = () => {}
+               console.info(`stockfish: max depth searched: ${maxDepth}, bestmove line: ${line}`)
+               console.info(`stockfish: search time: ${(new Date().getUTCMilliseconds()) - (startTime.getUTCMilliseconds())}ms`)
+               resolve(line.split(' ')[1])
+            }
+            else {
+               console.info(line)
+            }
+         }
+      })
+
+      if (timeLimit) {
+         self.instance.postMessage(`go depth ${depth} movetime ${timeLimit}`)
+      } else {
+         self.instance.postMessage(`go depth ${depth}`)
+      }
       return r
    }
 
