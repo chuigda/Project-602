@@ -6,7 +6,7 @@ import './startmenu.css'
 import { showSkirmishWindow } from './skirmish'
 import { showSettingsWindow } from './settings'
 import { showAboutWindow } from './about'
-import { evaluatePositionCPL } from './checkmate'
+// import { evaluatePositionCPL } from './checkmate'
 
 export function createStartMenu(): HTMLElement {
    const startMenu = <DoubleOpenScreen backgroundColor="black" zIndex={1000} />
