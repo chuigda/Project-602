@@ -7,12 +7,13 @@ import { sleep } from '../util/sleep'
 import { OpeningPosition } from '../chess/opening-book'
 import { globalResource } from '..'
 
-import './gameplay.css'
 import { openPromotionWindow } from '../widgets/promote'
 import { createCheckmateWindow, evaluatePositionCPL as evaluateGame } from './checkmate'
 import { trimFEN } from '../chess/trimfen'
 import { uci2san } from '../chess/uci2san'
 import { create2DChessboardFromFen } from '../chessboard/chessboard2d'
+
+import './gameplay.css'
 
 function gamePositionToChessboard(game: ChessGame, chessboard: Chessboard3D) {
    chessboard.staticPieces = []
@@ -96,8 +97,6 @@ export function createSkirmishGameplayWindow(
          </div>
       )
 
-      await sleep(100)
-      gameplayHud.style.flex = '0 0 320px'
       await sleep(300)
       gameplayHud.appendChild(minimap)
       gameplayHud.appendChild(scoreSheetContainer)
