@@ -9,6 +9,10 @@ export type PlayerSide = 'white' | 'black'
 
 export const FileChars = 'abcdefgh'
 
+export function getOpponentSide(side: PlayerSide): PlayerSide {
+   return side === 'white' ? 'black' : 'white'
+}
+
 export function square2rankfileZeroBased(square: string): [number, number] {
    return [square.charCodeAt(1) - 49, square.charCodeAt(0) - 97]
 }

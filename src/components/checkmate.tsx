@@ -3,19 +3,15 @@ import { h } from 'tsx-dom'
 import './checkmate.css'
 import { sleep } from '../util/sleep'
 import { SingleOpenScreen } from '../widgets/single-open-screen'
+import { globalResource } from '..'
+import { PlayerSide, getOpponentSide } from '../chess/chessgame'
+import { EvaluationScore } from '../fairy-stockfish/fairy-stockfish'
 
 export interface CheckmateWindowData {
    startPos: string,
-   movesPlayed: string,
-   moveCount: number,
-
-   brilliantCount: number,
-   excellentCount: number,
-   goodCount: number,
-   interestingCount: number,
-   inaccuracyCount: number,
-   mistakeCount: number,
-   blunderCount: number,
+   moves: string[],
+   uciMoves: string[],
+   moveCount: number
 }
 
 export function createCheckmateWindow(
@@ -56,15 +52,7 @@ export function createCheckmateWindow(
       await appendLine(`* 起始局面: ${data.startPos}`)
       await appendLine(`* 步着数: ${data.moveCount}`)
       await appendLine('')
-      await appendLine(`* 棋谱: ${data.movesPlayed}`)
-      await appendLine('')
-      await appendLine(`* 惊天妙手: ${data.brilliantCount}`)
-      await appendLine(`* 秒棋: ${data.excellentCount}`)
-      await appendLine(`* 好棋: ${data.goodCount}`)
-      await appendLine(`* 有趣: ${data.interestingCount}`)
-      await appendLine(`* 失准: ${data.inaccuracyCount}`)
-      await appendLine(`* 错误: ${data.mistakeCount}`)
-      await appendLine(`* 漏着: ${data.blunderCount}`)
+      await appendLine(`* 棋谱: ${allMovesIntoOneLine(data.moves)}`)
       await appendLine('')
 
       checkmateDiagnose.appendChild(
@@ -82,8 +70,69 @@ export function createCheckmateWindow(
             }}>[重启系统]</a>
          </div>
       )
+
+      await evaluatePositionCPL(data.startPos, data.uciMoves, progress => { console.info("evaluating: " + Math.round(progress * 100) + "%") })
    }
    asyncUpdates()
 
    return checkmateWindow
+}
+
+function allMovesIntoOneLine(moves: string[]): string {
+   let halfMove = 0
+   let ret = ''
+
+   if (moves[0] === '...') {
+      ret += `1... ${moves[1]} `
+      halfMove = 2
+   }
+
+   for (; halfMove < moves.length; halfMove += 2) {
+      ret += `${Math.round(halfMove / 2) + 1}. ${moves[halfMove]} `
+      if (halfMove + 1 < moves.length) {
+         ret += `${moves[halfMove + 1]} `
+      }
+   }
+
+   return ret
+}
+
+export async function evaluatePositionCPL(
+   startPos: string,
+   uciMoves: string[],
+   reportProgress?: (progress: number) => void
+): Promise<EvaluationScore[]> {
+   console.info("analysing uci moves:", uciMoves)
+   const fairyStockfish = globalResource.value.fairyStockfish
+   const scores: EvaluationScore[] = []
+
+   await fairyStockfish.unsetElo()
+   await fairyStockfish.setAnalyseMode(true)
+
+   let mover = currentMover(startPos)
+   await fairyStockfish.setPosition(startPos)
+   scores.push(await fairyStockfish.evaluatePosition(20))
+   if (reportProgress) {
+      reportProgress(1 / (uciMoves.length + 1))
+   }
+
+   const currentMoves = []
+   for (let i = 0; i < uciMoves.length; i++) {
+      currentMoves.push(uciMoves[i])
+      mover = getOpponentSide(mover)
+      await fairyStockfish.setPositionWithMoves(startPos, currentMoves)
+      scores.push(await fairyStockfish.evaluatePosition(20))
+      if (reportProgress) {
+         reportProgress((i + 2) / (uciMoves.length + 1))
+      }
+   }
+
+   if (reportProgress) {
+      reportProgress(1)
+   }
+   return scores
+}
+
+function currentMover(fen: string): PlayerSide {
+   return fen.split(' ')[1] === 'w' ? 'white' : 'black'
 }

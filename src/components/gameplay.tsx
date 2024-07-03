@@ -9,10 +9,10 @@ import { globalResource } from '..'
 
 import './gameplay.css'
 import { openPromotionWindow } from '../widgets/promote'
-import { createCheckmateWindow } from './checkmate'
+import { createCheckmateWindow, evaluatePositionCPL as evaluateGame } from './checkmate'
 import { trimFEN } from '../chess/trimfen'
-import { uci2san } from '../chess/notation'
-import { create2DChessboardFromFen } from './skirmish'
+import { uci2san } from '../chess/uci2san'
+import { create2DChessboardFromFen } from '../chessboard/chessboard2d'
 
 function gamePositionToChessboard(game: ChessGame, chessboard: Chessboard3D) {
    chessboard.staticPieces = []
@@ -71,6 +71,7 @@ export function createSkirmishGameplayWindow(
    const currentFen: Ref<string> = ref(chessGameToFen(chessGame.value))
    const checkers: Ref<string[]> = ref([])
    const recordedMoves: Ref<string[]> = ref([])
+   const uciMoves: Ref<string[]> = ref([])
 
    const getValidMoves = async () => {
       await fairyStockfish.setPosition(currentFen.value)
@@ -81,8 +82,6 @@ export function createSkirmishGameplayWindow(
       await Promise.all([sleep(300), getValidMoves()])
       await fairyStockfish.uciNewGame()
       await fairyStockfish.setElo(500 + (aiLevel - 1) * 200)
-      // await fairyStockfish.setThreadCount(4)
-      // await fairyStockfish.setHashSize(256)
 
       const minimap = <div class="skirmish-minimap" />
       const scoreSheet = <div class="skirmish-scoresheet" />
@@ -196,6 +195,7 @@ export function createSkirmishGameplayWindow(
          checkers.value = await fairyStockfish.getCheckers()
          highlightCheckers()
 
+         uciMoves.value.push(uci)
          const sanMove = uci2san(
             prevGame,
             uci,
@@ -235,6 +235,7 @@ export function createSkirmishGameplayWindow(
             if ((await fairyStockfish.getCheckers()).length > 0) {
                // TODO
                alert("YOU WIN BY CHECKMATE!")
+               await evaluateGame(startingPosition, uciMoves.value, (progress) => { console.info("evaluating: " + Math.round(progress * 100) + "%") })
             }
             else {
                // TODO
@@ -256,16 +257,9 @@ export function createSkirmishGameplayWindow(
                await sleep(1000)
                createCheckmateWindow({
                   startPos: startingPosition,
-                  movesPlayed: allMovesIntoOneLine(recordedMoves.value),
+                  moves: recordedMoves.value,
+                  uciMoves: uciMoves.value,
                   moveCount: Math.ceil(recordedMoves.value.length / 2.0),
-
-                  brilliantCount: 0,
-                  excellentCount: 1,
-                  goodCount: 26,
-                  interestingCount: 4,
-                  inaccuracyCount: 0,
-                  mistakeCount: 2,
-                  blunderCount: 1
                })
             }
             else {
@@ -360,22 +354,3 @@ function isPromoteMove(game: ChessGame, startRank: number, startFile: number, ta
 
 //    return false
 // }
-
-function allMovesIntoOneLine(moves: string[]): string {
-   let halfMove = 0
-   let ret = ''
-
-   if (moves[0] === '...') {
-      ret += `1... ${moves[1]} `
-      halfMove = 2
-   }
-
-   for (; halfMove < moves.length; halfMove += 2) {
-      ret += `${Math.round(halfMove / 2) + 1}. ${moves[halfMove]} `
-      if (halfMove + 1 < moves.length) {
-         ret += `${moves[halfMove + 1]} `
-      }
-   }
-
-   return ret
-}

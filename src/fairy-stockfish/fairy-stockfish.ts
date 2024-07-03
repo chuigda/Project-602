@@ -3,6 +3,8 @@ export interface StockfishResource {
    stockfishWasmBinary: ArrayBuffer
 }
 
+export type EvaluationScore = { $k: 'cp', score: number } | { $k: 'mate', inMoves: number }
+
 export async function loadStockfishResource(): Promise<StockfishResource> {
    setItemLoadProgress(0)
 
@@ -102,6 +104,10 @@ export class FairyStockfish {
       return this.sendCommandAndWaitReadyOk(`setoption name UCI_LimitStrength value false`)
    }
 
+   setAnalyseMode(analyseMode: boolean): Promise<void> {
+      return this.sendCommandAndWaitReadyOk(`setoption name UCI_AnalyseMode value ${analyseMode ? 'true' : 'false'}`)
+   }
+
    getCurrentFen(): Promise<string> {
       const self = this
       const r = new Promise<string>(resolve => {
@@ -152,34 +158,9 @@ export class FairyStockfish {
       return r
    }
 
-   findBestMove(time: number): Promise<string> {
-      const self = this
-      let maxDepth = 0
-      const r = new Promise<string>(resolve => {
-         self.messageHandler = line => {
-            if (line.startsWith('info depth')) {
-               const depth = parseInt(line.split(' ')[2])
-               if (depth > maxDepth) {
-                  maxDepth = depth
-               }
-            }
-
-            if (line.startsWith('bestmove')) {
-               self.messageHandler = () => {}
-               console.info(`stockfish: max depth searched: ${maxDepth}, bestmove line: ${line}`)
-               resolve(line.split(' ')[1])
-            }
-         }
-      })
-
-      self.instance.postMessage(`go movetime ${time}`)
-      return r
-   }
-
    findBestMoveByDepth(depth: number, timeLimit?: number): Promise<string> {
       const self = this
       let maxDepth = 0
-      const startTime = new Date()
       const r = new Promise<string>(resolve => {
          self.messageHandler = line => {
             if (line.startsWith('info depth')) {
@@ -192,7 +173,6 @@ export class FairyStockfish {
             if (line.startsWith('bestmove')) {
                self.messageHandler = () => {}
                console.info(`stockfish: max depth searched: ${maxDepth}, bestmove line: ${line}`)
-               console.info(`stockfish: search time: ${(new Date().getUTCMilliseconds()) - (startTime.getUTCMilliseconds())}ms`)
                resolve(line.split(' ')[1])
             }
             else {
@@ -206,6 +186,37 @@ export class FairyStockfish {
       } else {
          self.instance.postMessage(`go depth ${depth}`)
       }
+      return r
+   }
+
+   evaluatePosition(depth: number): Promise<EvaluationScore> {
+      const self = this
+      const r = new Promise<EvaluationScore>(resolve => {
+         let lastRecordedScore: EvaluationScore = { $k: 'cp', score: 0 }
+         self.messageHandler = line => {
+            if (line.startsWith('info depth')) {
+               const parts = line.split(' ')
+               const scoreIndex = parts.indexOf('cp')
+               if (scoreIndex !== -1) {
+                  console.info(parts, parts[scoreIndex + 1])
+                  lastRecordedScore = { $k: 'cp', score: parseInt(parts[scoreIndex + 1]) }
+               } else {
+                  const mateIndex = parts.indexOf('mate')
+                  if (mateIndex !== -1) {
+                     const mateInMoves = parseInt(parts[mateIndex + 1])
+                     lastRecordedScore = { $k: 'mate', inMoves: mateInMoves }
+                  }
+               }
+            }
+            else if (line.startsWith('bestmove')) {
+               console.warn('unsetting?')
+               self.messageHandler = () => {}
+               resolve(lastRecordedScore)
+            }
+         }
+      })
+
+      self.instance.postMessage(`go depth ${depth}`)
       return r
    }
 

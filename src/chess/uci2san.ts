@@ -1,4 +1,9 @@
-import { ChessGame, Piece, rankfile2squareZeroBased, square2rankfileZeroBased } from './chessgame'
+import {
+   ChessGame,
+   Piece,
+   rankfile2squareZeroBased,
+   square2rankfileZeroBased
+} from './chessgame'
 
 export function uci2san(
    game: ChessGame,
