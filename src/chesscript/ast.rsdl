@@ -1,0 +1,44 @@
+[inline]
+TokenKind = native(typescript => "'keyword' | 'ident' | 'string' | 'number' | 'symbol' | 'comment'")
+
+Token(
+   kind: TokenKind,
+   value: str,
+   line: int,
+   col: int
+)
+
+SyntaxError(
+   line: int,
+   col: int,
+   message: str
+)
+
+ScriptFile(
+   fileName: str,
+   sceneMetadata: Metadata,
+   blocks: [ScriptBlock]
+)
+
+Metadata(
+   sceneName: str,
+   startFen: str,
+   rest: [MetadataItem]
+)
+
+MetadataItem(key: str, value: str)
+
+ScriptBlock: DialogueBlock(dialogue: [Dialogue])
+           | ExecutableBlock(stmts: [Stmt])
+
+Dialogue(speaker: str, text: str, emotion?: str)
+
+Stmt: ExprStmt(expr: Expr)
+    | IfStmt(cond: Expr, thenStmt: [Stmt], elseStmt?: [Stmt])
+    | WhileStmt(cond: Expr, stmts: [Stmt])
+
+Expr: ExprCall(fn: Token, args: [Expr])
+    | ExprLiteral(value: Token)
+    | ExprVar(name: Token)
+    | ExprAssign(name: Token, value: Expr)
+    | ExprBinary(left: Expr, op: Token, right: Expr)
