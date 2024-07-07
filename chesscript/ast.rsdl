@@ -7,8 +7,10 @@ TokenKind: Keyword
          | Symbol
          | DialogueText
          | NewLine
+         | EndOfInput
 
 [rust_serde]
+[rust_derive(Debug, Clone)]
 Token(
    kind: TokenKind,
    line: int,
@@ -17,6 +19,7 @@ Token(
 )
 
 [rust_serde]
+[rust_derive(Debug, Clone)]
 SyntaxError(
    line: int,
    col: int,
@@ -24,6 +27,7 @@ SyntaxError(
 )
 
 [rust_serde]
+[rust_derive(Debug)]
 ScriptFile(
    file_name: str,
    metadata: [MetadataItem],
@@ -31,21 +35,30 @@ ScriptFile(
 )
 
 [rust_serde]
+[rust_derive(Debug)]
 MetadataItem(key: str, value: str)
 
 [rust_serde]
+[rust_derive(Debug)]
 ScriptBlock: DialogueBlock(dialogue: [Dialogue])
            | ExecutableBlock(stmts: [Stmt])
 
 [rust_serde]
-Dialogue(speaker: str, text: str, emotion?: str)
+[rust_derive(Debug)]
+Dialogue(speaker: Token, emotion?: Token, text: [Token])
 
 [rust_serde]
+[rust_derive(Debug)]
 Stmt: ExprStmt(expr: Expr)
-    | IfStmt(cond: Expr, them_stmt: [Stmt], else_stmt?: [Stmt])
-    | WhileStmt(cond: Expr, stmts: [Stmt])
+    | IfStmt(location: Token, cond: Expr, them_stmt: [Stmt], else_clause?: ElseClause)
+    | WhileStmt(location: Token, cond: Expr, stmts: [Stmt])
 
 [rust_serde]
+[rust_derive(Debug)]
+ElseClause(location: Token, stmts: [Stmt])
+
+[rust_serde]
+[rust_derive(Debug)]
 Expr: ExprCall(func: Token, args: [Expr])
     | ExprLiteral(value: Token)
     | ExprVar(name: Token)

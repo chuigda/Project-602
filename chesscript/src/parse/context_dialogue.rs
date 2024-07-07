@@ -63,6 +63,22 @@ impl<'a> ParseContext<'a> {
       (Token::with_value(TokenKind::DialogueText, value, self.line, self.col), self)
    }
 
+   pub fn next_dialogue_text_token_unbreakable(mut self) -> (Token, Self) {
+      let mut value = String::new();
+
+      while self.idx < self.chars.len() {
+         let c = self.chars[self.idx];
+         if c == '\n' {
+            break;
+         }
+         self.idx += 1;
+         self.col += 1;
+         value.push(c);
+      }
+
+      (Token::with_value(TokenKind::DialogueText, value, self.line, self.col), self)
+   }
+
    fn skip_dialogue_whitespace(&mut self) {
       while self.idx < self.chars.len() && self.is_dialogue_whitespace(self.chars[self.idx]) {
          self.idx += 1;

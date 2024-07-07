@@ -8,9 +8,10 @@ pub enum TokenKind {
     Symbol,
     DialogueText,
     NewLine,
+    EndOfInput,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Token {
     pub kind: TokenKind,
     pub line: i32,
@@ -18,51 +19,51 @@ pub struct Token {
     pub value: Option<String>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SyntaxError {
     pub line: i32,
     pub col: i32,
     pub message: String,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ScriptFile {
     pub file_name: String,
     pub metadata: Vec<MetadataItem>,
     pub blocks: Vec<ScriptBlock>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct MetadataItem {
     pub key: String,
     pub value: String,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(tag = "$kind")]
 pub enum ScriptBlock {
     DialogueBlock(DialogueBlock),
     ExecutableBlock(ExecutableBlock),
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct DialogueBlock {
     pub dialogue: Vec<Dialogue>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ExecutableBlock {
     pub stmts: Vec<Stmt>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Dialogue {
-    pub speaker: String,
-    pub text: String,
-    pub emotion: Option<String>,
+    pub speaker: Token,
+    pub emotion: Option<Token>,
+    pub text: Vec<Token>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(tag = "$kind")]
 pub enum Stmt {
     ExprStmt(ExprStmt),
@@ -70,25 +71,33 @@ pub enum Stmt {
     WhileStmt(WhileStmt),
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ExprStmt {
     pub expr: Expr,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct IfStmt {
+    pub location: Token,
     pub cond: Expr,
     pub them_stmt: Vec<Stmt>,
-    pub else_stmt: Option<Vec<Stmt>>,
+    pub else_clause: Option<ElseClause>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct WhileStmt {
+    pub location: Token,
     pub cond: Expr,
     pub stmts: Vec<Stmt>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ElseClause {
+    pub location: Token,
+    pub stmts: Vec<Stmt>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(tag = "$kind")]
 pub enum Expr {
     ExprCall(ExprCall),
@@ -98,29 +107,29 @@ pub enum Expr {
     ExprBinary(ExprBinary),
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ExprCall {
     pub func: Token,
     pub args: Vec<Expr>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ExprLiteral {
     pub value: Token,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ExprVar {
     pub name: Token,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ExprAssign {
     pub name: Token,
     pub value: Box<Expr>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ExprBinary {
     pub left: Box<Expr>,
     pub op: Token,
