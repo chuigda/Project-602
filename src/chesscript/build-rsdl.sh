@@ -1,1 +1,0 @@
-tyrsdl -t typescript -i ast.rsdl -o ast.ts -d '$k'

@@ -1,6 +1,7 @@
-[inline]
-TokenKind = native(typescript => "'keyword' | 'ident' | 'string' | 'number' | 'symbol' | 'comment'")
+[rust_serde]
+TokenKind: Keyword | Ident | Number | String | Symbol
 
+[rust_serde]
 Token(
    kind: TokenKind,
    value: str,
@@ -8,37 +9,38 @@ Token(
    col: int
 )
 
+[rust_serde]
 SyntaxError(
    line: int,
    col: int,
    message: str
 )
 
+[rust_serde]
 ScriptFile(
-   fileName: str,
-   sceneMetadata: Metadata,
+   file_name: str,
+   metadata: [MetadataItem],
    blocks: [ScriptBlock]
 )
 
-Metadata(
-   sceneName: str,
-   startFen: str,
-   rest: [MetadataItem]
-)
-
+[rust_serde]
 MetadataItem(key: str, value: str)
 
+[rust_serde]
 ScriptBlock: DialogueBlock(dialogue: [Dialogue])
            | ExecutableBlock(stmts: [Stmt])
 
+[rust_serde]
 Dialogue(speaker: str, text: str, emotion?: str)
 
+[rust_serde]
 Stmt: ExprStmt(expr: Expr)
-    | IfStmt(cond: Expr, thenStmt: [Stmt], elseStmt?: [Stmt])
+    | IfStmt(cond: Expr, them_stmt: [Stmt], else_stmt?: [Stmt])
     | WhileStmt(cond: Expr, stmts: [Stmt])
 
-Expr: ExprCall(fn: Token, args: [Expr])
+[rust_serde]
+Expr: ExprCall(func: Token, args: [Expr])
     | ExprLiteral(value: Token)
     | ExprVar(name: Token)
-    | ExprAssign(name: Token, value: Expr)
-    | ExprBinary(left: Expr, op: Token, right: Expr)
+    | ExprAssign(name: Token, [boxed] value: Expr)
+    | ExprBinary([boxed] left: Expr, op: Token, [boxed] right: Expr)

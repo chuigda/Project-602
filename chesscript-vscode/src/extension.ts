@@ -70,7 +70,7 @@ export class TokenProvider implements vscode.DocumentSemanticTokensProvider {
       }
 
       console.info('start minimally parsing items')
-      const [items, syntaxError2] = minParse(tokens)
+      const [items, syntaxError2] = minParse(tokens.filter(token => token.kind !== 'comment'))
       if (syntaxError2) {
          const range = new vscode.Range(
             syntaxError2.line - 1, syntaxError2.col - 1,
@@ -79,8 +79,6 @@ export class TokenProvider implements vscode.DocumentSemanticTokensProvider {
          const diag = new vscode.Diagnostic(range, syntaxError2.message, vscode.DiagnosticSeverity.Error)
          DiagCollection.set(document.uri, [diag])
       }
-
-      console.info(items)
 
       for (const item of items) {
          if (item.kind == 'metadata') {
