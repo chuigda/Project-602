@@ -25,16 +25,9 @@ pub struct SyntaxError {
 
 #[derive(Deserialize, Serialize)]
 pub struct ScriptFile {
-    pub fileName: String,
-    pub sceneMetadata: Metadata,
+    pub file_name: String,
+    pub metadata: Vec<MetadataItem>,
     pub blocks: Vec<ScriptBlock>,
-}
-
-#[derive(Deserialize, Serialize)]
-pub struct Metadata {
-    pub sceneName: String,
-    pub startFen: String,
-    pub rest: Vec<MetadataItem>,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -83,8 +76,8 @@ pub struct ExprStmt {
 #[derive(Deserialize, Serialize)]
 pub struct IfStmt {
     pub cond: Expr,
-    pub thenStmt: Vec<Stmt>,
-    pub elseStmt: Option<Vec<Stmt>>,
+    pub them_stmt: Vec<Stmt>,
+    pub else_stmt: Option<Vec<Stmt>>,
 }
 
 #[derive(Deserialize, Serialize)]
