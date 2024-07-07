@@ -20,6 +20,13 @@ pub struct Token {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct SyntaxTrivia {
+    pub line: i32,
+    pub col: i32,
+    pub len: i32,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SyntaxError {
     pub line: i32,
     pub col: i32,

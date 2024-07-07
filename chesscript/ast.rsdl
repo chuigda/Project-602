@@ -20,6 +20,14 @@ Token(
 
 [rust_serde]
 [rust_derive(Debug, Clone)]
+SyntaxTrivia(
+   line: int,
+   col: int,
+   len: int
+)
+
+[rust_serde]
+[rust_derive(Debug, Clone)]
 SyntaxError(
    line: int,
    col: int,
