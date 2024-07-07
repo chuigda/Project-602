@@ -1,12 +1,19 @@
 [rust_serde]
-TokenKind: Keyword | Ident | Number | String | Symbol
+[rust_derive(Debug, Clone, Copy, Eq, PartialEq)]
+TokenKind: Keyword
+         | Ident
+         | Number
+         | String
+         | Symbol
+         | DialogueText
+         | NewLine
 
 [rust_serde]
 Token(
    kind: TokenKind,
-   value: str,
    line: int,
-   col: int
+   col: int,
+   value?: str
 )
 
 [rust_serde]

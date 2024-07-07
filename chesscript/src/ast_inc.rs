@@ -1,4 +1,4 @@
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "$kind")]
 pub enum TokenKind {
     Keyword,
@@ -6,14 +6,16 @@ pub enum TokenKind {
     Number,
     String,
     Symbol,
+    DialogueText,
+    NewLine,
 }
 
 #[derive(Deserialize, Serialize)]
 pub struct Token {
     pub kind: TokenKind,
-    pub value: String,
     pub line: i32,
     pub col: i32,
+    pub value: Option<String>,
 }
 
 #[derive(Deserialize, Serialize)]
