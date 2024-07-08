@@ -119,21 +119,9 @@ impl Parser {
       loop {
          let (token, mut context1) = context.next_token();
 
-         if token.kind == TokenKind::Symbol {
-            if token.value.as_deref() == Some("}") {
-               context1.variation = LexerVariation::Dialogue;
-               return Either::Left((ExecutableBlock { stmts: Vec::new() }, context1));
-            }
-            else if token.value.as_deref() == Some("{") {
-               match Parser::parse_stmt_block(context1) {
-                  Either::Left((stmt_block, context2)) => {
-                     context1 = context2;
-                  },
-                  Either::Right(err) => {
-                     return Either::Right(err);
-                  }
-               }
-            }
+         if token.kind == TokenKind::Symbol && token.value.as_deref() == Some("}") {
+            context1.variation = LexerVariation::Dialogue;
+            return Either::Left((ExecutableBlock { stmts: Vec::new() }, context1));
          }
          else if token.kind == TokenKind::Keyword {
             match token.value.as_deref() {
