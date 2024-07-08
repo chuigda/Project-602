@@ -115,6 +115,7 @@ include!("parse_executable.rs");
 impl Parser {
    fn parse_executable(mut context: ParseContext) -> Either<(ExecutableBlock, ParseContext), SyntaxError> {
       context.variation = LexerVariation::ExecutableBlock;
+      let mut ret = ExecutableBlock { stmts: Vec::new() };
 
       loop {
          let (token, mut context1) = context.next_token();
@@ -128,6 +129,7 @@ impl Parser {
                Some("if") => {
                   match Parser::parse_if(context1) {
                      Either::Left((stmt, context2)) => {
+                        ret.stmts.push(stmt);
                         context = context2;
                      },
                      Either::Right(err) => {
@@ -147,6 +149,7 @@ impl Parser {
          else if token.kind == TokenKind::Ident {
             match Parser::parse_expr_stmt(context1, token) {
                Either::Left((stmt, context2)) => {
+                  ret.stmts.push(stmt);
                   context = context2;
                },
                Either::Right(err) => {
