@@ -36,14 +36,7 @@ pub struct SyntaxError {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ScriptFile {
     pub file_name: String,
-    pub metadata: Vec<MetadataItem>,
     pub blocks: Vec<ScriptBlock>,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct MetadataItem {
-    pub key: Token,
-    pub value: Token,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -51,6 +44,7 @@ pub struct MetadataItem {
 pub enum ScriptBlock {
     DialogueBlock(DialogueBlock),
     ExecutableBlock(ExecutableBlock),
+    MetadataItem(MetadataItem),
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -61,6 +55,12 @@ pub struct DialogueBlock {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ExecutableBlock {
     pub stmts: Vec<Stmt>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct MetadataItem {
+    pub key: Token,
+    pub value: Token,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -75,7 +75,6 @@ pub struct Dialogue {
 pub enum Stmt {
     ExprStmt(ExprStmt),
     IfStmt(IfStmt),
-    WhileStmt(WhileStmt),
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -89,13 +88,6 @@ pub struct IfStmt {
     pub cond: Expr,
     pub them_stmt: Vec<Stmt>,
     pub else_clause: Option<ElseClause>,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct WhileStmt {
-    pub location: Token,
-    pub cond: Expr,
-    pub stmts: Vec<Stmt>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]

@@ -38,18 +38,14 @@ SyntaxError(
 [rust_derive(Debug)]
 ScriptFile(
    file_name: str,
-   metadata: [MetadataItem],
    blocks: [ScriptBlock]
 )
 
 [rust_serde]
 [rust_derive(Debug)]
-MetadataItem(key: Token, value: Token)
-
-[rust_serde]
-[rust_derive(Debug)]
 ScriptBlock: DialogueBlock(dialogue: [Dialogue])
            | ExecutableBlock(stmts: [Stmt])
+           | MetadataItem(key: Token, value: Token)
 
 [rust_serde]
 [rust_derive(Debug)]
@@ -59,7 +55,6 @@ Dialogue(speaker: Token, emotion?: Token, text: [Token])
 [rust_derive(Debug)]
 Stmt: ExprStmt(expr: Expr)
     | IfStmt(location: Token, cond: Expr, them_stmt: [Stmt], else_clause?: ElseClause)
-    | WhileStmt(location: Token, cond: Expr, stmts: [Stmt])
 
 [rust_serde]
 [rust_derive(Debug)]
