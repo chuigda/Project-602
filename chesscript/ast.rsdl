@@ -44,7 +44,7 @@ ScriptFile(
 
 [rust_serde]
 [rust_derive(Debug)]
-MetadataItem(key: str, value: str)
+MetadataItem(key: Token, value: Token)
 
 [rust_serde]
 [rust_derive(Debug)]

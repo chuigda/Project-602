@@ -64,6 +64,19 @@ impl<'a> ParseContext<'a> {
    }
 
    pub fn next_dialogue_text_token_unbreakable(mut self) -> (Token, Self) {
+      if self.idx >= self.chars.len() {
+         return (Token::new(TokenKind::EndOfInput, self.line, self.col), self);
+      }
+
+      if self.chars[self.idx] == '\n' {
+         return (Token::new(TokenKind::NewLine, self.line, self.col), ParseContext {
+            idx: self.idx + 1,
+            line: self.line + 1,
+            col: 1,
+            ..self
+         });
+      }
+
       let mut value = String::new();
 
       while self.idx < self.chars.len() {

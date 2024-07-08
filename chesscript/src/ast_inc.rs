@@ -42,8 +42,8 @@ pub struct ScriptFile {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct MetadataItem {
-    pub key: String,
-    pub value: String,
+    pub key: Token,
+    pub value: Token,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
