@@ -58,10 +58,10 @@
       cx.updateVariable('codeSegmentsCollected', 0, x => x + 1)
    })
 
-   cx.setCaptureHook(() => {
+   cx.setVictoryAction(() => {
       cx.setGameMode('singleplayer')
       cx.createPortal('e8', '04')
-      cx.setCaptureHook()
+      cx.setVictoryAction()
    })
 }
 
