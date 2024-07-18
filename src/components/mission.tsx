@@ -10,7 +10,6 @@ import { sleep } from '../util/sleep'
 import './mission.css'
 import { OpeningPosition } from '../chess/opening-book'
 import { trimFEN } from '../chess/trimfen'
-import { StoryDef } from '../story/storydef'
 import { loadCharacter } from '../assetloader'
 import { CharacterDefs } from '../story/chardef'
 
@@ -90,6 +89,13 @@ export class Context {
             }
          }
       }
+
+      this.chessboard.onRightclick = async () => {
+         if (self.selectedSquare) {
+            self.selectedSquare = undefined
+            self.chessboard.highlightSquares = []
+         }
+      }
    }
 
    async selectSquare(rank: number, file: number) {
@@ -135,9 +141,23 @@ export class Context {
       )
 
       this.currentFen = trimFEN(await fairyStockfish.getCurrentFen())
+      if (this.variant === 'singleplayer') {
+         this.currentFen = this.currentFen.replace('b', 'w')
+      }
+
       this.chessgame = createChessGameFromFen(this.currentFen)
       gamePositionToChessboard(this.chessgame, this.chessboard)
+
+      await fairyStockfish.setPosition(this.currentFen)
       this.validMoves = await fairyStockfish.getValidMoves()
+      console.info(this.validMoves)
+      this.selectedSquare = undefined
+      this.chessboard.highlightSquares = []
+
+      for (const handler of this.onPositionChanged) {
+         await handler(this)
+      }
+      console.info(this)
    }
 
    // public APIs
@@ -151,7 +171,7 @@ export class Context {
       }
 
       this.eventPool = code
-      this.pushEvent(code[code.StartingEvent])
+      this.pushEvent(code.StartingEvent)
       this.handleEvents()
    }
 
@@ -160,8 +180,8 @@ export class Context {
       await globalResource.value.fairyStockfish.setVariant(variant)
    }
 
-   async setFen(fen: string, autoFade?: boolean) {
-      if (autoFade && this.chessboardCanvas.style.opacity === '1') {
+   async setFen(fen: string, noAutoFade?: boolean) {
+      if (!noAutoFade && this.chessboardCanvas.style.opacity === '1') {
          this.chessboardCanvas.style.opacity = '0'
          await sleep(300)
       }
@@ -170,10 +190,11 @@ export class Context {
 
       this.chessgame = createChessGameFromFen(fen)
       gamePositionToChessboard(this.chessgame, this.chessboard)
+      this.currentFen = fen
       await fairyStockfish.setPosition(fen)
       this.validMoves = await fairyStockfish.getValidMoves()
 
-      if (autoFade && this.chessboardCanvas.style.opacity === '0') {
+      if (!noAutoFade && this.chessboardCanvas.style.opacity === '0') {
          this.chessboardCanvas.style.opacity = '1'
          await sleep(300)
       }
@@ -224,14 +245,15 @@ export class Context {
       this.chessboard.highlightSquares.push({ rank, file, color: this.constants[color] })
    }
 
-   pushEvent(handler: (cx: Context, ...args: any[]) => Promise<void> | any, ...args: any[]) {
-      this.pendingEvents.push({ handler: handler, args })
+   pushEvent(handlerName: string, ...args: any[]) {
+      this.pendingEvents.push({ handler: this.eventPool[handlerName], args })
    }
 
    async handleEvents(): Promise<void> {
       while (true) {
          const event = this.pendingEvents.shift()
          if (event) {
+            console.info(event)
             await event.handler(this, ...event.args)
          }
          else {

@@ -47,6 +47,8 @@ export async function createDialogue(zIndex: number): Promise<Dialogue> {
 
 export async function showDialogue(dialogue: Dialogue) {
    document.body.appendChild(dialogue.portrait)
+   document.body.appendChild(dialogue.container)
+   await sleep(50)
    dialogue.container.style.opacity = '1'
    await sleep(125)
 }
@@ -56,6 +58,7 @@ export async function hideDialogue(dialogue: Dialogue) {
    dialogue.container.style.opacity = '0'
    await sleep(125)
    dialogue.portrait.remove()
+   dialogue.container.remove()
 }
 
 export function speak(

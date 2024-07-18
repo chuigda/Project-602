@@ -10,11 +10,11 @@ export const Event_01 = async (cx) => {
    await cx.setFen('8/8/8/8/8/8/8/4Q3 w - - 0 1')
 
    await cx.showPrompt('system', '警告: 服务器正受到入侵')
-   await cx.showPrompt('system', '威胁等级 15，请尽快前往控制中心')
+   await cx.showPrompt('system', '警告: 请尽快前往控制中心，防线需要支援')
 
    await cx.showDialogue()
-   await cx.speak('NeroRi', '啊，头好像 ... 非常痛，我这是 ... 在哪？', '加载中')
-   await cx.speak('NeroRi', '服务器遭到攻击？明明每个字都看得懂，连起来就...', '加载中')
+   await cx.speak('NeroRi', '啊，头好像... 非常痛，我这是... 在哪？', '加载中')
+   await cx.speak('NeroRi', '服务器... 入侵... 什么情况', '加载中')
    await cx.speak('NeroRi', `嘛，虽然不太明白发生了什么
 总之好像很严重的样子
 我最好赶紧赶过去`)
@@ -48,6 +48,9 @@ export const Event_02 = async (cx) => {
    await cx.speak('NeroRi', '哎呀你们两个好烦呐', '无语')
    await cx.speak('白杨', `你俩算哪根葱，少跟我搁这人五人六的，滚你妈的蛋`, '黄豆')
    await cx.speak('黑后', '呜呜呜，被骂了', '大哭')
+   await cx.hideDialogue()
+
+   await new Promise((resolve) => setTimeout(resolve, 2000))
 
    alert('演示部分到这里就结束了')
 }

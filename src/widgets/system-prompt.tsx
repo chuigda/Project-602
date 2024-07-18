@@ -6,7 +6,6 @@ import './system-prompt.css'
 export interface SystemPrompt {
    element: HTMLElement
    subElements: HTMLElement[]
-   interval: number
 }
 
 export function createSystemPrompt(zIndex: number): SystemPrompt {
@@ -14,15 +13,7 @@ export function createSystemPrompt(zIndex: number): SystemPrompt {
    const subElements: HTMLElement[] = []
    document.body.appendChild(element)
 
-   const interval = setInterval(() => {
-      if (!element.isConnected) {
-         clearInterval(interval)
-      }
-
-      subElements.shift()?.remove()
-   }, 3000)
-
-   return { element, subElements, interval }
+   return { element, subElements }
 }
 
 export type PromptLevel = 'system' | 'prompt'
@@ -39,6 +30,7 @@ export function addPromptLine(systemPrompt: SystemPrompt, level: PromptLevel, te
       }
 
       await sleep(200)
+      setTimeout(() => systemPrompt.subElements.shift()?.remove(), 3500)
       resolve()
    })
 }
