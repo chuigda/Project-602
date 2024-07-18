@@ -47,12 +47,16 @@
       function setItemLoadProgress(progress) {
         $('progress-bar-current-inner').style.width = `${progress * 100}%`
       }
+
+      function importWithoutVite(path) {
+        return import(/* @vite-ignore */ path)
+      }
     </script>
 
     <script type="module">
       async function startLoading() {
         $('load-item-title').innerHTML = '正在载入基本系统'
-        await import("/src/index.ts")
+        await importWithoutVite("/src/index.ts")
       }
 
       document.addEventListener("DOMContentLoaded", startLoading)

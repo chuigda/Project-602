@@ -1,3 +1,3 @@
 export const StoryDef = [
-   'public/story/1_awakening.js',
+   '/public/story/1_awakening.js',
 ]

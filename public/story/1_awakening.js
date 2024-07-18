@@ -27,7 +27,7 @@ export const Event_01 = async (cx) => {
    await cx.showPrompt('prompt', '提示: 你控制的棋子是皇后，她可以直走或者斜走，不限步数')
    await cx.highlightSquare('e8', 'greenyellow')
    await cx.showPrompt('prompt', '提示: 将棋子移动到高亮的格子上')
-   await cx.waitForSpecificPosition('4Q3/8/8/8/8/8/8/8 w - - 0 1')
+   await cx.waitForSpecificPosition('4Q3/8/8/8/8/8/8/8')
 
    cx.pushEvent('Event_02')
 }

@@ -70,6 +70,10 @@ export class FairyStockfish {
       return this.sendCommandAndWaitReadyOk('ucinewgame')
    }
 
+   setVariant(variant: string): Promise<void> {
+      return this.sendCommandAndWaitReadyOk(`setoption name Variant value ${variant}`)
+   }
+
    setPosition(fen: string): Promise<void> {
       console.info(`stockfish: setting position to ${fen}`)
       return this.sendCommandAndWaitReadyOk(`position fen ${fen}`)

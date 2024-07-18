@@ -87,12 +87,8 @@ export function createSkirmishGameplayWindow(
 
       const selectSquare = async (rank: number, file: number) => {
          selectedSquare.value = [rank, file]
+         chessboard.highlightSquares = [{ rank, file, color: chessboardColor.aquamarine_66 }]
          highlightCheckers()
-         chessboard.highlightSquares = [
-            {
-               rank, file, color: chessboardColor.aquamarine_66
-            }
-         ]
 
          const openingBookPosition = globalResource.value.chessData.openingBook[currentFen.value]
          const startSquare = rankfile2squareZeroBased(rank, file)

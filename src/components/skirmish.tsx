@@ -7,11 +7,11 @@ import { sleep } from '../util/sleep'
 import { Button } from '../widgets/button'
 import { createSkirmishGameplayWindow } from './gameplay'
 import { Ref, ref } from '../util/ref'
-
-import './skirmish.css'
 import { globalResource } from '..'
 import { PlayerSide } from '../chess/chessgame'
 import { create2DChessboardFromFen } from '../chessboard/chessboard2d'
+
+import './skirmish.css'
 
 export function showSkirmishWindow(): HTMLElement {
    const windowBackground = <DoubleOpenScreen backgroundColor="black" zIndex={2000} />

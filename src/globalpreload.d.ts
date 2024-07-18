@@ -29,3 +29,5 @@ declare function $(): FakeJQuery
 
 declare function setOverallLoadProgress(progress: number)
 declare function setItemLoadProgress(progress: number)
+
+declare function importWithoutVite(path: string): Promise<any>

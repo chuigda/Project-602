@@ -67,7 +67,7 @@ export const CharacterDefs: Record<string, CharacterDef> = {
          '不悦': ['base', '/portrait/black_queen_annoyed.png'],
          '生气': ['base', '/portrait/black_queen_angry.png'],
          '大哭': ['base', '/portrait/black_queen_cry.png'],
-         '雌小鬼': ['base', '/portrait/black_queen_grimface.png'],
+         '雌小鬼': ['base', '/portrait/black_queen_grimace.png'],
       },
 
       startX: 0,
