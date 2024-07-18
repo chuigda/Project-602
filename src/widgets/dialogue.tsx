@@ -38,6 +38,7 @@ export async function createDialogue(zIndex: number): Promise<Dialogue> {
    const speakContent = <div class="speak-content" />
    container.appendChild(speaker)
    container.appendChild(speakContent)
+   document.body.appendChild(portrait)
    document.body.appendChild(container)
 
    await sleep(125)
@@ -45,7 +46,7 @@ export async function createDialogue(zIndex: number): Promise<Dialogue> {
 }
 
 export async function showDialogue(dialogue: Dialogue) {
-   dialogue.portrait.style.opacity = '1'
+   document.body.appendChild(dialogue.portrait)
    dialogue.container.style.opacity = '1'
    await sleep(125)
 }
@@ -54,14 +55,46 @@ export async function hideDialogue(dialogue: Dialogue) {
    dialogue.portrait.style.opacity = '0'
    dialogue.container.style.opacity = '0'
    await sleep(125)
+   dialogue.portrait.remove()
 }
 
 export function speak(
    dialogue: Dialogue,
    character: Character,
    speaker: string,
+   emotion: string,
    text: string
 ): Promise<void> {
+   dialogue.portrait.width = dialogue.portrait.clientWidth * (window.devicePixelRatio || 1)
+   dialogue.portrait.height = dialogue.portrait.clientHeight * (window.devicePixelRatio || 1)
+   if (dialogue.portrait.style.opacity === '0') {
+      dialogue.portrait.style.opacity = '1'
+   }
+
+   const ctx = dialogue.portrait.getContext('2d')!
+   ctx.clearRect(0, 0, dialogue.portrait.width, dialogue.portrait.height)
+   const emotionImages = character.emotions[emotion]
+   if (!emotionImages) {
+      console.error(`角色 ${speaker} 缺少表情图片序列 ${emotion}`)
+   }
+   else {
+      for (const image of emotionImages) {
+         ctx.drawImage(
+            image,
+            0, 0
+            // image,
+            // character.startX,
+            // character.startY,
+            // character.width,
+            // character.height,
+            // character.drawX,
+            // character.drawY,
+            // character.drawWidth,
+            // character.drawHeight
+         )
+      }
+   }
+
    dialogue.speaker.innerText = speaker
    dialogue.speakContent.innerText = ''
 

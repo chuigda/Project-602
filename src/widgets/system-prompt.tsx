@@ -24,12 +24,10 @@ export function createSystemPrompt(zIndex: number): SystemPrompt {
    return { element, subElements, interval }
 }
 
-export function addPromptLine(
-   systemPrompt: SystemPrompt,
-   role: 'system' | 'prompt',
-   text: string
-): Promise<void> {
-   const line = <div class={`${role}`}></div>
+export type PromptLevel = 'system' | 'prompt'
+
+export function addPromptLine(systemPrompt: SystemPrompt, level: PromptLevel, text: string): Promise<void> {
+   const line = <div class={`${level}`}></div>
    systemPrompt.element.appendChild(line)
    systemPrompt.subElements.push(line)
 

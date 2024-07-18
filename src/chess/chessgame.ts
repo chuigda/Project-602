@@ -1,9 +1,12 @@
 export type Piece =
    'r' | 'n' | 'b' | 'q' | 'k' | 'p' |
-   'R' | 'N' | 'B' | 'Q' | 'K' | 'P' | 'W'
+   'R' | 'N' | 'B' | 'Q' | 'K' | 'P' |
+   'W' | // WGC is only usable for white
+   'I' | 'i'
+
 
 export type PieceName =
-   'rook' | 'knight' | 'bishop' | 'queen' | 'king' | 'pawn' | 'wgc'
+   'rook' | 'knight' | 'bishop' | 'queen' | 'king' | 'pawn' | 'wgc' | 'immovable'
 
 export type PlayerSide = 'white' | 'black'
 
@@ -43,6 +46,7 @@ export function getPieceName(piece: Piece): PieceName {
       case 'k': return 'king'
       case 'p': return 'pawn'
       case 'w': return 'wgc'
+      case 'w': return 'immovable'
    }
 
    throw new Error(`invalid piece ${piece}`)
