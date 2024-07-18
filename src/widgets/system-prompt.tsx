@@ -1,6 +1,7 @@
-import { h } from "tsx-dom"
+import { h } from 'tsx-dom'
+import { sleep } from '../util/sleep'
+
 import './system-prompt.css'
-import { sleep } from "../util/sleep"
 
 export interface SystemPrompt {
    element: HTMLElement

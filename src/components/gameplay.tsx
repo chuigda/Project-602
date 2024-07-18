@@ -1,6 +1,6 @@
 import { h } from 'tsx-dom'
 import { DoubleOpenScreen } from '../widgets/double-open-screen'
-import { Chessboard3D, chessboardColor, createChessboard3D } from '../chessboard/chessboard'
+import { Chessboard3D, chessboardColor, createChessboard3D, gamePositionToChessboard } from '../chessboard/chessboard'
 import { ChessGame, PlayerSide, chessGameToFen, createChessGameFromFen, getPieceName, getPieceOfSide, getPieceSide, isPlayerPiece, rankfile2squareZeroBased, square2rankfileZeroBased } from '../chess/chessgame'
 import { Ref, ref } from '../util/ref'
 import { sleep } from '../util/sleep'
@@ -14,27 +14,6 @@ import { uci2san } from '../chess/uci2san'
 import { create2DChessboardFromFen } from '../chessboard/chessboard2d'
 
 import './gameplay.css'
-
-function gamePositionToChessboard(game: ChessGame, chessboard: Chessboard3D) {
-   chessboard.staticPieces = []
-
-   for (let rank = 0; rank < 8; rank++) {
-      for (let file = 0; file < 8; file++) {
-         const piece = game.position[rank][file]
-         if (piece) {
-            const pieceName = getPieceName(piece)
-            const pieceColor = getPieceSide(piece)
-
-            chessboard.staticPieces.push({
-               piece: pieceName,
-               color: pieceColor,
-               rank,
-               file,
-            })
-         }
-      }
-   }
-}
 
 function pickBookMove(aiLevel: number, openingPosition: OpeningPosition): string {
    const allowedCPL = [200, 150, 100, 75, 50, 40, 40, 40]

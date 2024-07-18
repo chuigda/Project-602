@@ -5,7 +5,7 @@ import './gl_matrix/types.d.ts'
 import * as mat4 from './gl_matrix/mat4.mjs'
 import { Framebuffer, createFrameBuffer } from './glx/framebuffer_object.ts'
 import { GameAsset } from '../assetloader.ts'
-import { PieceName, PlayerSide } from '../chess/chessgame.ts'
+import { ChessGame, getPieceName, getPieceSide, PieceName, PlayerSide } from '../chess/chessgame.ts'
 
 export const chessboardColor: Record<string, [number, number, number, number]> = {
    cyan: [0.0, 0.85, 0.8, 1.0],
@@ -15,6 +15,8 @@ export const chessboardColor: Record<string, [number, number, number, number]> =
    aquamarine: [0.498, 1.0, 0.831, 1.0],
    aquamarine_33: [0.498, 1.0, 0.831, 0.33],
    aquamarine_66: [0.498, 1.0, 0.831, 0.66],
+   greenyellow: [0.678, 1.0, 0.184, 1.0],
+   greenyellow_33: [0.678, 1.0, 0.184, 0.33],
 
    red: [0.9, 0.0, 0.0, 1.0],
 }
@@ -61,6 +63,8 @@ export interface Chessboard3D {
       kingLine: VertexBufferObject
       wgc: VertexBufferObject
       wgcLine: VertexBufferObject
+      immovable: VertexBufferObject,
+      immovableLine: VertexBufferObject,
 
       square: VertexBufferObject
       squareFrame: VertexBufferObject
@@ -112,6 +116,8 @@ export function createChessboard3D(
          // TODO WGC modelling
          wgc: createVertexBufferObject(gl, asset.rookObj),
          wgcLine: createVertexBufferObject(gl, asset.rookLineObj),
+         immovable: createVertexBufferObject(gl, asset.immovableObj),
+         immovableLine: createVertexBufferObject(gl, asset.immovableLineObj),
 
          square: createVertexBufferObject(gl, asset.squareObj),
          squareFrame: createVertexBufferObject(gl, asset.squareFrameObj),
@@ -336,4 +342,25 @@ export function createChessboard3D(
    })
 
    return self
+}
+
+export function gamePositionToChessboard(game: ChessGame, chessboard: Chessboard3D) {
+   chessboard.staticPieces = []
+
+   for (let rank = 0; rank < 8; rank++) {
+      for (let file = 0; file < 8; file++) {
+         const piece = game.position[rank][file]
+         if (piece) {
+            const pieceName = getPieceName(piece)
+            const pieceColor = getPieceSide(piece)
+
+            chessboard.staticPieces.push({
+               piece: pieceName,
+               color: pieceColor,
+               rank,
+               file,
+            })
+         }
+      }
+   }
 }

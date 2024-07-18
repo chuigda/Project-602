@@ -1,4 +1,4 @@
-import { CharacterDef } from './assetloader'
+import { CharacterDef } from '../assetloader'
 
 export const CharacterDefs: Record<string, CharacterDef> = {
    '白杨': {
@@ -45,6 +45,21 @@ export const CharacterDefs: Record<string, CharacterDef> = {
       drawWidth: 0,
       drawHeight: 0
    },
+   '黑王': {
+      baseImage: '/portrait/black_king_glow.png',
+      emotions: {
+         '常态': ['base']
+      },
+
+      startX: 0,
+      startY: 0,
+      width: 0,
+      height: 0,
+      drawX: 0,
+      drawY: 0,
+      drawWidth: 0,
+      drawHeight: 0
+   },
    '黑后': {
       baseImage: '/portrait/black_queen_base_glow.png',
       emotions: {
@@ -52,6 +67,7 @@ export const CharacterDefs: Record<string, CharacterDef> = {
          '不悦': ['base', '/portrait/black_queen_annoyed.png'],
          '生气': ['base', '/portrait/black_queen_angry.png'],
          '大哭': ['base', '/portrait/black_queen_cry.png'],
+         '雌小鬼': ['base', '/portrait/black_queen_grimface.png'],
       },
 
       startX: 0,
