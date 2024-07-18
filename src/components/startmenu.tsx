@@ -6,9 +6,6 @@ import './startmenu.css'
 import { showSkirmishWindow } from './skirmish'
 import { showSettingsWindow } from './settings'
 import { showAboutWindow } from './about'
-import { createDialogue, hideDialogue, showDialogue, speak } from '../widgets/dialogue'
-import { loadCharacter } from '../assetloader'
-import { CharacterDefs } from '../chardef'
 
 export function createStartMenu(): HTMLElement {
    const startMenu = <DoubleOpenScreen backgroundColor="black" zIndex={1000} />
