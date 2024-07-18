@@ -1,9 +1,23 @@
 import { h } from 'tsx-dom'
-import { Character } from '../components/mission'
 import { sleep } from '../util/sleep'
 import { ref } from '../util/ref'
 
 import './dialogue.css'
+
+export interface Character {
+   name: string,
+   emotions: Record<string, HTMLImageElement[]>
+
+   startX: number,
+   startY: number,
+   width: number,
+   height: number,
+
+   drawX: number,
+   drawY: number,
+   drawWidth: number,
+   drawHeight: number
+}
 
 export interface Dialogue {
    portrait: HTMLCanvasElement

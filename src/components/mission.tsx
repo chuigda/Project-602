@@ -1,23 +1,11 @@
 import { ChessGame, createEmptyChessGame } from "../chess/chessgame"
 import { Chessboard3D } from "../chessboard/chessboard"
+import { Character } from "../widgets/dialogue"
 import { SystemPrompt } from "../widgets/system-prompt"
 
 export interface ContextVariable {
    value: any
    onChange: ((value: any) => void)[]
-}
-
-export interface PortraitImage {
-   images: ImageData[]
-   startX: number
-   startY: number
-   imageWidth: number
-   imageHeight: number
-}
-
-export interface Character {
-   name: string,
-   emotions: Record<string, PortraitImage[]>
 }
 
 export class Context {

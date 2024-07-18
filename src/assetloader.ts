@@ -1,5 +1,6 @@
 import { CommonOpeningPosition, OpeningPosition } from './chess/opening-book'
 import { Object3D, loadObject } from './chessboard/glx/object'
+import { Character } from './widgets/dialogue'
 
 export interface GameAsset {
    // 2D chess piece CSS
@@ -25,6 +26,21 @@ export interface GameAsset {
    squareObj: Object3D
    squareFrameObj: Object3D
    boardFrameObj: Object3D
+}
+
+export interface CharacterDef {
+   emotions: Record<string, string[]>,
+   baseImage?: string
+
+   startX: number,
+   startY: number,
+   width: number,
+   height: number,
+
+   drawX: number,
+   drawY: number,
+   drawWidth: number,
+   drawHeight: number
 }
 
 export interface ChessData {
@@ -100,4 +116,62 @@ export async function loadChessData(): Promise<ChessData> {
       openingBook,
       commonOpeningPositions
    }
+}
+
+export async function loadCharacter(
+   name: string,
+   def: CharacterDef,
+   onProgress: (progress: number) => any
+): Promise<Character> {
+   onProgress(0)
+
+   const imagesToLoad = new Set<string>()
+   if (def.baseImage) {
+      imagesToLoad.add(def.baseImage)
+   }
+
+   for (const emotionImages of Object.values(def.emotions)) {
+      for (const image of emotionImages) {
+         if (image === 'base') {
+            continue
+         }
+
+         imagesToLoad.add(image)
+      }
+   }
+
+   const loadedImages: Record<string, HTMLImageElement> = {}
+   for (const image of imagesToLoad) {
+      loadedImages[image] = await loadImage(image)
+      onProgress(Object.keys(loadedImages).length / imagesToLoad.size)
+   }
+
+   if (def.baseImage) {
+      loadedImages['base'] = loadedImages[def.baseImage]
+   }
+
+   const emotions: Record<string, HTMLImageElement[]> = {}
+   for (const emotionName in def.emotions) {
+      emotions[emotionName] = def.emotions[emotionName].map(image => loadedImages[image])
+   }
+
+   return { ...def, name, emotions }
+}
+
+async function loadImage(url: string): Promise<HTMLImageElement> {
+   const img = new Image()
+   img.style.display = 'none'
+   img.src = url
+
+   document.body.appendChild(img)
+   return new Promise((resolve, reject) => {
+      img.onload = () => {
+         resolve(img)
+         img.remove()
+      }
+      img.onerror = () => {
+         reject(new Error(`Failed to load image ${url}`))
+         img.remove()
+      }
+   })
 }
