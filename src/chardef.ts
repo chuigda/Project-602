@@ -5,10 +5,10 @@ export const CharacterDefs: Record<string, CharacterDef> = {
       baseImage: '/portrait/white_queen_glow.png',
       emotions: {
          '常态': ['base'],
-         '扇子': ['/portrait/white_queen_fan.png'],
+         '扇子': ['/portrait/white_queen_fan_glow.png'],
          '生气': ['base', '/portrait/white_queen_angry.png'],
          '加载中': ['base', '/portrait/white_queen_loading.png'],
-         '惊讶': ['base', '/portrait/white_queen_surprised.png'],
+         '惊讶': ['base', '/portrait/white_queen_shocked.png'],
          '无语': ['base', '/portrait/white_queen_speachless.png'],
          '黄豆': ['base', '/portrait/white_queen_soybean.png'],
          'wink': ['base', '/portrait/white_queen_wink.png'],
