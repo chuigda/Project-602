@@ -68,6 +68,10 @@ export interface ChessGame {
    enPassantSquare: [number, number] | null
 }
 
+export function createEmptyChessGame(): ChessGame {
+   return createChessGameFromFen('8/8/8/8/8/8/8/8 w KQkq -')
+}
+
 export function createChessGameFromFen(fen: string): ChessGame {
    const [position, turn, castling, enPassant] = fen.split(' ')
    const [whiteCastling, blackCastling] = [

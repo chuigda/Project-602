@@ -1,0 +1,17 @@
+.system-prompt {
+   position: absolute;
+   left: 0;
+   top: 0;
+
+   user-select: none;
+   font-family: Dengxian, sans-serif;
+   font-size: 12pt;
+}
+
+.system-prompt .system {
+   color: var(--theme-color);
+}
+
+.system-prompt .prompt {
+   color: var(--theme-color-prompt);
+}
