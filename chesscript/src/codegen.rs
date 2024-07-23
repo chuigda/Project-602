@@ -8,9 +8,9 @@ pub fn codegen(script: &ScriptFile) -> String {
       match block {
          ScriptBlock::DialogueBlock(dialogue_block) => gen_dialogue_block(&dialogue_block, &mut ret),
          ScriptBlock::ExecutableBlock(executable_block) => {
-            ret.push_str("   // CODE_BLOCK\n   ");
+            ret.push_str("   /* codeblock */\n   ");
             ret.push_str(&executable_block.token.value.as_deref().unwrap().trim());
-            ret.push_str("\n   // END_CODE_BLOCK\n");
+            ret.push_str("\n   /* end codeblock */\n");
          },
          ScriptBlock::MetadataItem(metadata_item) => gen_metadata_item(&metadata_item, &mut ret, &mut in_script_block),
       }
@@ -68,7 +68,7 @@ fn gen_metadata_item(metadata_item: &MetadataItem, ret: &mut String, in_script_b
    match metadata_item.key.value.as_ref().unwrap().trim() {
       "scene" | "event" => {
          if *in_script_block {
-            ret.push_str("}\n");
+            ret.push_str("}\n\n");
          }
 
          let scene_id = metadata_item.value
@@ -93,7 +93,7 @@ fn gen_metadata_item(metadata_item: &MetadataItem, ret: &mut String, in_script_b
             .as_ref()
             .unwrap()
             .trim();
-         ret.push_str(&format!("   cx.setFen('{}')\n", fen));
+         ret.push_str(&format!("   await cx.setFen('{}')\n", fen));
       },
       "variant" => {
          let variant = metadata_item.value
@@ -103,7 +103,7 @@ fn gen_metadata_item(metadata_item: &MetadataItem, ret: &mut String, in_script_b
             .as_ref()
             .unwrap()
             .trim();
-         ret.push_str(&format!("   cx.setVariant('{}')\n", variant));
+         ret.push_str(&format!("   await cx.setVariant('{}')\n", variant));
       },
       "charuse" => {
          let characters = metadata_item.value
@@ -119,7 +119,7 @@ fn gen_metadata_item(metadata_item: &MetadataItem, ret: &mut String, in_script_b
             .collect::<Vec<_>>();
 
          ret.push_str(&format!(
-            "export const CharacterUse = [{}]",
+            "export const CharacterUse = [{}]\n\n",
             characters.join(", ")
          ));
       },
@@ -135,13 +135,13 @@ fn gen_metadata_item(metadata_item: &MetadataItem, ret: &mut String, in_script_b
             .next()
             .unwrap();
 
-         ret.push_str(&format!("export const StartingEvent = Event_{}\n", scene_id));
+         ret.push_str(&format!("export const StartingEvent = Event_{}\n\n", scene_id));
       },
       "dialogue" => {
-         ret.push_str(&format!("   await cx.showDialogue()\n"));
+         ret.push_str(&format!("   /* [dialogue] */ await cx.showDialogue()\n"));
       },
       "/dialogue" => {
-         ret.push_str(&format!("   await cx.hideDialogue()\n"));
+         ret.push_str(&format!("   /* [/dialogue] */ await cx.hideDialogue()\n"));
       }
       _ => panic!("unknown metadata key: {}", metadata_item.key.value.as_deref().unwrap().trim()),
    }
