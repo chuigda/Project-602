@@ -1,71 +1,34 @@
-[position 01:苏醒]
-[gamemode singleplayer]
-[fen "8/8/8/8/8/8/8/4Q3 w - - 0 1"]
+[startscene 01_start]
+[charuse NeroRi]
 
-{ cx.createPortal('e8', '02') }
+[scene 01_start:NeroRi的苏醒]
+[fen "8/8/8/8/8/8/8/4Q3 w - -"]
+[variant singleplayer]
 
-白后(加载中): 啊，头好像 ... 非常疼，我这是 ... 在哪？
+系统: 警告：服务器正被入侵
 
-系统: 警告：服务器整受到攻击
+系统：警告：请尽快前往控制中心，防线需要支援
 
-白后(惊讶): 哈？让我看看怎么个事
+[dialogue]
+NeroRi（加载中）：啊，头好像... 非常痛，我这是... 在哪？
 
-系统: 危险等级 15
-请尽快前往控制中心
+NeroRi(加载中): 服务器... 入侵... 什么情况
 
-白后: 虽然不太明白发生了什么
-但好像挺严重的
-我最好赶紧赶过去
+NeroRi：虽然不太明白发生了什么
+总之好像很严重的样子
+按照指示行动应该没有问题吧？
+[/dialogue]
 
-{ cx.highlightSquare('e1', 'green') }
+{ await cx.highlightSquare('e1', 'greenyellow') }
+提示：点击棋子以选中
+{ await cx.waitForSquareClicked('e1') }
+提示：你控制的棋子是往后，她可以直走或者斜走，不限步数
 
-提示: 点击棋子以选中
-
-{ await cx.clickSquare('e1') }
-
-提示: 你控制的棋子是皇后，该棋子可以直走或斜走无限步
-
-{ cx.highlightSquare('e8', 'green') }
-
-提示: 将皇后移动到传送门上
-
-[position 02:数据收集与熟悉移动]
-[fen "8/8/8/8/8/8/8/Q7 w - - 0 1"]
-
+提示：棋子所能到达的格子会显示为蓝色
+{ await cx.highlightSquare('e8', 'greenyellow') }
+提示：将棋子移动到高亮的格子上
 {
-   cx.createPortal('e8', '03')
-   cx.createDataFragment('a5', '01', () => {
-      await cx.speak('白后', '无语', '他怎么骂人啊，真是的')
-      await cx.speak('白后', '惊讶', '等等，“白杨”？好熟悉的名字 ...')
-   })
-   cx.createDataFragment('h5', '02', () => {
-      await cx.speak('白后', '扇子', '（读取系统时间）也就是说，我从 2003 年 9 月一直睡到现在？')
-   })
+   await cx.waitForSpecificPosition('4Q3/8/8/8/8/8/8/8')
+
+   // 没做后续
 }
-
-系统: 因为服务器被攻击，目前有大量数据损坏或丢失
-尝试收集散落的数据碎片来恢复数据
-
-[position 03:攻击敌方单位]
-[gamemode captureall]
-[fen "8/8/8/3p4/8/8/8/7Q w - - 0 1"]
-
-{
-   await cx.createDataFragment('h5', '10', () => {
-      await cx.speak('白后', '加载中', '完全没有头绪呢，这东西用来睡前助眠效果肯定特别好...')
-      await cx.speak('白后', '不过没准有用呢？先保存起来吧')
-
-      cx.updateVariable('codeSegmentsCollected', 0, x => x + 1)
-   })
-
-   cx.setVictoryAction(() => {
-      cx.setGameMode('singleplayer')
-      cx.createPortal('e8', '04')
-      cx.setVictoryAction()
-   })
-}
-
-系统: 战场上红色的目标都是入侵服务器的敌对单位
-不清理干净的话，服务器将持续受到攻击
-
-白后: 看我一击灭之！
