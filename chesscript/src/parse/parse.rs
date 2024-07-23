@@ -18,10 +18,7 @@ use super::LexerVariation;
 pub struct Parser;
 
 impl Parser {
-   pub fn parse(
-      file_name: impl ToString,
-      context: ParseContext
-   ) -> (ScriptFile, Option<SyntaxError>) {
+   pub fn parse(file_name: impl ToString, context: ParseContext) -> (ScriptFile, Option<SyntaxError>) {
       let mut ret = ScriptFile {
          file_name: file_name.to_string(),
          blocks: Vec::new()

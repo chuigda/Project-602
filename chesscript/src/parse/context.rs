@@ -93,16 +93,7 @@ impl<'a> ParseContext<'a> {
             col: 1,
             ..self
          }),
-         '{' | '｛' => (Token::with_value(TokenKind::Symbol, "{", self.line, self.col), ParseContext {
-            idx: self.idx + 1,
-            col: self.col + 1,
-            ..self
-         }),
-         '}' | '｝' => (Token::with_value(TokenKind::Symbol, "}", self.line, self.col), ParseContext {
-            idx: self.idx + 1,
-            col: self.col + 1,
-            ..self
-         }),
+         '{' | '｛' => self.next_code_block(),
          '[' | '［' => (Token::with_value(TokenKind::Symbol, "[", self.line, self.col), ParseContext {
             idx: self.idx + 1,
             col: self.col + 1,
@@ -130,6 +121,35 @@ impl<'a> ParseContext<'a> {
          }),
          _ => self.next_dialogue_text_token()
       }
+   }
+
+   fn next_code_block(mut self) -> (Token, Self) {
+      let mut value = String::new();
+      let mut depth = 1;
+
+      self.idx += 1;
+      self.col += 1;
+
+      while self.idx < self.chars.len() {
+         let c = self.chars[self.idx];
+         if c == '}' || c == '｝' {
+            depth -= 1;
+            if depth == 0 {
+               break;
+            }
+         } else if c == '{' || c == '｛' {
+            depth += 1;
+         }
+         self.idx += 1;
+         self.col += 1;
+         value.push(c);
+      }
+
+      (Token::with_value(TokenKind::CodeBlock, value, self.line, self.col), ParseContext {
+         idx: self.idx + 1,
+         col: self.col + 1,
+         ..self
+      })
    }
 
    fn next_dialogue_text_token(mut self) -> (Token, Self) {
