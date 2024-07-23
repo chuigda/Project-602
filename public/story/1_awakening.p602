@@ -22,7 +22,7 @@ NeroRi：虽然不太明白发生了什么
 { await cx.highlightSquare('e1', 'greenyellow') }
 提示：点击棋子以选中
 { await cx.waitForSquareClicked('e1') }
-提示：你控制的棋子是往后，她可以直走或者斜走，不限步数
+提示：你控制的棋子是王后，她可以直走或者斜走，不限步数
 
 提示：棋子所能到达的格子会显示为蓝色
 { await cx.highlightSquare('e8', 'greenyellow') }
