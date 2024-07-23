@@ -7,6 +7,7 @@ TokenKind: Keyword
          | Symbol
          | DialogueText
          | NewLine
+         | CodeBlock
          | EndOfInput
 
 [rust_serde]
@@ -44,26 +45,9 @@ ScriptFile(
 [rust_serde]
 [rust_derive(Debug)]
 ScriptBlock: DialogueBlock(dialogue: [Dialogue])
-           | ExecutableBlock(stmts: [Stmt])
+           | ExecutableBlock(token: Token)
            | MetadataItem(key: Token, value: Token)
 
 [rust_serde]
 [rust_derive(Debug)]
 Dialogue(speaker: Token, emotion?: Token, text: [Token])
-
-[rust_serde]
-[rust_derive(Debug)]
-Stmt: ExprStmt(expr: Expr)
-    | IfStmt(location: Token, cond: Expr, them_stmt: [Stmt], else_clause?: ElseClause)
-
-[rust_serde]
-[rust_derive(Debug)]
-ElseClause(location: Token, stmts: [Stmt])
-
-[rust_serde]
-[rust_derive(Debug)]
-Expr: ExprCall(func: Token, args: [Expr])
-    | ExprLiteral(value: Token)
-    | ExprVar(name: Token)
-    | ExprAssign(name: Token, [boxed] value: Expr)
-    | ExprBinary([boxed] left: Expr, op: Token, [boxed] right: Expr)

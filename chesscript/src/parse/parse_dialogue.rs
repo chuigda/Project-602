@@ -45,6 +45,9 @@ impl Parser {
          if token2.kind == TokenKind::EndOfInput {
             return Either::Left((Dialogue { speaker, emotion, text }, context2));
          }
+         else if token2.kind == TokenKind::CodeBlock {
+            return Either::Left((Dialogue { speaker, emotion, text }, context1));
+         }
          else if token2.kind == TokenKind::NewLine {
             let (token3, context3) = context2.next_token();
             if token3.kind == TokenKind::NewLine {

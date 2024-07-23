@@ -46,7 +46,7 @@ export const Event_02 = async (cx) => {
    await cx.speak('黑王', '呵，这种设计也就只有你想得出来')
    await cx.speak('黑后', '杂鱼~ 杂❤鱼~', '雌小鬼')
    await cx.speak('NeroRi', '哎呀你们两个好烦呐', '无语')
-   await cx.speak('白杨', `你俩算哪根葱，少跟我搁这人五人六的，滚你妈的蛋`, '黄豆')
+   await cx.speak('白杨', `你算哪根葱，少跟我搁这人五人六的，滚你妈的蛋`, '黄豆')
    await cx.speak('黑后', '呜呜呜，被骂了', '大哭')
    await cx.hideDialogue()
 
