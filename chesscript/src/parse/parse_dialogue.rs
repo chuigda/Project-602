@@ -42,13 +42,7 @@ impl Parser {
       let mut text = Vec::new();
       loop {
          let (token2, context2) = context1.next_dialogue_text_token_unbreakable();
-         if token2.kind == TokenKind::EndOfInput {
-            return Either::Left((Dialogue { speaker, emotion, text }, context2));
-         }
-         else if token2.kind == TokenKind::CodeBlock {
-            return Either::Left((Dialogue { speaker, emotion, text }, context1));
-         }
-         else if token2.kind == TokenKind::NewLine {
+         if token2.kind == TokenKind::NewLine {
             let (token3, context3) = context2.next_token();
             if token3.kind == TokenKind::NewLine {
                return Either::Left((Dialogue { speaker, emotion, text }, context3));
@@ -57,9 +51,12 @@ impl Parser {
                context1 = context2;
             }
          }
-         else {
+         else if token2.kind == TokenKind::DialogueText {
             text.push(token2);
             context1 = context2;
+         }
+         else {
+            return Either::Left((Dialogue { speaker, emotion, text }, context1));
          }
       }
    }

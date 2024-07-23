@@ -1,10 +1,18 @@
-[scene 测试局面]
-[fen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"]
-[orientation white]
+[startscene 001]
 
+[scene 001:测试局面]
+[fen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"]
+
+[dialogue]
 白王（愤怒）：你算哪根葱，跟我搁这人五人六的
 赶紧滚你妈的蛋
 
 黑王：好的，我这就滚
+[/dialogue]
 
+[dialogue]
 { await cx.speak('白王', "真是有趣...") }
+
+白后: 不是你干嘛骂人啊
+{ await cx.speak('白王', "打得一拳开，免得百拳来") }
+[/dialogue]

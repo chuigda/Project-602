@@ -61,7 +61,7 @@ pub struct ExecutableBlock {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct MetadataItem {
     pub key: Token,
-    pub value: Token,
+    pub value: Option<Token>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]

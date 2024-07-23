@@ -1,20 +1,16 @@
-use std::{
-   fs::{read_to_string, write},
-   path::Path
-};
-use chesscript::{codegen::codegen, parse::{ParseContext, Parser}};
+use std::{fs::read_to_string, path::Path};
+
+use chesscript::parse::{ParseContext, Parser};
 
 fn main() {
    let args = std::env::args().collect::<Vec<_>>();
-   if args.len() != 3 {
-      eprintln!("Usage: {} <input file> <output file>",
+   if args.len() != 2 {
+      eprintln!("Usage: {} <input file>",
                 Path::new(&args[0]).file_name().unwrap().to_string_lossy());
       std::process::exit(1);
    }
 
    let file_name = &args[1];
-   let output_file_name = &args[2];
-
    let Ok(content) = read_to_string(file_name) else {
       eprintln!("Error reading file: {}", file_name);
       std::process::exit(1);
@@ -29,6 +25,5 @@ fn main() {
       std::process::exit(1);
    }
 
-   let generated = codegen(&script);
-   write(output_file_name, generated).unwrap();
+   println!("{}", serde_json::to_string_pretty(&script).unwrap());
 }

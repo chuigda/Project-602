@@ -46,7 +46,7 @@ ScriptFile(
 [rust_derive(Debug)]
 ScriptBlock: DialogueBlock(dialogue: [Dialogue])
            | ExecutableBlock(token: Token)
-           | MetadataItem(key: Token, value: Token)
+           | MetadataItem(key: Token, value?: Token)
 
 [rust_serde]
 [rust_derive(Debug)]

@@ -11,11 +11,15 @@ impl Parser {
          });
       }
 
-      let (value, context2) = context1.next_token();
-      if value.kind != TokenKind::String && value.kind != TokenKind::Ident {
+      let (maybe_value, mut context2) = context1.next_token();
+      if maybe_value.kind == TokenKind::Symbol && maybe_value.value.as_deref() == Some("]") {
+         context2.variation = LexerVariation::Dialogue;
+         return Either::Left((MetadataItem { key, value: None }, context2));
+      }
+      else if maybe_value.kind != TokenKind::String && maybe_value.kind != TokenKind::Ident {
          return Either::Right(SyntaxError {
-            line: value.line,
-            col: value.col,
+            line: maybe_value.line,
+            col: maybe_value.col,
             message: "Expected identifier or string".to_string()
          });
       }
@@ -30,6 +34,6 @@ impl Parser {
       }
 
       context3.variation = LexerVariation::Dialogue;
-      Either::Left((MetadataItem { key, value }, context3))
+      Either::Left((MetadataItem { key, value: Some(maybe_value) }, context3))
    }
 }

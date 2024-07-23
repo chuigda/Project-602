@@ -4,6 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [[bin]]
+name = "chesscript-ast"
+path = "src/driver/parse_ast.rs"
+
+[[bin]]
 name = "chesscript"
 path = "src/driver/main.rs"
 
