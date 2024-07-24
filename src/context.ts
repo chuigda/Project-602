@@ -12,7 +12,7 @@ import { OpeningPosition } from './chess/opening-book'
 import { trimFEN } from './chess/trimfen'
 import { Chessboard3D, chessboardColor, gamePositionToChessboard } from './chessboard/chessboard'
 import { showDialogue, hideDialogue, speak, Dialogue } from './widgets/dialogue'
-import { addPromptLine, PromptLevel, SystemPrompt } from './widgets/system-prompt'
+import { addPromptLine, clearPrompt, PromptLevel, SystemPrompt } from './widgets/system-prompt'
 import { loadCharacter } from './assetloader'
 import { CharacterDefs } from './story/chardef'
 import { sleep } from './util/sleep'
@@ -316,6 +316,7 @@ export class Context {
    async handleEvents(): Promise<void> {
       while (true) {
          const eventFn = this.sceneEvents.shift()
+         clearPrompt(this.systemPrompt)
          if (!eventFn) {
             break
          }

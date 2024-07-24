@@ -38,3 +38,8 @@ export function addPromptLine(systemPrompt: SystemPrompt, level: PromptLevel, te
       resolve()
    })
 }
+
+export function clearPrompt(systemPrompt: SystemPrompt) {
+   systemPrompt.subElements.forEach(element => element.remove())
+   systemPrompt.subElements = []
+}
