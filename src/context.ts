@@ -19,7 +19,6 @@ import { CharacterDefs } from './story/chardef'
 import { sleep } from './util/sleep'
 
 import { globalResource } from '.'
-import { FairyStockfish } from './fairy-stockfish/fairy-stockfish'
 
 export interface ContextVariable {
    value: any

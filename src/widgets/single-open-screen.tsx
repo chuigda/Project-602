@@ -3,10 +3,12 @@ import './single-open-screen.css'
 
 export function SingleOpenScreen(props: {
    backgroundColor: string,
-   zIndex: number
+   zIndex: number,
+   id?: string
 }): HTMLElement {
    const innerDiv = (
-      <div class="single-open-screen-background"
+      <div id={props.id}
+           class="single-open-screen-background"
            style={`background-color: ${props.backgroundColor}`}
       />
    )

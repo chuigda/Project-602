@@ -23,3 +23,12 @@
    font-family: Dengxian, sans-serif;
    font-size: 14pt;
 }
+
+table, th, td {
+   border: 1px solid var(--theme-color);
+   border-collapse: collapse;
+}
+
+th, td {
+   padding: 2px 4px;
+}
