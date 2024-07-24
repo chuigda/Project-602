@@ -1,5 +1,6 @@
 import { FairyStockfish, createFairyStockfish, loadStockfishResource } from './fairy-stockfish/fairy-stockfish'
 import { createStartMenu } from './components/startmenu'
+import { Character } from './story/character'
 import { loadAsset, loadChessData, GameAsset, ChessData } from './assetloader'
 import { Ref, ref } from './util/ref'
 import { sleep } from './util/sleep'
@@ -10,6 +11,7 @@ export interface GlobalResource {
    gameAsset: GameAsset
    fairyStockfish: FairyStockfish
    chessData: ChessData
+   characters: Record<string, Character>
 }
 
 export const globalResource: Ref<GlobalResource> = <Ref<GlobalResource>>(<any>ref(undefined))
@@ -43,7 +45,8 @@ async function continueLoadingOperation() {
    globalResource.value = {
       gameAsset,
       fairyStockfish,
-      chessData
+      chessData,
+      characters: {}
    }
 
    await sleep(500)

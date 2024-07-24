@@ -2,7 +2,7 @@ import { h } from 'tsx-dom'
 import { globalResource } from '..'
 import { ChessGame, chessGameToFen, createChessGameFromFen, createEmptyChessGame, isPlayerPiece, PlayerSide, rankfile2squareZeroBased, square2rankfileZeroBased } from '../chess/chessgame'
 import { Chessboard3D, chessboardColor, createChessboard3D, gamePositionToChessboard } from '../chessboard/chessboard'
-import { Character, showDialogue, hideDialogue, speak, createDialogue, Dialogue } from '../widgets/dialogue'
+import { showDialogue, hideDialogue, speak, createDialogue, Dialogue } from '../widgets/dialogue'
 import { DoubleOpenScreen } from '../widgets/double-open-screen'
 import { addPromptLine, createSystemPrompt, PromptLevel, SystemPrompt } from '../widgets/system-prompt'
 import { sleep } from '../util/sleep'
@@ -21,14 +21,10 @@ export interface ContextVariable {
 export type SupportedVariant = 'chess' | 'captureall' | 'chesswith310' | 'captureall310' | 'singleplayer'
 
 export type GenericEventHandler = (cx: Context, ...args: any[]) => Promise<void> | void
+export type SceneEvent = (cx: Context) => Promise<void> | void
 export type SquareClickHandler = (cx: Context, square: string) => Promise<void> | void
 export type MovePlayedHandler = (cx: Context, side: PlayerSide, square: string) => Promise<void> | void
 export type PositionChangedHandler = (cx: Context) => Promise<void> | void
-
-export interface PendingEvent {
-   handler: GenericEventHandler,
-   args: any[]
-}
 
 export class Context {
    chessboardCanvas: HTMLCanvasElement
@@ -36,15 +32,14 @@ export class Context {
    dialogue: Dialogue
    systemPrompt: SystemPrompt
 
-   characters: Record<string, Character> = {}
-
    chessgame: ChessGame = createEmptyChessGame()
    currentFen: string = '8/8/8/8/8/8/8/8 w - - 0 1'
-   variables: Record<string, ContextVariable> = {}
-   eventPool: Record<string, GenericEventHandler> = {}
-   pendingEvents: PendingEvent[] = []
    variant: SupportedVariant = 'singleplayer'
    validMoves: string[] = []
+
+   variables: Record<string, ContextVariable> = {}
+   eventPool: Record<string, GenericEventHandler> = {}
+   sceneEvents: SceneEvent[] = []
 
    onSquareClicked: Set<SquareClickHandler> = new Set()
    onMovePlayed: Set<MovePlayedHandler> = new Set()
@@ -163,21 +158,35 @@ export class Context {
    // public APIs
 
    async enterScript(scriptFile: string) {
-      const code = await importWithoutVite(scriptFile)
+      const code = await importNoVite(scriptFile)
       for (const characterName of code.CharacterUse) {
-         if (!this.characters[characterName]) {
-            this.characters[characterName] = await loadCharacter(characterName, CharacterDefs[characterName], () => {})
+         if (!globalResource.value.characters[characterName]) {
+            globalResource.value.characters[characterName] =
+               await loadCharacter(characterName, CharacterDefs[characterName], () => {})
          }
       }
 
       this.eventPool = code
       this.pushEvent(code.StartingEvent)
-      this.handleEvents()
    }
 
    async setVariant(variant: SupportedVariant) {
       this.variant = variant
-      await globalResource.value.fairyStockfish.setVariant(variant)
+      if (variant === 'singleplayer') {
+         // use "captureall310" rules, and we will manually switch side
+         await globalResource.value.fairyStockfish.setVariant('captureall310')
+      }
+   }
+
+   async setChessboardDisplay(display: boolean) {
+      if (display) {
+         this.chessboardCanvas.style.opacity = '1'
+         await sleep(300)
+      }
+      else {
+         this.chessboardCanvas.style.opacity = '0'
+         await sleep(300)
+      }
    }
 
    async setFen(fen: string, noAutoFade?: boolean) {
@@ -233,7 +242,13 @@ export class Context {
    }
 
    async speak(speaker: string, text: string, emotion?: string): Promise<void> {
-      await speak(this.dialogue, this.characters[speaker], speaker, emotion || '常态', text)
+      await speak(
+         this.dialogue,
+         globalResource.value.characters[speaker],
+         speaker,
+         emotion || '常态',
+         text
+      )
    }
 
    async showPrompt(level: PromptLevel, text: string): Promise<void> {
@@ -245,20 +260,18 @@ export class Context {
       this.chessboard.highlightSquares.push({ rank, file, color: this.constants[color] })
    }
 
-   pushEvent(handlerName: string, ...args: any[]) {
-      this.pendingEvents.push({ handler: this.eventPool[handlerName], args })
+   pushEvent(handlerName: string) {
+      this.sceneEvents.push(this.eventPool[`Event_${handlerName}`])
    }
 
    async handleEvents(): Promise<void> {
       while (true) {
-         const event = this.pendingEvents.shift()
-         if (event) {
-            console.info(event)
-            await event.handler(this, ...event.args)
-         }
-         else {
+         const eventFn = this.sceneEvents.shift()
+         if (!eventFn) {
             break
          }
+
+         await eventFn(this)
       }
    }
 }
@@ -281,6 +294,7 @@ export async function showTestMissionWindow(zIndex: number): Promise<HTMLElement
 
       const cx = new Context(gameplayCanvas, chessboard, dialogue, systemPrompt)
       cx.enterScript('/story/1_awakening.js')
+      await cx.handleEvents()
    }
    asyncUpdates()
 

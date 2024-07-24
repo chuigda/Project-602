@@ -1,6 +1,6 @@
 import { CommonOpeningPosition, OpeningPosition } from './chess/opening-book'
 import { Object3D, loadObject } from './chessboard/glx/object'
-import { Character } from './widgets/dialogue'
+import { Character } from './story/character'
 
 export interface GameAsset {
    // 2D chess piece CSS
