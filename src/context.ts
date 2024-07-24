@@ -4,6 +4,7 @@ import {
    createChessGameFromFen,
    createEmptyChessGame,
    isPlayerPiece,
+   Piece,
    PlayerSide,
    rankfile2squareZeroBased,
    square2rankfileZeroBased
@@ -18,6 +19,7 @@ import { CharacterDefs } from './story/chardef'
 import { sleep } from './util/sleep'
 
 import { globalResource } from '.'
+import { FairyStockfish } from './fairy-stockfish/fairy-stockfish'
 
 export interface ContextVariable {
    value: any
@@ -184,6 +186,18 @@ export class Context {
       for (const handler of this.onPositionChanged) {
          await handler(this)
       }
+   }
+
+   // debug API
+   async setPiece(square: string, piece: Piece | undefined) {
+      const [rank, file] = square2rankfileZeroBased(square)
+      this.chessgame.position[rank][file] = piece
+      gamePositionToChessboard(this.chessgame, this.chessboard)
+      this.currentFen = chessGameToFen(this.chessgame)
+
+      const fairyStockfish = globalResource.value.fairyStockfish
+      await fairyStockfish.setPosition(this.currentFen)
+      this.validMoves = await fairyStockfish.getValidMoves()
    }
 
    // public APIs

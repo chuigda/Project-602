@@ -7,6 +7,8 @@ import { DoubleOpenScreen } from '../widgets/double-open-screen'
 import { createSystemPrompt } from '../widgets/system-prompt'
 import { sleep } from '../util/sleep'
 
+import { dbg_PlayingContext } from './debugconsole'
+
 import './mission.css'
 
 export async function showTestMissionWindow(zIndex: number): Promise<HTMLElement> {
@@ -28,6 +30,7 @@ export async function showTestMissionWindow(zIndex: number): Promise<HTMLElement
       const chessboard = createChessboard3D(gameplayCanvas, globalResource.value.gameAsset, 'white')
 
       const cx = new Context(gameplayCanvas, chessboard, dialogue, systemPrompt)
+      dbg_PlayingContext.value = cx
       await cx.enterScript('/story/1_awakening.js')
       await cx.handleEvents()
    }

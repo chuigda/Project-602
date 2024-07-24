@@ -6,6 +6,7 @@ import { Ref, ref } from './util/ref'
 import { sleep } from './util/sleep'
 
 import './index.css'
+import { createDebugConsole } from './components/debugconsole'
 
 export interface GlobalResource {
    gameAsset: GameAsset
@@ -50,6 +51,7 @@ async function continueLoadingOperation() {
    }
 
    await sleep(500)
+   createDebugConsole()
    createStartMenu()
 }
 
