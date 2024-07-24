@@ -47,7 +47,7 @@ export function createDebugConsole() {
       dbgWarn(`未捕获的错误: ${e.error.message}`)
       if (e.error && e.error.stack) {
          for (const line of e.error.stack.split('\n')) {
-            if (line.startsWith('Error:')) {
+            if (line.includes('Error: ')) {
                continue
             }
             else if (line.startsWith('  ')) {
