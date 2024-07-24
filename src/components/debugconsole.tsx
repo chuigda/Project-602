@@ -182,7 +182,13 @@ function showHelp() {
 }
 
 function removeCheckmate() {
-   $('checkmate').remove()
+   const checkmate = $('checkmate')
+   if (!checkmate) {
+      dbgWarn('nocheckmate: 目前没有将死窗口')
+      return
+   }
+
+   checkmate.remove()
 }
 
 function makeError(args: string[]) {
