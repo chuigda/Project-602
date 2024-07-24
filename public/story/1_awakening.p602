@@ -4,6 +4,7 @@
 [scene 01_start:NeroRi的苏醒]
 [fen "8/8/8/8/8/8/8/4Q3 w - -"]
 [variant singleplayer]
+{ cx.setChessboardInteract(false) }
 
 系统: 警告：服务器正被入侵
 
@@ -21,17 +22,27 @@ NeroRi：虽然不太明白发生了什么
 
 { await cx.highlightSquare('e1', 'greenyellow') }
 提示：点击棋子以选中
-{ await cx.waitForSquareClicked('e1') }
+{
+   cx.enableChessboard()
+   await cx.waitForSquareClicked('e1')
+   cx.disableChessboard()
+}
 提示：你控制的棋子是王后，她可以直走或者斜走，不限步数
 
 提示：棋子所能到达的格子会显示为蓝色
-{ await cx.highlightSquare('e8', 'greenyellow') }
+{
+   await cx.highlightSquare('e8', 'greenyellow')
+   cx.enableChessboard()
+}
 提示：将棋子移动到高亮的格子上
-{ await cx.waitForSpecificPosition('4Q3/8/8/8/8/8/8/8') }
+{
+   await cx.waitForSpecificPosition('4Q3/8/8/8/8/8/8/8')
+   cx.disableChessboard()
+}
 [next 02_intro]
 
 [scene 02_intro:介绍部分]
-[fen "8/8/8/8/8/8/8/4Q3 w - -"]
+[fen "kq6/8/8/8/8/8/PPPPPPPP/RNBQKBNR w KQ -"]
 
 [dialogue]
 白杨：嘿，你来啦

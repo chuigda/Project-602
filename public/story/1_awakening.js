@@ -5,6 +5,9 @@ export const CharacterUse = ['NeroRi', '白杨', '黑王', '黑后']
 export const Event_01_start = async cx => {
    await cx.setFen('8/8/8/8/8/8/8/4Q3 w - -')
    await cx.setVariant('singleplayer')
+   /* codeblock */
+   cx.setChessboardInteract(false)
+   /* end codeblock */
    await cx.showPrompt('system', `警告：服务器正被入侵`)
    await cx.showPrompt('system', `警告：请尽快前往控制中心，防线需要支援`)
    /* [dialogue] */ await cx.showDialogue()
@@ -19,22 +22,26 @@ export const Event_01_start = async cx => {
    /* end codeblock */
    await cx.showPrompt('prompt', `点击棋子以选中`)
    /* codeblock */
+   cx.enableChessboard()
    await cx.waitForSquareClicked('e1')
+   cx.disableChessboard()
    /* end codeblock */
    await cx.showPrompt('prompt', `你控制的棋子是王后，她可以直走或者斜走，不限步数`)
    await cx.showPrompt('prompt', `棋子所能到达的格子会显示为蓝色`)
    /* codeblock */
    await cx.highlightSquare('e8', 'greenyellow')
+   cx.enableChessboard()
    /* end codeblock */
    await cx.showPrompt('prompt', `将棋子移动到高亮的格子上`)
    /* codeblock */
    await cx.waitForSpecificPosition('4Q3/8/8/8/8/8/8/8')
-   cx.pushEvent('02_intro')
+   cx.disableChessboard()
    /* end codeblock */
+   await cx.pushEvent('02_intro')
 }
 
 export const Event_02_intro = async cx => {
-   await cx.setFen('kq6/8/8/8/8/8/PPPPPPPP/RNBQKBNR w KQ - 0 1')
+   await cx.setFen('kq6/8/8/8/8/8/PPPPPPPP/RNBQKBNR w KQ -')
    /* [dialogue] */ await cx.showDialogue()
    await cx.speak('白杨', `嘿，你来啦`)
    await cx.speak('NeroRi', `说说看这是怎么一回事吧`, '扇子')

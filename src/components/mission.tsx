@@ -177,6 +177,18 @@ export class Context {
 
    // public APIs
 
+   async setChessboardInteract(enable: boolean) {
+      this.chessboardInteract = enable
+   }
+
+   async enableChessboard() {
+      this.chessboardInteract = true
+   }
+
+   async disableChessboard() {
+      this.chessboardInteract = false
+   }
+
    async enterScript(scriptFile: string) {
       const code = await importNoVite(scriptFile)
       for (const characterName of code.CharacterUse) {
@@ -224,6 +236,7 @@ export class Context {
 
       this.chessgame = createChessGameFromFen(fen)
       gamePositionToChessboard(this.chessgame, this.chessboard)
+      console.info(this.chessgame)
       this.currentFen = fen
       await fairyStockfish.setPosition(fen)
       this.validMoves = await fairyStockfish.getValidMoves()
