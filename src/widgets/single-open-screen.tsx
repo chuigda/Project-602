@@ -7,14 +7,14 @@ export function SingleOpenScreen(props: {
    id?: string
 }): HTMLElement {
    const innerDiv = (
-      <div id={props.id}
-           class="single-open-screen-background"
+      <div class="single-open-screen-background"
            style={`background-color: ${props.backgroundColor}`}
       />
    )
 
    const ret = (
-      <div class="single-open-screen-background-container"
+      <div id={props.id}
+           class="single-open-screen-background-container"
            style={`z-index: ${props.zIndex}`}>
          { innerDiv }
       </div>
