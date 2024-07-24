@@ -23,6 +23,10 @@ export function addPromptLine(systemPrompt: SystemPrompt, level: PromptLevel, te
    systemPrompt.element.appendChild(line)
    systemPrompt.subElements.push(line)
 
+   if (level === 'prompt') {
+      text = `提示: ${text}`
+   }
+
    return new Promise(async resolve => {
       for (let i = 0; i < text.length; i++) {
          line.textContent += text[i]
@@ -30,7 +34,7 @@ export function addPromptLine(systemPrompt: SystemPrompt, level: PromptLevel, te
       }
 
       await sleep(200)
-      setTimeout(() => systemPrompt.subElements.shift()?.remove(), 3500)
+      setTimeout(() => systemPrompt.subElements.shift()?.remove(), 5000)
       resolve()
    })
 }
