@@ -1,5 +1,5 @@
 [startscene 01_start]
-[charuse NeroRi]
+[charuse NeroRi,白杨,黑王,黑后]
 
 [scene 01_start:NeroRi的苏醒]
 [fen "8/8/8/8/8/8/8/4Q3 w - -"]
@@ -29,6 +29,35 @@ NeroRi：虽然不太明白发生了什么
 提示：将棋子移动到高亮的格子上
 {
    await cx.waitForSpecificPosition('4Q3/8/8/8/8/8/8/8')
+   cx.pushEvent('02_intro')
+}
 
-   // 没做后续
+[scene 02_intro:介绍部分]
+[fen "8/8/8/8/8/8/8/4Q3 w - -"]
+
+[dialogue]
+白杨：嘿，你来啦
+
+NeroRi（扇子）：说说看这是怎么一回事吧
+
+白杨：简单来说，这个游戏的游玩方式类似于 JRPG
+不过你的所有操作都是通过移动棋子来完成的
+
+白杨：之后除了这种简单移动、对话，以及和敌对单位战斗之外
+还会引入数据碎片机制，收集这些数据碎片来解锁故事文本和技能
+
+黑王：呵，这种设计也就只有你想得出来
+
+黑后（雌小鬼）：杂鱼~杂❤鱼~
+
+NeroRi(无语)：哎呀你们两个好烦呐
+
+白杨（黄豆）：你算哪根葱，少跟我搁这人五人六的，滚你妈的蛋
+
+黑后（大哭）：呜呜呜，被骂了
+[/dialogue]
+
+{
+   await new Promise(resolve => setTimeout(resolve, 2000))
+   alert('演示部分到这里就结束了')
 }

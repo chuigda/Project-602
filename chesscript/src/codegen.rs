@@ -135,7 +135,7 @@ fn gen_metadata_item(metadata_item: &MetadataItem, ret: &mut String, in_script_b
             .next()
             .unwrap();
 
-         ret.push_str(&format!("export const StartingEvent = Event_{}\n\n", scene_id));
+         ret.push_str(&format!("export const StartingEvent = '{}'\n\n", scene_id));
       },
       "dialogue" => {
          ret.push_str(&format!("   /* [dialogue] */ await cx.showDialogue()\n"));

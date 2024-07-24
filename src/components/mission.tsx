@@ -168,6 +168,9 @@ export class Context {
 
       this.eventPool = code
       this.pushEvent(code.StartingEvent)
+      console.info(this.eventPool)
+      console.info(code.StartingEvent)
+      console.info(this.sceneEvents)
    }
 
    async setVariant(variant: SupportedVariant) {
@@ -293,7 +296,7 @@ export async function showTestMissionWindow(zIndex: number): Promise<HTMLElement
       const chessboard = createChessboard3D(gameplayCanvas, globalResource.value.gameAsset, 'white')
 
       const cx = new Context(gameplayCanvas, chessboard, dialogue, systemPrompt)
-      cx.enterScript('/story/1_awakening.js')
+      await cx.enterScript('/story/1_awakening.js')
       await cx.handleEvents()
    }
    asyncUpdates()

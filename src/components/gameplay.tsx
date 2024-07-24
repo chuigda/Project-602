@@ -143,7 +143,13 @@ export function createSkirmishGameplayWindow(
          }
       }
 
-      const playMove = async (startRank: number, startFile: number, targetRank: number, targetFile: number, uci?: string) => {
+      const playMove = async (
+         startRank: number,
+         startFile: number,
+         targetRank: number,
+         targetFile: number,
+         uci?: string
+      ) => {
          // TODO this is just for correct board status update,
          // TODO for animation we still need to some manual check
          if (!uci) {

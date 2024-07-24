@@ -32,6 +32,7 @@ impl Parser {
       };
 
       if token1.kind != TokenKind::Symbol || token1.value.as_deref() != Some(":") {
+         dbg!(&speaker);
          return Either::Right(SyntaxError {
             line: token1.line,
             col: token1.col,
