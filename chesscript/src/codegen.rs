@@ -137,6 +137,31 @@ fn gen_metadata_item(metadata_item: &MetadataItem, ret: &mut String, in_script_b
 
          ret.push_str(&format!("export const StartingEvent = '{}'\n\n", scene_id));
       },
+      "next" | "pushevent" => {
+         let scene_id = metadata_item.value
+            .as_ref()
+            .expect("metadata `next` or `pushevent` requires an argument")
+            .value
+            .as_ref()
+            .unwrap()
+            .trim()
+            .split(':')
+            .next()
+            .unwrap();
+
+         ret.push_str(&format!("   await cx.pushEvent('{}')\n", scene_id));
+      },
+      "nextscript" | "enterscript" => {
+         let script_id = metadata_item.value
+            .as_ref()
+            .expect("metadata `nextscript` or `enterscript` requires an argument")
+            .value
+            .as_ref()
+            .unwrap()
+            .trim();
+
+         ret.push_str(&format!("   await cx.enterScript('{}')\n", script_id));
+      },
       "dialogue" => {
          ret.push_str(&format!("   /* [dialogue] */ await cx.showDialogue()\n"));
       },

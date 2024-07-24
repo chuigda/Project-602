@@ -33,9 +33,11 @@ export class Context {
    systemPrompt: SystemPrompt
 
    chessgame: ChessGame = createEmptyChessGame()
+   playerSide: PlayerSide = 'white'
    currentFen: string = '8/8/8/8/8/8/8/8 w - - 0 1'
    variant: SupportedVariant = 'singleplayer'
    validMoves: string[] = []
+   chessboardInteract: boolean = true
 
    variables: Record<string, ContextVariable> = {}
    eventPool: Record<string, GenericEventHandler> = {}
@@ -64,9 +66,13 @@ export class Context {
 
       const self = this
       this.chessboard.onClickSquare = async (rank: number, file: number) => {
-         if (self.chessgame.turn === 'white') {
+         if (!this.chessboardInteract) {
+            return
+         }
+
+         if (self.chessgame.turn === this.playerSide) {
             if (self.chessgame.position[rank][file]) {
-               if (isPlayerPiece(self.chessgame.position[rank][file]!, 'white')) {
+               if (isPlayerPiece(self.chessgame.position[rank][file]!, this.playerSide)) {
                   self.selectSquare(rank, file)
                   return
                }
@@ -86,6 +92,10 @@ export class Context {
       }
 
       this.chessboard.onRightclick = async () => {
+         if (!this.chessboardInteract) {
+            return
+         }
+
          if (self.selectedSquare) {
             self.selectedSquare = undefined
             self.chessboard.highlightSquares = []
@@ -126,18 +136,30 @@ export class Context {
       }
    }
 
-   async playMove(startRank: number, startFile: number, targetRank: number, targetFile: number, uci?: string) {
-      // TODO migrate from skirmish code
+   async playMove(
+      startRank: number,
+      startFile: number,
+      targetRank: number,
+      targetFile: number,
+      uci?: string
+   ) {
+      // TODO migrate from skirmish code, implement promotion
+      uci = uci ?? rankfile2squareZeroBased(startRank, startFile) + rankfile2squareZeroBased(targetRank, targetFile)
 
       const fairyStockfish = globalResource.value.fairyStockfish
       await fairyStockfish.setPositionWithMoves(
          this.currentFen,
-         [uci || rankfile2squareZeroBased(startRank, startFile) + rankfile2squareZeroBased(targetRank, targetFile)]
+         [uci]
       )
 
       this.currentFen = trimFEN(await fairyStockfish.getCurrentFen())
       if (this.variant === 'singleplayer') {
-         this.currentFen = this.currentFen.replace('b', 'w')
+         if (this.playerSide === 'white') {
+            this.currentFen = this.currentFen.replace('b', 'w')
+         }
+         else {
+            this.currentFen = this.currentFen.replace('w', 'b')
+         }
       }
 
       this.chessgame = createChessGameFromFen(this.currentFen)
@@ -145,14 +167,12 @@ export class Context {
 
       await fairyStockfish.setPosition(this.currentFen)
       this.validMoves = await fairyStockfish.getValidMoves()
-      console.info(this.validMoves)
       this.selectedSquare = undefined
       this.chessboard.highlightSquares = []
 
       for (const handler of this.onPositionChanged) {
          await handler(this)
       }
-      console.info(this)
    }
 
    // public APIs
@@ -168,9 +188,6 @@ export class Context {
 
       this.eventPool = code
       this.pushEvent(code.StartingEvent)
-      console.info(this.eventPool)
-      console.info(code.StartingEvent)
-      console.info(this.sceneEvents)
    }
 
    async setVariant(variant: SupportedVariant) {
@@ -179,6 +196,11 @@ export class Context {
          // use "captureall310" rules, and we will manually switch side
          await globalResource.value.fairyStockfish.setVariant('captureall310')
       }
+   }
+
+   async setPlayerSide(side: PlayerSide) {
+      this.playerSide = side
+      this.chessboard.orientation = side
    }
 
    async setChessboardDisplay(display: boolean) {
@@ -288,9 +310,11 @@ export async function showTestMissionWindow(zIndex: number): Promise<HTMLElement
       const systemPrompt = createSystemPrompt(zIndex + 1)
       const dialogue = await createDialogue(zIndex + 2)
 
-      windowBackground.appendChild(<div class="gameplay-container">
-         {gameplayCanvas}
-      </div>)
+      windowBackground.appendChild(
+         <div class="gameplay-container">
+            {gameplayCanvas}
+         </div>
+      )
       await sleep(300)
 
       const chessboard = createChessboard3D(gameplayCanvas, globalResource.value.gameAsset, 'white')

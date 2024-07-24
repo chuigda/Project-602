@@ -34,6 +34,8 @@ export async function createDialogue(zIndex: number): Promise<Dialogue> {
 export async function showDialogue(dialogue: Dialogue) {
    document.body.appendChild(dialogue.portrait)
    document.body.appendChild(dialogue.container)
+   dialogue.speaker.innerText = ''
+   dialogue.speakContent.innerText = ''
    await sleep(50)
    dialogue.container.style.opacity = '1'
    await sleep(125)
@@ -56,6 +58,8 @@ export function speak(
 ): Promise<void> {
    dialogue.portrait.width = dialogue.portrait.clientWidth * (window.devicePixelRatio || 1)
    dialogue.portrait.height = dialogue.portrait.clientHeight * (window.devicePixelRatio || 1)
+   dialogue.speaker.innerText = speaker
+   dialogue.speakContent.innerText = ''
    if (dialogue.portrait.style.opacity === '0') {
       dialogue.portrait.style.opacity = '1'
    }
@@ -83,9 +87,6 @@ export function speak(
          )
       }
    }
-
-   dialogue.speaker.innerText = speaker
-   dialogue.speakContent.innerText = ''
 
    const interrupted = ref(false)
    const promise = new Promise<void>(async resolve => {
