@@ -50,7 +50,7 @@ NeroRi：虽然不太明白发生了什么
 系统：不过对于你，无所不能的 NeroRi 来说，消灭它应该不是问题
 
 [dialogue]
-NeroRi: 那当然，毕竟我可是最强的
+NeroRi(扇子): 那当然，毕竟我可是最强的
 [/dialogue]
 
 { await cx.highlightSquare('a5', 'orangered') }

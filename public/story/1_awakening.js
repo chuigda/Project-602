@@ -46,7 +46,7 @@ export const Event_02_capture_pawn = async cx => {
    await cx.showPrompt('system', `警告：侦测到敌对魔偶`)
    await cx.showPrompt('system', `不过对于你，无所不能的 NeroRi 来说，消灭它应该不是问题`)
    /* [dialogue] */ await cx.showDialogue()
-   await cx.speak('NeroRi', `那当然，毕竟我可是最强的`)
+   await cx.speak('NeroRi', `那当然，毕竟我可是最强的`, '扇子')
    /* [/dialogue] */ await cx.hideDialogue()
    /* codeblock */
    await cx.highlightSquare('a5', 'orangered')
