@@ -37,7 +37,7 @@ export function createDebugConsole() {
    dbg_DisplayElement.value = display
 
    document.addEventListener('keydown', e => {
-      if (e.shiftKey && e.ctrlKey && e.key === 'p') {
+      if (e.ctrlKey && e.key === '`') {
          debugConsole.style.display = debugConsole.style.display === 'none' ? 'flex' : 'none'
          dbg_DisplayElement.value?.scrollTo(0, dbg_DisplayElement.value.scrollHeight)
          input.focus()
