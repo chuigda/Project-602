@@ -67,3 +67,7 @@
 .debug-log {
    color: lightgray;
 }
+
+.debug-info table, th, tr, td {
+   border: 1px solid cyan;
+}

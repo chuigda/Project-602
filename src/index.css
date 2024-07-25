@@ -25,7 +25,6 @@
 }
 
 table, th, td {
-   border: 1px solid var(--theme-color);
    border-collapse: collapse;
 }
 

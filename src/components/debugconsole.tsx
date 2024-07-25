@@ -140,7 +140,7 @@ function checkmate(args: string[]) {
 function showHelp() {
    dbgInfo('可用命令:')
    addElementToDisplay(
-      <table class="debug-console-table">
+      <table class="debug-console-table debug-info">
          <tbody>
             <tr>
                <th>命令</th>
