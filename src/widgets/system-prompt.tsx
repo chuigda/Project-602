@@ -6,14 +6,16 @@ import './system-prompt.css'
 export interface SystemPrompt {
    element: HTMLElement
    subElements: HTMLElement[]
+   timeouts: any[]
 }
 
 export function createSystemPrompt(zIndex: number): SystemPrompt {
    const element = <div class="system-prompt" style={{ zIndex: `${zIndex}` }} />
    const subElements: HTMLElement[] = []
+   const timeouts: any[] = []
    document.body.appendChild(element)
 
-   return { element, subElements }
+   return { element, subElements, timeouts }
 }
 
 export type PromptLevel = 'system' | 'prompt'
@@ -34,7 +36,9 @@ export function addPromptLine(systemPrompt: SystemPrompt, level: PromptLevel, te
       }
 
       await sleep(200)
-      setTimeout(() => systemPrompt.subElements.shift()?.remove(), 5000)
+      systemPrompt.timeouts.push(setTimeout(() => {
+         systemPrompt.subElements.shift()?.remove()
+      }, 5000))
       resolve()
    })
 }
@@ -42,4 +46,6 @@ export function addPromptLine(systemPrompt: SystemPrompt, level: PromptLevel, te
 export function clearPrompt(systemPrompt: SystemPrompt) {
    systemPrompt.subElements.forEach(element => element.remove())
    systemPrompt.subElements = []
+   systemPrompt.timeouts.forEach(timeout => clearTimeout(timeout))
+   systemPrompt.timeouts = []
 }

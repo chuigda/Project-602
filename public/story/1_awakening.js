@@ -3,8 +3,8 @@ export const StartingEvent = '01_start'
 export const CharacterUse = ['NeroRi', '白杨', '黑王', '黑后']
 
 export const Event_01_start = async cx => {
-   await cx.setFen('8/8/8/8/8/8/8/4Q3 w - -')
    await cx.setVariant('singleplayer')
+   await cx.setFen('8/8/8/8/8/8/8/4Q3 w - -')
    /* codeblock */
    cx.setChessboardInteract(false)
    /* end codeblock */
@@ -37,26 +37,47 @@ export const Event_01_start = async cx => {
    await cx.waitForSpecificPosition('4Q3/8/8/8/8/8/8/8')
    cx.disableChessboard()
    /* end codeblock */
-   await cx.pushEvent('02_intro')
+   await cx.pushEvent('02_capture_pawn')
 }
 
-export const Event_02_intro = async cx => {
-   await cx.setFen('kq6/8/8/8/8/8/PPPPPPPP/RNBQKBNR w KQ -')
+export const Event_02_capture_pawn = async cx => {
+   await cx.setVariant('captureall310')
+   await cx.setFen('8/8/8/p7/8/8/8/4Q3 w - -')
+   await cx.showPrompt('system', `警告：侦测到敌对魔偶`)
+   await cx.showPrompt('system', `不过对于你，无所不能的 NeroRi 来说，消灭它应该不是问题`)
    /* [dialogue] */ await cx.showDialogue()
-   await cx.speak('白杨', `嘿，你来啦`)
-   await cx.speak('NeroRi', `说说看这是怎么一回事吧`, '扇子')
-   await cx.speak('白杨', `简单来说，这个游戏的游玩方式类似于 JRPG
-不过你的所有操作都是通过移动棋子来完成的`)
-   await cx.speak('白杨', `之后除了这种简单移动、对话，以及和敌对单位战斗之外
-还会引入数据碎片机制，收集这些数据碎片来解锁故事文本和技能`)
-   await cx.speak('黑王', `呵，这种设计也就只有你想得出来`)
-   await cx.speak('黑后', `杂鱼~杂❤鱼~`, '雌小鬼')
-   await cx.speak('NeroRi', `哎呀你们两个好烦呐`, '无语')
-   await cx.speak('白杨', `你算哪根葱，少跟我搁这人五人六的，滚你妈的蛋`, '黄豆')
-   await cx.speak('黑后', `呜呜呜，被骂了`, '大哭')
+   await cx.speak('NeroRi', `那当然，毕竟我可是最强的`)
    /* [/dialogue] */ await cx.hideDialogue()
    /* codeblock */
-   await new Promise(resolve => setTimeout(resolve, 2000))
-   alert('演示部分到这里就结束了')
+   await cx.highlightSquare('a5', 'orangered')
+   /* end codeblock */
+   await cx.showPrompt('prompt', `以红色标识的棋子均为敌对单位`)
+   /* codeblock */
+   await cx.highlightSquare('e1', 'greenyellow')
+   /* end codeblock */
+   await cx.showPrompt('prompt', `点击绿色高亮的己方棋子`)
+   /* codeblock */
+   cx.enableChessboard()
+   await cx.waitForSquareClicked('e1')
+   cx.disableChessboard()
+   await cx.highlightSquare('a5', 'orangered')
+   /* end codeblock */
+   await cx.showPrompt('prompt', `点击红色高亮的敌方棋子`)
+   /* codeblock */
+   cx.enableChessboard()
+   await cx.waitForSpecificPosition('8/8/8/Q7/8/8/8/8')
+   cx.disableChessboard()
+   /* end codeblock */
+   await cx.showPrompt('system', `干得漂亮，敌对魔偶已被消灭`)
+   await cx.showPrompt('system', `现在赶快前往控制中心吧`)
+   await cx.setVariant('singleplayer')
+   /* codeblock */
+   cx.highlightSquare('e8', 'greenyellow')
+   cx.enableChessboard()
+   await cx.waitForSpecificPosition('4Q3/8/8/8/8/8/8/8')
+   cx.disableChessboard()
+
+   await new Promise(resolve => setTimeout(resolve, 1000))
+   alert('演示结束')
    /* end codeblock */
 }

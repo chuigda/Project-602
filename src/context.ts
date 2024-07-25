@@ -231,6 +231,13 @@ export class Context {
       if (variant === 'singleplayer') {
          // use "captureall310" rules, and we will manually switch side
          await globalResource.value.fairyStockfish.setVariant('captureall310')
+
+         if (this.chessgame.turn != this.playerSide) {
+            this.chessgame.turn = this.playerSide
+            this.currentFen = chessGameToFen(this.chessgame)
+            await globalResource.value.fairyStockfish.setPosition(this.currentFen)
+            this.validMoves = await globalResource.value.fairyStockfish.getValidMoves()
+         }
       }
    }
 

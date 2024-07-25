@@ -2,8 +2,8 @@
 [charuse NeroRi,白杨,黑王,黑后]
 
 [scene 01_start:NeroRi的苏醒]
-[fen "8/8/8/8/8/8/8/4Q3 w - -"]
 [variant singleplayer]
+[fen "8/8/8/8/8/8/8/4Q3 w - -"]
 { cx.setChessboardInteract(false) }
 
 系统: 警告：服务器正被入侵
@@ -39,34 +39,54 @@ NeroRi：虽然不太明白发生了什么
    await cx.waitForSpecificPosition('4Q3/8/8/8/8/8/8/8')
    cx.disableChessboard()
 }
-[next 02_intro]
+[next 02_capture_pawn]
 
-[scene 02_intro:介绍部分]
-[fen "kq6/8/8/8/8/8/PPPPPPPP/RNBQKBNR w KQ -"]
+[scene 02_capture_pawn:攻击敌对单位]
+[variant "captureall310"]
+[fen "8/8/8/p7/8/8/8/4Q3 w - -"]
+
+系统：警告：侦测到敌对魔偶
+
+系统：不过对于你，无所不能的 NeroRi 来说，消灭它应该不是问题
 
 [dialogue]
-白杨：嘿，你来啦
-
-NeroRi（扇子）：说说看这是怎么一回事吧
-
-白杨：简单来说，这个游戏的游玩方式类似于 JRPG
-不过你的所有操作都是通过移动棋子来完成的
-
-白杨：之后除了这种简单移动、对话，以及和敌对单位战斗之外
-还会引入数据碎片机制，收集这些数据碎片来解锁故事文本和技能
-
-黑王：呵，这种设计也就只有你想得出来
-
-黑后（雌小鬼）：杂鱼~杂❤鱼~
-
-NeroRi(无语)：哎呀你们两个好烦呐
-
-白杨（黄豆）：你算哪根葱，少跟我搁这人五人六的，滚你妈的蛋
-
-黑后（大哭）：呜呜呜，被骂了
+NeroRi: 那当然，毕竟我可是最强的
 [/dialogue]
 
+{ await cx.highlightSquare('a5', 'orangered') }
+
+提示：以红色标识的棋子均为敌对单位
+
+{ await cx.highlightSquare('e1', 'greenyellow') }
+
+提示：点击绿色高亮的己方棋子
+
 {
-   await new Promise(resolve => setTimeout(resolve, 2000))
-   alert('演示部分到这里就结束了')
+   cx.enableChessboard()
+   await cx.waitForSquareClicked('e1')
+   cx.disableChessboard()
+   await cx.highlightSquare('a5', 'orangered')
+}
+
+提示：点击红色高亮的敌方棋子
+
+{
+   cx.enableChessboard()
+   await cx.waitForSpecificPosition('8/8/8/Q7/8/8/8/8')
+   cx.disableChessboard()
+}
+
+系统：干得漂亮，敌对魔偶已被消灭
+
+系统：现在赶快前往控制中心吧
+
+[variant singleplayer]
+{
+   cx.highlightSquare('e8', 'greenyellow')
+   cx.enableChessboard()
+   await cx.waitForSpecificPosition('4Q3/8/8/8/8/8/8/8')
+   cx.disableChessboard()
+
+   await new Promise(resolve => setTimeout(resolve, 1000))
+   alert('演示结束')
 }
