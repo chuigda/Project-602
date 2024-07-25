@@ -8,6 +8,7 @@ black_queen.psd,缸脑,CC-BY-SA 4.0
 white_king.psd,昏睡白糖+缸脑,CC-BY-SA 4.0
 white_queen.psd,禾几木+缸脑,私有
 bishop,木火kika,CC-BY-SA 4.0
+knight,木火kika,CC-BY-SA 4.0
 ```
 
 ## 三维模型
