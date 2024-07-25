@@ -55,9 +55,9 @@ export interface ChessData {
 
 export async function loadAsset(): Promise<GameAsset> {
    setItemLoadProgress(0)
-   const vertexShader = await $().get('/shader/opaque.vs')
+   const vertexShader = await $().get('/shader/opaque.vertex.glsl')
    setItemLoadProgress(1 / 5)
-   const fragmentShader = await $().get('/shader/opaque.fs')
+   const fragmentShader = await $().get('/shader/opaque.fragment.glsl')
    setItemLoadProgress(2 / 5)
 
    const objFile = await $().get('/chess-pieces/chess-pieces-3d.obj')
