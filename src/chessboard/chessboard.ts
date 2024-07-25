@@ -17,7 +17,8 @@ export const chessboardColor: Record<string, [number, number, number, number]> =
    aquamarine_66: [0.498, 1.0, 0.831, 0.66],
    greenyellow: [0.678, 1.0, 0.184, 1.0],
    greenyellow_33: [0.678, 1.0, 0.184, 0.33],
-
+   yellow: [1.0, 1.0, 0.0, 1.0],
+   yellow_20: [0.2, 0.2, 0.0, 1.0],
    red: [0.9, 0.0, 0.0, 1.0],
 }
 
@@ -248,7 +249,10 @@ export function createChessboard3D(
          const linearIndex = staticPiece.rank * 8 + staticPiece.file
          let color = [0.0, 0.0, 0.0, 1.0]
          if (self.currentObjectId !== undefined && self.currentObjectId === linearIndex) {
-            if (staticPiece.color === 'white') {
+            if (staticPiece.piece === 'immovable') {
+               color = chessboardColor.yellow_20
+            }
+            else if (staticPiece.color === 'white') {
                color = chessboardColor.cyan_20
             }
             else {
@@ -260,7 +264,10 @@ export function createChessboard3D(
          const vbo = self.vbo[staticPiece.piece]
          vbo.draw(gl)
 
-         if (staticPiece.color === 'white') {
+         if (staticPiece.piece === 'immovable') {
+            self.program.uniform4fv(gl, 'u_ObjectColor', chessboardColor.yellow)
+         }
+         else if (staticPiece.color === 'white') {
             self.program.uniform4fv(gl, 'u_ObjectColor', chessboardColor.cyan)
          }
          else {

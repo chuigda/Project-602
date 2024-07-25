@@ -177,8 +177,7 @@ export class Context {
       this.chessgame = createChessGameFromFen(this.currentFen)
       gamePositionToChessboard(this.chessgame, this.chessboard)
 
-      await fairyStockfish.setPosition(this.currentFen)
-      this.validMoves = await fairyStockfish.getValidMoves()
+      await this.updateValidMoves()
       this.selectedSquare = undefined
       this.chessboard.highlightSquares = []
 
@@ -187,16 +186,27 @@ export class Context {
       }
    }
 
+   updateFenFromChessgame() {
+      this.currentFen = chessGameToFen(this.chessgame)
+   }
+
+   async updateValidMoves() {
+      if (this.currentFen.startsWith('8/8/8/8/8/8/8/8')) {
+         this.validMoves = []
+      }
+      else {
+         await globalResource.value.fairyStockfish.setPosition(this.currentFen)
+         this.validMoves = await globalResource.value.fairyStockfish.getValidMoves()
+      }
+   }
+
    // debug API
    async setPiece(square: string, piece: Piece | undefined) {
       const [rank, file] = square2rankfileZeroBased(square)
       this.chessgame.position[rank][file] = piece
       gamePositionToChessboard(this.chessgame, this.chessboard)
-      this.currentFen = chessGameToFen(this.chessgame)
-
-      const fairyStockfish = globalResource.value.fairyStockfish
-      await fairyStockfish.setPosition(this.currentFen)
-      this.validMoves = await fairyStockfish.getValidMoves()
+      this.updateFenFromChessgame()
+      await this.updateValidMoves()
    }
 
    // public APIs
@@ -229,16 +239,21 @@ export class Context {
    async setVariant(variant: SupportedVariant) {
       this.variant = variant
       if (variant === 'singleplayer') {
-         // use "captureall310" rules, and we will manually switch side
-         await globalResource.value.fairyStockfish.setVariant('captureall310')
-
+         // use "chesswith310" rules, and we will manually switch side
+         // when in normal chess mode, when there's no opponent king, fairy-stockfish could search moves for one player normally
+         // but if captureall rule is used, fairy-stockfish will determine the position is winning for one side
+         // and will not do any search
+         await globalResource.value.fairyStockfish.setVariant('chesswith310')
          if (this.chessgame.turn != this.playerSide) {
             this.chessgame.turn = this.playerSide
-            this.currentFen = chessGameToFen(this.chessgame)
-            await globalResource.value.fairyStockfish.setPosition(this.currentFen)
-            this.validMoves = await globalResource.value.fairyStockfish.getValidMoves()
          }
       }
+      else {
+         await globalResource.value.fairyStockfish.setVariant(variant)
+      }
+
+      this.updateFenFromChessgame()
+      await this.updateValidMoves()
    }
 
    async setPlayerSide(side: PlayerSide) {
@@ -263,14 +278,10 @@ export class Context {
          await sleep(300)
       }
 
-      const fairyStockfish = globalResource.value.fairyStockfish
-
       this.chessgame = createChessGameFromFen(fen)
-      gamePositionToChessboard(this.chessgame, this.chessboard)
-      console.info(this.chessgame)
       this.currentFen = fen
-      await fairyStockfish.setPosition(fen)
-      this.validMoves = await fairyStockfish.getValidMoves()
+      gamePositionToChessboard(this.chessgame, this.chessboard)
+      await this.updateValidMoves()
 
       if (!noAutoFade && this.chessboardCanvas.style.opacity === '0') {
          this.chessboardCanvas.style.opacity = '1'

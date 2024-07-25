@@ -114,7 +114,7 @@ function setPiece(args: string[]) {
       }
 
       const lowerCased = piece.toLowerCase()
-      if (![...'prnbqkw'].includes(lowerCased)) {
+      if (![...'prnbqkwi'].includes(lowerCased)) {
          dbgError('setpiece: 棋子格式错误')
          return
       }

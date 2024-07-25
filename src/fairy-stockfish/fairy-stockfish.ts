@@ -71,7 +71,7 @@ export class FairyStockfish {
    }
 
    setVariant(variant: string): Promise<void> {
-      return this.sendCommandAndWaitReadyOk(`setoption name Variant value ${variant}`)
+      return this.sendCommandAndWaitReadyOk(`setoption name UCI_Variant value ${variant}`)
    }
 
    setPosition(fen: string): Promise<void> {
@@ -251,7 +251,6 @@ export async function createFairyStockfish(stockfishResource: StockfishResource)
    return new Promise(resolve => {
       const fairyStockfish = new FairyStockfish(instance)
       fairyStockfish.messageHandler = line => {
-         console.info(line)
          if (line.trim() == 'uciok') {
             fairyStockfish.messageHandler = () => {}
             resolve(fairyStockfish)
