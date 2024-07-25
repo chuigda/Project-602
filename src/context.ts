@@ -165,14 +165,7 @@ export class Context {
       )
 
       this.currentFen = trimFEN(await fairyStockfish.getCurrentFen())
-      if (this.variant === 'singleplayer') {
-         if (this.playerSide === 'white') {
-            this.currentFen = this.currentFen.replace('b', 'w')
-         }
-         else {
-            this.currentFen = this.currentFen.replace('w', 'b')
-         }
-      }
+      this.postprocessFen()
 
       this.chessgame = createChessGameFromFen(this.currentFen)
       gamePositionToChessboard(this.chessgame, this.chessboard)
@@ -188,6 +181,29 @@ export class Context {
 
    updateFenFromChessgame() {
       this.currentFen = chessGameToFen(this.chessgame)
+      this.postprocessFen()
+   }
+
+   postprocessFen() {
+      // if player is white, then replace all black immovable pieces (i) with white immovable pieces (I)
+      // so that immovable pieces act as barriers for white player
+      if (this.playerSide === 'white') {
+         this.currentFen = this.currentFen.replace(/i/g, 'I')
+      }
+      // on the contray, if player is black, then replace all white immovable pieces (I) with black immovable pieces (i)
+      else {
+         this.currentFen = this.currentFen.replace(/I/g, 'i')
+      }
+
+      // when in single player mode, always set turn to this.playerSide
+      if (this.variant === 'singleplayer') {
+         if (this.playerSide === 'white') {
+            this.currentFen = this.currentFen.replace('b', 'w')
+         }
+         else {
+            this.currentFen = this.currentFen.replace('w', 'b')
+         }
+      }
    }
 
    async updateValidMoves() {
@@ -280,6 +296,7 @@ export class Context {
 
       this.chessgame = createChessGameFromFen(fen)
       this.currentFen = fen
+      this.postprocessFen()
       gamePositionToChessboard(this.chessgame, this.chessboard)
       await this.updateValidMoves()
 
