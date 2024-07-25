@@ -48,7 +48,9 @@ export const CharacterDefs: Record<string, CharacterDef> = {
    '黑王': {
       baseImage: '/portrait/black_king_glow',
       emotions: {
-         '常态': ['base']
+         '常态': ['base'],
+         '生气': ['base', '/portrait/black_king_angry'],
+         '微笑': ['base', '/portrait/black_king_smile'],
       },
 
       startX: 0,
@@ -70,6 +72,42 @@ export const CharacterDefs: Record<string, CharacterDef> = {
          '鬼脸': ['base', '/portrait/black_queen_grimace'],
          '大笑': ['base', '/portrait/black_queen_laugh'],
          '雌小鬼': ['base', '/portrait/black_queen_laugh'],
+      },
+
+      startX: 0,
+      startY: 0,
+      width: 0,
+      height: 0,
+      drawX: 0,
+      drawY: 0,
+      drawWidth: 0,
+      drawHeight: 0
+   },
+   '黑主教': {
+      baseImage: '/portrait/black_bishop_glow',
+      emotions: {
+         '常态': ['base'],
+         '生气': ['base', '/portrait/black_bishop_angry'],
+         '大哭': ['base', '/portrait/black_bishop_cry'],
+         '震惊': ['base', '/portrait/black_bishop_shocked'],
+      },
+
+      startX: 0,
+      startY: 0,
+      width: 0,
+      height: 0,
+      drawX: 0,
+      drawY: 0,
+      drawWidth: 0,
+      drawHeight: 0
+   },
+   '黑骑士': {
+      baseImage: '/portrait/black_knight_glow',
+      emotions: {
+         '常态': ['base'],
+         '生气': ['base', '/portrait/black_knight_angry'],
+         '大哭': ['base', '/portrait/black_knight_cry'],
+         '震惊': ['base', '/portrait/black_knight_shocked'],
       },
 
       startX: 0,

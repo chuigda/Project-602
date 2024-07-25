@@ -252,6 +252,19 @@ export class Context {
       this.pushEvent(code.StartingEvent)
    }
 
+   async enterNonModuleScript(script: string) {
+      const pseudoModule = eval(script)
+      for (const characterName of pseudoModule.CharacterUse) {
+         if (!globalResource.value.characters[characterName]) {
+            globalResource.value.characters[characterName] =
+               await loadCharacter(characterName, CharacterDefs[characterName], () => {})
+         }
+      }
+
+      this.eventPool = pseudoModule
+      this.pushEvent(pseudoModule.StartingEvent)
+   }
+
    async setVariant(variant: SupportedVariant) {
       this.variant = variant
       if (variant === 'singleplayer') {

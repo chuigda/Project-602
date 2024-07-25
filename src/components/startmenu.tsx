@@ -1,10 +1,11 @@
 import { h } from 'tsx-dom'
-import { sleep } from '../util/sleep'
 import { DoubleOpenScreen } from '../widgets/double-open-screen'
+import { showTestMissionWindow } from './mission'
 import { showSkirmishWindow } from './skirmish'
+import { runCustomMission } from './custom'
 import { showSettingsWindow } from './settings'
 import { showAboutWindow } from './about'
-import { showTestMissionWindow } from './mission'
+import { sleep } from '../util/sleep'
 
 import './startmenu.css'
 
@@ -38,11 +39,14 @@ export function createStartMenu(): HTMLElement {
       startMenuButtons.appendChild(<div onClick={showSkirmishWindow}>遭遇战</div>)
       startMenuButtons.style.height = 'calc(16pt * 3 + 4px)'
       await sleep(125)
-      startMenuButtons.appendChild(<div onClick={showSettingsWindow}>系统设定</div>)
+      startMenuButtons.appendChild(<div onClick={runCustomMission}>自定战役</div>)
       startMenuButtons.style.height = 'calc(16pt * 4 + 4px)'
       await sleep(125)
+      startMenuButtons.appendChild(<div onClick={showSettingsWindow}>系统设定</div>)
+      startMenuButtons.style.height = 'calc(16pt * 5 + 4px)'
+      await sleep(125)
       startMenuButtons.appendChild(<div onClick={showAboutWindow}>关于</div>)
-      startMenuButtons.style.height = 'calc(16pt * 5 + 6px)'
+      startMenuButtons.style.height = 'calc(16pt * 6 + 6px)'
       await sleep(125)
    }
    asyncUpdates()

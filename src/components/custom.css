@@ -1,0 +1,13 @@
+.custom-warn-text {
+   font-size: 16pt;
+
+   display: flex;
+   flex-direction: column;
+   row-gap: 0.5em;
+   line-height: 110%;
+}
+
+.custom-warn-text .warn {
+   color: yellow;
+   font-weight: bold;
+}

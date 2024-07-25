@@ -1,0 +1,52 @@
+.confirm-window-background {
+   position: fixed;
+   left: 0;
+   top: 0;
+   width: 100vw;
+   height: 100vh;
+
+   color: transparent;
+
+   display: flex;
+   flex-direction: column;
+
+   justify-content: center;
+   align-items: center;
+}
+
+.confirm-window {
+   border: 1px solid var(--theme-color);
+   background-color: black;
+   color: var(--theme-color);
+
+   width: 50%;
+   height: 1em;
+   transition: 0.25s ease;
+   font-family: Dengxian, sans-serif;
+
+   padding: 1em;
+   font-size: 14pt;
+
+   display: flex;
+   flex-direction: column;
+
+   user-select: none;
+}
+
+.confirm-window > hr {
+   border-color: var(--theme-color);
+   width: 100%;
+}
+
+.confirm-window > .content {
+   flex: 1 0 auto;
+}
+
+.confirm-window > .title {
+   font-size: 24px;
+}
+
+.confirm-window > .button-area {
+   display: flex;
+   justify-content: space-between;
+}
