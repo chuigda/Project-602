@@ -2,15 +2,18 @@ use std::{
    fs::{read_to_string, write},
    path::Path
 };
-use chesscript::{codegen::codegen, parse::{ParseContext, Parser}};
+use chesscript::{codegen::{codegen, codegen_nomodule}, parse::{ParseContext, Parser}};
 
 fn main() {
    let args = std::env::args().collect::<Vec<_>>();
-   if args.len() != 3 {
-      eprintln!("Usage: {} <input file> <output file>",
+   if args.len() < 3 {
+      eprintln!("Usage: {} <input file> <output file> options",
                 Path::new(&args[0]).file_name().unwrap().to_string_lossy());
       std::process::exit(1);
    }
+
+   let options = &args[3..];
+   let nomodule: bool = options.iter().any(|x| x == "--nomodule");
 
    let file_name = &args[1];
    let output_file_name = &args[2];
@@ -29,6 +32,6 @@ fn main() {
       std::process::exit(1);
    }
 
-   let generated = codegen(&script);
+   let generated = if nomodule { codegen_nomodule(&script) } else { codegen(&script) };
    write(output_file_name, generated).unwrap();
 }

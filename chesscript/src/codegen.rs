@@ -1,5 +1,29 @@
 use crate::ast::{DialogueBlock, MetadataItem, ScriptBlock, ScriptFile};
 
+pub fn codegen_nomodule(script: &ScriptFile) -> String {
+   let mut ret = String::from("(() => ({\n");
+   let mut in_script_block = false;
+
+   for block in &script.blocks {
+      match block {
+         ScriptBlock::DialogueBlock(dialogue_block) => gen_dialogue_block(&dialogue_block, &mut ret),
+         ScriptBlock::ExecutableBlock(executable_block) => {
+            ret.push_str("   /* codeblock */\n   ");
+            ret.push_str(&executable_block.token.value.as_deref().unwrap().trim());
+            ret.push_str("\n   /* end codeblock */\n");
+         },
+         ScriptBlock::MetadataItem(metadata_item) => gen_metadata_item(&metadata_item, true, &mut ret, &mut in_script_block),
+      }
+   }
+
+   if in_script_block {
+      ret.push_str("   }\n");
+   }
+
+   ret.push_str("}))()\n");
+   ret
+}
+
 pub fn codegen(script: &ScriptFile) -> String {
    let mut ret = String::new();
    let mut in_script_block = false;
@@ -12,7 +36,7 @@ pub fn codegen(script: &ScriptFile) -> String {
             ret.push_str(&executable_block.token.value.as_deref().unwrap().trim());
             ret.push_str("\n   /* end codeblock */\n");
          },
-         ScriptBlock::MetadataItem(metadata_item) => gen_metadata_item(&metadata_item, &mut ret, &mut in_script_block),
+         ScriptBlock::MetadataItem(metadata_item) => gen_metadata_item(&metadata_item, false, &mut ret, &mut in_script_block),
       }
    }
 
@@ -64,11 +88,16 @@ fn gen_dialogue_block(dialogue_block: &DialogueBlock, ret: &mut String) {
    }
 }
 
-fn gen_metadata_item(metadata_item: &MetadataItem, ret: &mut String, in_script_block: &mut bool) {
+fn gen_metadata_item(metadata_item: &MetadataItem, no_module: bool, ret: &mut String, in_script_block: &mut bool) {
    match metadata_item.key.value.as_ref().unwrap().trim() {
       "scene" | "event" => {
          if *in_script_block {
-            ret.push_str("}\n\n");
+            if no_module {
+               ret.push_str("   },\n");
+            }
+            else {
+               ret.push_str("}\n\n");
+            }
          }
 
          let scene_id = metadata_item.value
@@ -82,7 +111,12 @@ fn gen_metadata_item(metadata_item: &MetadataItem, ret: &mut String, in_script_b
             .next()
             .unwrap();
 
-         ret.push_str(&format!("export const Event_{} = async cx => {{\n", scene_id));
+         if no_module {
+            ret.push_str(&format!("   Event_{}: async cx => {{\n", scene_id));
+         }
+         else {
+            ret.push_str(&format!("export const Event_{} = async cx => {{\n", scene_id));
+         }
          *in_script_block = true;
       },
       "fen" => {
@@ -118,10 +152,15 @@ fn gen_metadata_item(metadata_item: &MetadataItem, ret: &mut String, in_script_b
             .map(|c| format!("'{}'", c))
             .collect::<Vec<_>>();
 
-         ret.push_str(&format!(
-            "export const CharacterUse = [{}]\n\n",
-            characters.join(", ")
-         ));
+         if no_module {
+            ret.push_str(&format!("   CharacterUse: [{}],\n", characters.join(", ")));
+         }
+         else {
+            ret.push_str(&format!(
+               "export const CharacterUse = [{}]\n\n",
+               characters.join(", ")
+            ));
+         }
       },
       "startevent" | "startscene" => {
          let scene_id = metadata_item.value
@@ -135,7 +174,12 @@ fn gen_metadata_item(metadata_item: &MetadataItem, ret: &mut String, in_script_b
             .next()
             .unwrap();
 
-         ret.push_str(&format!("export const StartingEvent = '{}'\n\n", scene_id));
+         if no_module {
+            ret.push_str(&format!("   StartingEvent: '{}',\n", scene_id));
+         }
+         else {
+            ret.push_str(&format!("export const StartingEvent = '{}'\n\n", scene_id));
+         }
       },
       "next" | "pushevent" => {
          let scene_id = metadata_item.value
