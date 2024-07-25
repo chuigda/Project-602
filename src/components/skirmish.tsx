@@ -1,7 +1,7 @@
 import { h } from 'tsx-dom'
 import * as fischer from 'fischer960'
 import { DoubleOpenScreen } from '../widgets/double-open-screen'
-import { Select } from '../widgets/select'
+import { createSelect } from '../widgets/select'
 import { Window } from '../widgets/window'
 import { sleep } from '../util/sleep'
 import { Button } from '../widgets/button'
@@ -37,7 +37,7 @@ export function showSkirmishWindow(): HTMLElement {
    const errorReporter = <span class="error-reporter" />
 
    const skirmishMapPreview = <div class="skirmish-map-preview" />
-   const createInitialPositionPreview = () => {
+   const recreatePositionPreview = () => {
       skirmishMapPreview.innerHTML = ''
       skirmishMapPreview.append(...create2DChessboardFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -'))
    }
@@ -72,7 +72,12 @@ export function showSkirmishWindow(): HTMLElement {
       errorReporter.innerText = ''
    }
 
-   const openingSelection = <Select title="开局选择" options={openingOptions} onChange={chooseSpecificPosition}/>
+   const openingSelection = createSelect<string>(
+      '开局选择',
+      openingOptions,
+      chooseSpecificPosition
+   )
+
    const chess960Selection = <div class="skirmish-chess960-selection" style="display: none">
       <span>局面编号</span>
       <input type="text"
@@ -85,14 +90,14 @@ export function showSkirmishWindow(): HTMLElement {
    const onChooseGameMode = (gamemode: string) => {
       if (gamemode === 'chess960') {
          chess960Selection.style.display = 'flex'
-         openingSelection.style.display = 'none'
+         openingSelection.element.style.display = 'none'
       }
       else {
          chess960Selection.style.display = 'none'
-         openingSelection.style.display = 'flex'
+         openingSelection.element.style.display = 'flex'
       }
 
-      createInitialPositionPreview()
+      recreatePositionPreview()
    }
 
    const onChoosePlayerSide = (side: PlayerSide) => {
@@ -115,6 +120,39 @@ export function showSkirmishWindow(): HTMLElement {
       windowBackground.remove()
    }
 
+   const gameModeSelect = createSelect<'chess' | 'chess960'>(
+      '游戏模式',
+      [
+         { text: '标准国际象棋', value: 'chess' },
+         { text: '国际象棋960', value: 'chess960' }
+      ],
+      onChooseGameMode
+   )
+
+   const playerColorSelect = createSelect<PlayerSide>(
+      '玩家颜色',
+      [
+         { text: '白色', value: 'white' },
+         { text: '黑色', value: 'black' }
+      ],
+      onChoosePlayerSide
+   )
+
+   const aiLevelSelect = createSelect<number>(
+      '电脑难度',
+      [
+         { text: '等级 1', value: 1 },
+         { text: '等级 2', value: 2 },
+         { text: '等级 3', value: 3 },
+         { text: '等级 4', value: 4 },
+         { text: '等级 5', value: 5 },
+         { text: '等级 6', value: 6 },
+         { text: '等级 7', value: 7 },
+         { text: '等级 8', value: 8 },
+      ],
+      onChooseAILevel
+   )
+
    const skirmishWindow = (
       <Window title="遭遇战" height="65vh" onClose={async () => {
          (windowBackground.children[0] as HTMLElement).style.height = '0';
@@ -124,34 +162,10 @@ export function showSkirmishWindow(): HTMLElement {
       }}>
          <div class="skirmish-content">
             <div class="skirmish-settings">
-               <Select title="游戏模式"
-                       options={[
-                        {text: '标准国际象棋', value: 'chess'},
-                        {text: '国际象棋960', value: 'chess960'}
-                       ]}
-                       onChange={onChooseGameMode}
-               />
-               <Select title="玩家颜色"
-                       options={[
-                        {text: '白色', value: 'white'},
-                        {text: '黑色', value: 'black'}
-                       ]}
-                       onChange={onChoosePlayerSide}
-               />
-               <Select title="电脑难度"
-                       options={[
-                        {text: '等级 1', value: 1},
-                        {text: '等级 2', value: 2},
-                        {text: '等级 3', value: 3},
-                        {text: '等级 4', value: 4},
-                        {text: '等级 5', value: 5},
-                        {text: '等级 6', value: 6},
-                        {text: '等级 7', value: 7},
-                        {text: '等级 8', value: 8},
-                       ]}
-                       onChange={onChooseAILevel}
-               />
-               { openingSelection }
+               { gameModeSelect.element }
+               { playerColorSelect.element }
+               { aiLevelSelect.element }
+               { openingSelection.element }
                { chess960Selection }
             </div>
             { skirmishMapPreview }
@@ -165,7 +179,7 @@ export function showSkirmishWindow(): HTMLElement {
 
    setTimeout(() => {
       windowBackground.appendChild(skirmishWindow)
-      createInitialPositionPreview()
+      recreatePositionPreview()
    }, 500)
    document.body.appendChild(windowBackground)
    return windowBackground

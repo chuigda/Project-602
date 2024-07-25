@@ -4,6 +4,7 @@ import {
    rankfile2squareZeroBased,
    square2rankfileZeroBased
 } from './chessgame'
+import { choosePieceNotation } from './pieceNotation'
 
 export function uci2san(
    game: ChessGame,
@@ -22,10 +23,10 @@ export function uci2san(
 
    if (promotion) {
       if (fromFile !== toFile) {
-         return `${from[0]}x${to}=${promotion.toUpperCase()}${tail}`
+         return `${from[0]}x${to}=${choosePieceNotation(promotion.toUpperCase())}${tail}`
       }
       else {
-         return `${to}=${promotion.toUpperCase()}${tail}`
+         return `${to}=${choosePieceNotation(promotion.toUpperCase())}${tail}`
       }
    }
 
@@ -102,7 +103,7 @@ export function uci2san(
       reachable = []
    }
 
-   const srcPieceUpper = srcPiece.toUpperCase()
+   const srcPieceUpper = choosePieceNotation(srcPiece.toUpperCase())
 
    const hasSameFile_ = hasSameFile(reachable)
    const hasSameRank_ = hasSameRank(reachable)

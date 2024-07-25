@@ -2,6 +2,7 @@ import {
    ChessGame,
    square2rankfileZeroBased
 } from './chessgame'
+import { choosePieceNotation } from './pieceNotation'
 
 export function uci2lan(
    game: ChessGame,
@@ -20,10 +21,10 @@ export function uci2lan(
 
    if (promotion) {
       if (fromFile !== toFile) {
-         return `${from}x${to}=${promotion.toUpperCase()}${tail}`
+         return `${from}x${to}=${choosePieceNotation(promotion.toUpperCase())}${tail}`
       }
       else {
-         return `${from}-${to}=${promotion.toUpperCase()}${tail}`
+         return `${from}-${to}=${choosePieceNotation(promotion.toUpperCase())}${tail}`
       }
    }
 
@@ -39,6 +40,6 @@ export function uci2lan(
       }
    }
 
-   const capture = dstPiece ? 'x' : ''
-   return `${srcPiece.toUpperCase()}${from}${capture}${to}${tail}`
+   const capture = dstPiece ? 'x' : '-'
+   return `${choosePieceNotation(srcPiece.toUpperCase())}${from}${capture}${to}${tail}`
 }

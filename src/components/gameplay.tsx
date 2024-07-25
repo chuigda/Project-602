@@ -14,6 +14,7 @@ import { uci2san } from '../chess/uci2san'
 import { create2DChessboardFromFen } from '../chessboard/chessboard2d'
 
 import './gameplay.css'
+import { uci2lan } from '../chess/uci2lan'
 
 function pickBookMove(aiLevel: number, openingPosition: OpeningPosition): string {
    const allowedCPL = [200, 150, 100, 75, 50, 40, 40, 40]
@@ -176,17 +177,33 @@ export function createSkirmishGameplayWindow(
          highlightCheckers()
 
          uciMoves.value.push(uci)
-         const sanMove = uci2san(
-            prevGame,
-            uci,
-            checkers.value.length !== 0,
-            validMoves.value.length === 0
-         )
-         recordedMoves.value.push(sanMove)
+         let notationMove
+         switch (globalResource.value.config.chessNotation) {
+            case 'san':
+               notationMove = uci2san(
+                  prevGame,
+                  uci,
+                  checkers.value.length !== 0,
+                  validMoves.value.length === 0
+               )
+               break
+            case 'lan':
+               notationMove = uci2lan(
+                  prevGame,
+                  uci,
+                  checkers.value.length !== 0,
+                  validMoves.value.length === 0
+               )
+               break
+            case 'uci':
+            default:
+               notationMove = uci
+         }
+         recordedMoves.value.push(notationMove)
          if (recordedMoves.value.length % 2 !== 0) {
             scoreSheet.appendChild(<div>{Math.ceil(recordedMoves.value.length / 2)}.</div>)
          }
-         scoreSheet.appendChild(<div>{sanMove}</div>)
+         scoreSheet.appendChild(<div>{notationMove}</div>)
          scoreSheetContainer.scrollTop = scoreSheetContainer.scrollHeight
 
          if (chessGame.value.turn !== playerSide) {
