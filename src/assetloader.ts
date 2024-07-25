@@ -1,3 +1,4 @@
+import { globalResource } from '.'
 import { CommonOpeningPosition, OpeningPosition } from './chess/opening-book'
 import { Object3D, loadObject } from './chessboard/glx/object'
 import { Character } from './story/character'
@@ -144,9 +145,11 @@ export async function loadCharacter(
       }
    }
 
+   const fileSuffix = globalResource.value.config.highResPortrait ? '.png' : '.webp'
+
    const loadedImages: Record<string, HTMLImageElement> = {}
    for (const image of imagesToLoad) {
-      loadedImages[image] = await loadImage(image)
+      loadedImages[image] = await loadImage(`${image}${fileSuffix}`)
       onProgress(Object.keys(loadedImages).length / imagesToLoad.size)
    }
 
