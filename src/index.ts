@@ -7,8 +7,11 @@ import { sleep } from './util/sleep'
 
 import './index.css'
 import { createDebugConsole } from './components/debugconsole'
+import { Config, loadConfig } from './config'
 
 export interface GlobalResource {
+   config: Config
+
    gameAsset: GameAsset
    fairyStockfish: FairyStockfish
    chessData: ChessData
@@ -44,14 +47,17 @@ async function continueLoadingOperation() {
    $('load-item-title').innerText = '即将完成...'
 
    globalResource.value = {
+      config: loadConfig(),
+
       gameAsset,
       fairyStockfish,
       chessData,
       characters: {}
-   }
+   };
+
+   (window.globalThis as any)['debug'] = createDebugConsole
 
    await sleep(500)
-   createDebugConsole()
    createStartMenu()
 }
 
