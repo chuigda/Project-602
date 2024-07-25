@@ -46,7 +46,7 @@ export function getPieceName(piece: Piece): PieceName {
       case 'k': return 'king'
       case 'p': return 'pawn'
       case 'w': return 'wgc'
-      case 'w': return 'immovable'
+      case 'i': return 'immovable'
    }
 
    throw new Error(`invalid piece ${piece}`)

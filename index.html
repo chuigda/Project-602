@@ -53,13 +53,7 @@
       }
     </script>
 
-    <script type="module">
-      async function startLoading() {
-        $('load-item-title').innerHTML = '正在载入基本系统'
-        await import("/src/index.ts")
-      }
-
-      document.addEventListener("DOMContentLoaded", startLoading)
+    <script type="module" src="/src/index.ts">
     </script>
 
     <style>
