@@ -4,6 +4,7 @@ import { sleep } from '../util/sleep'
 
 export interface SelectControl<T> {
    element: HTMLElement
+   selectCurrentSpan: HTMLElement
    value: T
    options: { value: T, text: string }[]
 }
@@ -14,7 +15,7 @@ export function setCurrentOption<T>(control: SelectControl<T>, value: T) {
       return
    }
 
-   (control.element.querySelector('.select-current') as HTMLElement).innerText = option.text
+   control.selectCurrentSpan.innerText = option.text
    control.value = option.value
 }
 
@@ -31,6 +32,8 @@ export function createSelect<T>(
          popUpDiv.remove()
       }, 200)
    }
+
+   const selectCurrentSpan = <span class="select-current">{ options[0].text }</span>
 
    const popUpDiv = <div class="select-popup" tabIndex={0} onBlur={closePopUpDiv} />
 
@@ -57,7 +60,7 @@ export function createSelect<T>(
                if (onChange) {
                   onChange(option.value)
                }
-               (selectDiv.querySelector('.select-current') as HTMLElement).innerText = option.text
+               selectCurrentSpan.innerText = option.text
                closePopUpDiv()
             }}>{option.text}</div>
          })
@@ -71,7 +74,7 @@ export function createSelect<T>(
       <div class="select-container">
          <span>{title}</span>
          <div class="select" onClick={showPopUpDiv}>
-            <span class="select-current">{ options[0].text }</span>
+            { selectCurrentSpan }
             <span>▼</span>
          </div>
       </div>
@@ -80,12 +83,13 @@ export function createSelect<T>(
    if (value) {
       const option = options.find(option => option.value === value)
       if (option) {
-         (selectContainerDiv.querySelector('.select-current') as HTMLElement).innerText = option.text
+         selectCurrentSpan.innerText = option.text
       }
    }
 
    return {
       element: selectContainerDiv,
+      selectCurrentSpan,
       value: value ?? options[0].value,
       options: options
    }
