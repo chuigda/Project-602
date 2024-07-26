@@ -1,4 +1,5 @@
 import { h } from 'tsx-dom'
+import { ChessGame } from '../chess/chessgame'
 
 export function create2DChessboardFromFen(fen: string): HTMLElement[] {
    const elements = []
@@ -25,6 +26,24 @@ export function create2DChessboardFromFen(fen: string): HTMLElement[] {
             )
             file += 1
          }
+      }
+   }
+
+   return elements
+}
+
+export function create2DChessboardFromChessGame(chessgame: ChessGame): HTMLElement[] {
+   const elements = []
+
+   for (let rank = 0; rank < 8; rank++) {
+      for (let file = 0; file < 8; file++) {
+         const piece = chessgame.position[rank][file]
+         const color = (rank + file) % 2 === 0 ? 'light-square' : 'dark-square'
+         elements.push(
+            <div class={`chessboard-square ${color}`}>
+               {piece && <span class={`chesspiece chesspiece-${piece}`} />}
+            </div>
+         )
       }
    }
 

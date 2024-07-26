@@ -64,8 +64,8 @@ export function createSkirmishGameplayWindow(
       await fairyStockfish.uciNewGame()
       await fairyStockfish.setElo(500 + (aiLevel - 1) * 200)
 
-      const minimap = <div class="skirmish-minimap" />
-      const scoreSheet = <div class="skirmish-scoresheet" />
+      const minimap = <div class="gameplay-minimap" />
+      const scoreSheet = <div class="gameplay-scoresheet" />
       const scoreSheetContainer = <div class="scoresheet-container">{scoreSheet}</div>
       const gameplayCanvas = <canvas class="gameplay-canvas" style={{ opacity: '0%' }} /> as HTMLCanvasElement
       const gameplayHud = <div class="gameplay-hud" />

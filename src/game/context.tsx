@@ -1,3 +1,5 @@
+import { h } from 'tsx-dom'
+import { globalResource } from '..'
 import {
    ChessGame,
    chessGameToFen,
@@ -14,14 +16,13 @@ import {
 import { OpeningPosition } from '../chess/opening-book'
 import { trimFEN } from '../chess/trimfen'
 import { Chessboard3D, chessboardColor, gamePositionToChessboard } from '../chessboard/chessboard'
+import { create2DChessboardFromChessGame } from '../chessboard/chessboard2d'
 import { showDialogue, hideDialogue, speak, Dialogue } from '../widgets/dialogue'
+import { openPromotionWindow } from '../widgets/promote'
 import { addPromptLine, clearPrompt, PromptLevel, SystemPrompt } from '../widgets/system-prompt'
 import { loadCharacter } from '../assetloader'
 import { CharacterDefs } from '../story/chardef'
 import { sleep } from '../util/sleep'
-
-import { globalResource } from '..'
-import { openPromotionWindow } from '../widgets/promote'
 
 export interface ContextVariable {
    value: any
@@ -49,6 +50,8 @@ export class Context {
    chessboard: Chessboard3D
    dialogue: Dialogue
    systemPrompt: SystemPrompt
+   minimap: HTMLElement
+   scoreSheet: HTMLElement
 
    // 游戏逻辑数据
    chessgame: ChessGame = createEmptyChessGame()
@@ -90,13 +93,17 @@ export class Context {
       chessboardCanvas: HTMLCanvasElement,
       chessboard: Chessboard3D,
       dialogue: Dialogue,
-      systemPrompt: SystemPrompt
+      systemPrompt: SystemPrompt,
+      minimap: HTMLElement,
+      scoreSheet: HTMLElement
    ) {
       this.zIndex = zIndex
       this.chessboardCanvas = chessboardCanvas
       this.chessboard = chessboard
       this.dialogue = dialogue
       this.systemPrompt = systemPrompt
+      this.minimap = minimap
+      this.scoreSheet = scoreSheet
 
       const self = this
       this.chessboard.onClickSquare = async (rank: number, file: number) => {
@@ -135,6 +142,8 @@ export class Context {
             self.updateHighlightSquares()
          }
       }
+
+      this.minimap.append(...create2DChessboardFromChessGame(this.chessgame))
    }
 
    async selectSquare(rank: number, file: number) {
@@ -214,6 +223,10 @@ export class Context {
          this.currentFen = this.currentFen.replace(/I/g, 'i')
       }
       // 如此一来屏障单位就对游戏双方表现为完全的屏障
+
+      // 更新小地图显示
+      this.minimap.innerHTML = ''
+      this.minimap.append(...create2DChessboardFromChessGame(this.chessgame))
    }
 
    async updateValidMoves() {
@@ -530,9 +543,9 @@ export class Context {
    async highlightSquare(square: string, color: string, persist?: boolean) {
       if (persist) {
          this.persistHighlightSquares.push([square, color])
+         this.updateHighlightSquares()
       }
-      this.updateHighlightSquares()
-      if (!persist) {
+      else {
          const [rank, file] = square2rankfileZeroBased(square)
          this.chessboard.highlightSquares.push({ rank, file, color: this.constants[color] })
       }

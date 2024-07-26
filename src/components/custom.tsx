@@ -1,13 +1,6 @@
 import { h } from 'tsx-dom'
-import { globalResource } from '..'
-import { Context } from '../game/context'
-import { createChessboard3D } from '../chessboard/chessboard'
+import { startGameplay } from './gameplay_v2'
 import { showConfirmWindow } from '../widgets/confirm-window'
-import { createSystemPrompt } from '../widgets/system-prompt'
-import { createDialogue } from '../widgets/dialogue'
-import { DoubleOpenScreen } from '../widgets/double-open-screen'
-import { dbg_PlayingContext } from './debugconsole'
-import { sleep } from '../util/sleep'
 import './custom.css'
 
 export async function runCustomMission() {
@@ -48,24 +41,8 @@ export async function runCustomMission() {
 
    const text = reader.result as string
 
-   const windowBackground = <DoubleOpenScreen backgroundColor="black" zIndex={2000} />
-   document.body.appendChild(windowBackground)
-   await sleep(300)
-   const gameplayCanvas = <canvas class="gameplay-canvas" style={{ opacity: '0%' }} /> as HTMLCanvasElement
-   const systemPrompt = createSystemPrompt(2001)
-   const dialogue = await createDialogue(2002)
-
-   windowBackground.appendChild(
-      <div class="gameplay-container">
-         {gameplayCanvas}
-      </div>
-   )
-   await sleep(300)
-
-   const chessboard = createChessboard3D(gameplayCanvas, globalResource.value.gameAsset, 'white')
-
-   const cx = new Context(2000, gameplayCanvas, chessboard, dialogue, systemPrompt)
-   dbg_PlayingContext.value = cx
-   await cx.enterNonModuleScript(text)
-   await cx.handleEvents()
+   await startGameplay(2000, async cx => {
+      await cx.enterNonModuleScript(text)
+      await cx.handleEvents()
+   })
 }
