@@ -1,13 +1,13 @@
+import { loadAsset, loadChessData, GameAsset, ChessData } from './assetloader'
+import { Config, loadConfig } from './config'
 import { FairyStockfish, createFairyStockfish, loadStockfishResource } from './fairy-stockfish/fairy-stockfish'
+import { createDebugConsole } from './components/debugconsole'
 import { createStartMenu } from './components/startmenu'
 import { Character } from './story/character'
-import { loadAsset, loadChessData, GameAsset, ChessData } from './assetloader'
 import { Ref, ref } from './util/ref'
 import { sleep } from './util/sleep'
 
 import './index.css'
-import { createDebugConsole } from './components/debugconsole'
-import { Config, loadConfig } from './config'
 
 export interface GlobalResource {
    config: Config

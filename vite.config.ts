@@ -17,7 +17,7 @@ export default defineConfig({
    build: {
       target: 'es2018',
       cssCodeSplit: false,
-      copyPublicDir: false,
+      copyPublicDir: true,
       rollupOptions: {
          output: {
             entryFileNames: 'index.js',
