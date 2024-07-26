@@ -9,8 +9,9 @@
    await cx.sleep(1000)
    /* end codeblock */
    /* [dialogue] */ await cx.showDialogue()
-   await cx.speak('黑王', `作为一名优秀的新秀执白棋手 —— 我没说你，从开局的那一刻一切就尽在他的掌握之中`)
-   await cx.speak('黑王', `不幸的是，在真实的国际象棋对弈中，你有一半的时间都执不到白`)
+   await cx.speak('黑王', `作为一名棋界新秀执白棋手 —— 我没说你，从开局的那一刻一切就尽在他的掌握之中`)
+   await cx.speak('黑王', `不幸的是，在真实的国际象棋对弈中，你有一半的时间都执不到白
+而一旦你执黑，那就只能步步为营了`)
    await cx.speak('黑王', `所以，学习黑方开局也是非常重要的一部分。这是白杨不会教给你的，呵呵`, '微笑')
    /* [/dialogue] */ await cx.hideDialogue()
    /* codeblock */
@@ -19,7 +20,7 @@
    /* end codeblock */
    /* [dialogue] */ await cx.showDialogue()
    await cx.speak('黑王', `西西里防御是黑方应对白方王兵开局的重要武器之一`)
-   await cx.speak('黑王', `现在，把你的 c 兵走到 c5`)
+   await cx.speak('黑王', `现在，把 c 兵走到 c5`)
    /* [/dialogue] */ await cx.hideDialogue()
    /* codeblock */
    let failCount = 0
@@ -54,7 +55,7 @@
                await cx.speak('黑王', '哟，现代人啊，中心直接不要了', '微笑')
                break
             case 'g8f6':
-               await cx.speak('黑王', '阿廖欣防御？你的口味还真是特殊', '微笑')
+               await cx.speak('黑王', '阿廖欣防御？你的品味还真是独特', '微笑')
                break
             default:
                await cx.speak('黑王', '真有意思，看来你有一点自己的想法')
