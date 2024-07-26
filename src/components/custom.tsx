@@ -1,6 +1,6 @@
 import { h } from 'tsx-dom'
 import { globalResource } from '..'
-import { Context } from '../context'
+import { Context } from '../game/context'
 import { createChessboard3D } from '../chessboard/chessboard'
 import { showConfirmWindow } from '../widgets/confirm-window'
 import { createSystemPrompt } from '../widgets/system-prompt'
@@ -64,7 +64,7 @@ export async function runCustomMission() {
 
    const chessboard = createChessboard3D(gameplayCanvas, globalResource.value.gameAsset, 'white')
 
-   const cx = new Context(gameplayCanvas, chessboard, dialogue, systemPrompt)
+   const cx = new Context(2000, gameplayCanvas, chessboard, dialogue, systemPrompt)
    dbg_PlayingContext.value = cx
    await cx.enterNonModuleScript(text)
    await cx.handleEvents()

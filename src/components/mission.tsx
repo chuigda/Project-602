@@ -1,6 +1,6 @@
 import { h } from 'tsx-dom'
 import { globalResource } from '..'
-import { Context } from '../context'
+import { Context } from '../game/context'
 import { createChessboard3D } from '../chessboard/chessboard'
 import { createDialogue } from '../widgets/dialogue'
 import { DoubleOpenScreen } from '../widgets/double-open-screen'
@@ -29,7 +29,7 @@ export async function showTestMissionWindow(zIndex: number): Promise<HTMLElement
 
       const chessboard = createChessboard3D(gameplayCanvas, globalResource.value.gameAsset, 'white')
 
-      const cx = new Context(gameplayCanvas, chessboard, dialogue, systemPrompt)
+      const cx = new Context(zIndex, gameplayCanvas, chessboard, dialogue, systemPrompt)
       dbg_PlayingContext.value = cx
       await cx.enterScript('/story/1_awakening.js')
       await cx.handleEvents()

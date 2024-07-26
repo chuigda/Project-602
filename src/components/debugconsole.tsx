@@ -1,5 +1,5 @@
 import { h } from 'tsx-dom'
-import { Context } from '../context'
+import { Context } from '../game/context'
 import { createCheckmateWindow } from './checkmate'
 import { ref, Ref } from '../util/ref'
 import { sleep } from '../util/sleep'

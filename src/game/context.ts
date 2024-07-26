@@ -8,17 +8,18 @@ import {
    PlayerSide,
    rankfile2squareZeroBased,
    square2rankfileZeroBased
-} from './chess/chessgame'
-import { OpeningPosition } from './chess/opening-book'
-import { trimFEN } from './chess/trimfen'
-import { Chessboard3D, chessboardColor, gamePositionToChessboard } from './chessboard/chessboard'
-import { showDialogue, hideDialogue, speak, Dialogue } from './widgets/dialogue'
-import { addPromptLine, clearPrompt, PromptLevel, SystemPrompt } from './widgets/system-prompt'
-import { loadCharacter } from './assetloader'
-import { CharacterDefs } from './story/chardef'
-import { sleep } from './util/sleep'
+} from '../chess/chessgame'
+import { OpeningPosition } from '../chess/opening-book'
+import { trimFEN } from '../chess/trimfen'
+import { Chessboard3D, chessboardColor, gamePositionToChessboard } from '../chessboard/chessboard'
+import { showDialogue, hideDialogue, speak, Dialogue } from '../widgets/dialogue'
+import { addPromptLine, clearPrompt, PromptLevel, SystemPrompt } from '../widgets/system-prompt'
+import { loadCharacter } from '../assetloader'
+import { CharacterDefs } from '../story/chardef'
+import { sleep } from '../util/sleep'
 
-import { globalResource } from '.'
+import { globalResource } from '..'
+import { openPromotionWindow } from '../widgets/promote'
 
 export interface ContextVariable {
    value: any
@@ -35,10 +36,12 @@ export type SupportedVariant =
 export type GenericEventHandler = (cx: Context, ...args: any[]) => Promise<void> | void
 export type SceneEvent = (cx: Context) => Promise<void> | void
 export type SquareClickHandler = (cx: Context, square: string) => Promise<void> | void
-export type MovePlayedHandler = (cx: Context, side: PlayerSide, square: string) => Promise<void> | void
+export type MovePlayedHandler = (cx: Context, side: PlayerSide, uciMove: string) => Promise<void> | void
 export type PositionChangedHandler = (cx: Context) => Promise<void> | void
+export type GameTerminationHandler = (cx: Context) => Promise<void> | void
 
 export class Context {
+   zIndex: number
    chessboardCanvas: HTMLCanvasElement
    chessboard: Chessboard3D
    dialogue: Dialogue
@@ -59,6 +62,12 @@ export class Context {
    onMovePlayed: Set<MovePlayedHandler> = new Set()
    onPositionChanged: Set<PositionChangedHandler> = new Set()
 
+   onCheckmate: Set<GameTerminationHandler> = new Set()
+   onStalemate: Set<GameTerminationHandler> = new Set()
+   onThreefold: Set<GameTerminationHandler> = new Set()
+   onInsufficientMaterial: Set<GameTerminationHandler> = new Set()
+   onCaptureAll: Set<GameTerminationHandler> = new Set()
+
    constants: Record<string, any> = {
       ...chessboardColor
    }
@@ -66,11 +75,13 @@ export class Context {
    selectedSquare: [number, number] | undefined = undefined
 
    constructor(
+      zIndex: number,
       chessboardCanvas: HTMLCanvasElement,
       chessboard: Chessboard3D,
       dialogue: Dialogue,
       systemPrompt: SystemPrompt
    ) {
+      this.zIndex = zIndex
       this.chessboardCanvas = chessboardCanvas
       this.chessboard = chessboard
       this.dialogue = dialogue
@@ -97,7 +108,7 @@ export class Context {
                const move = startSquare + targetSquare
                const isValidMove = self.validMoves.find(m => m.startsWith(move)) !== undefined
                if (isValidMove) {
-                  await self.playMove(...self.selectedSquare, rank, file)
+                  await self.humanPlayMove(...self.selectedSquare, rank, file)
                }
             }
          }
@@ -148,35 +159,21 @@ export class Context {
       }
    }
 
-   async playMove(
+   async humanPlayMove(
       startRank: number,
       startFile: number,
       targetRank: number,
       targetFile: number,
-      uci?: string
    ) {
-      // TODO migrate from skirmish code, implement promotion
-      uci = uci ?? rankfile2squareZeroBased(startRank, startFile) + rankfile2squareZeroBased(targetRank, targetFile)
-
-      const fairyStockfish = globalResource.value.fairyStockfish
-      await fairyStockfish.setPositionWithMoves(
-         this.currentFen,
-         [uci]
-      )
-
-      this.currentFen = trimFEN(await fairyStockfish.getCurrentFen())
-      this.postprocessFen()
-
-      this.chessgame = createChessGameFromFen(this.currentFen)
-      gamePositionToChessboard(this.chessgame, this.chessboard)
-
-      await this.updateValidMoves()
-      this.selectedSquare = undefined
-      this.chessboard.highlightSquares = []
-
-      for (const handler of this.onPositionChanged) {
-         await handler(this)
+      let uci = rankfile2squareZeroBased(startRank, startFile) + rankfile2squareZeroBased(targetRank, targetFile)
+      if (isPromoteMove(this.chessgame, startRank, startFile, targetRank)) {
+         this.disableChessboard()
+         const promotionPiece = await openPromotionWindow(this.chessgame.turn, this.zIndex + 1000)
+         uci += promotionPiece
+         this.enableChessboard()
       }
+
+      await this.playMoveUCI(uci)
    }
 
    updateFenFromChessgame() {
@@ -226,7 +223,6 @@ export class Context {
    }
 
    // public APIs
-
    async setChessboardInteract(enable: boolean) {
       this.chessboardInteract = enable
    }
@@ -285,7 +281,7 @@ export class Context {
       await this.updateValidMoves()
    }
 
-   async setPlayerSide(side: PlayerSide) {
+   setPlayerSide(side: PlayerSide) {
       this.playerSide = side
       this.chessboard.orientation = side
    }
@@ -319,6 +315,31 @@ export class Context {
       }
    }
 
+   async playMoveUCI(uciMove: string) {
+      const currentSide = this.chessgame.turn
+
+      const fairyStockfish = globalResource.value.fairyStockfish
+      await fairyStockfish.setPositionWithMoves(this.currentFen, [uciMove])
+
+      this.currentFen = trimFEN(await fairyStockfish.getCurrentFen())
+      this.postprocessFen()
+
+      this.chessgame = createChessGameFromFen(this.currentFen)
+      gamePositionToChessboard(this.chessgame, this.chessboard)
+
+      await this.updateValidMoves()
+      this.selectedSquare = undefined
+      this.chessboard.highlightSquares = []
+
+      for (const handler of this.onMovePlayed) {
+         await handler(this, currentSide, uciMove)
+      }
+
+      for (const handler of this.onPositionChanged) {
+         await handler(this)
+      }
+   }
+
    waitForSquareClicked(square: string): Promise<void> {
       return new Promise<void>(resolve => {
          const handler = async (cx: Context, clickedSquare: string) => {
@@ -341,6 +362,52 @@ export class Context {
          }
          this.onPositionChanged.add(handler)
       })
+   }
+
+   waitForPosition(condition: (chessGame: ChessGame) => boolean): Promise<void> {
+      return new Promise<void>(resolve => {
+         const handler = async (cx: Context) => {
+            if (condition(cx.chessgame)) {
+               cx.onPositionChanged.delete(handler)
+               resolve()
+            }
+         }
+         this.onPositionChanged.add(handler)
+      })
+   }
+
+   waitForSpecificMove(expectedUciMove: string, expectedSide?: PlayerSide): Promise<void> {
+      return new Promise<void>(resolve => {
+         const handler = async (cx: Context, side: PlayerSide, uciMove: string) => {
+            if (expectedSide && side !== expectedSide) {
+               return
+            }
+
+            if (uciMove === expectedUciMove) {
+               cx.onMovePlayed.delete(handler)
+               resolve()
+            }
+         }
+         this.onMovePlayed.add(handler)
+      })
+   }
+
+   waitForMove(): Promise<string> {
+      return new Promise<string>(resolve => {
+         const handler = async (cx: Context, _: PlayerSide, uciMove: string) => {
+            cx.onMovePlayed.delete(handler)
+            resolve(uciMove)
+         }
+         this.onMovePlayed.add(handler)
+      })
+   }
+
+   async addCheckmateHandler(handler: GameTerminationHandler) {
+      this.onCheckmate.add(handler)
+   }
+
+   async addStalemateHandler(handler: GameTerminationHandler) {
+      this.onStalemate.add(handler)
    }
 
    async showDialogue() {
@@ -370,6 +437,10 @@ export class Context {
       this.chessboard.highlightSquares.push({ rank, file, color: this.constants[color] })
    }
 
+   async sleep(ms: number) {
+      await sleep(ms)
+   }
+
    pushEvent(handlerName: string) {
       this.sceneEvents.push(this.eventPool[`Event_${handlerName}`])
    }
@@ -390,4 +461,17 @@ export class Context {
 function isBookMove(openingPosition: OpeningPosition, uciMove: string) {
    const move4chars = uciMove.slice(0, 4)
    return openingPosition.moves.some(move => move[0].startsWith(move4chars))
+}
+
+function isPromoteMove(game: ChessGame, startRank: number, startFile: number, targetRank: number) {
+   const piece = game.position[startRank][startFile]
+   if (piece !== 'p' && piece !== 'P') {
+      return false
+   }
+
+   if (targetRank === 0 || targetRank === 7) {
+      return true
+   }
+
+   return false
 }

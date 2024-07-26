@@ -139,6 +139,16 @@ fn gen_metadata_item(metadata_item: &MetadataItem, no_module: bool, ret: &mut St
             .trim();
          ret.push_str(&format!("   await cx.setVariant('{}')\n", variant));
       },
+      "playerside" => {
+         let side = metadata_item.value
+            .as_ref()
+            .expect("metadata `playerside` requires an argument")
+            .value
+            .as_ref()
+            .unwrap()
+            .trim();
+         ret.push_str(&format!("   await cx.setPlayerSide('{}')\n", side));
+      },
       "charuse" => {
          let characters = metadata_item.value
             .as_ref()
