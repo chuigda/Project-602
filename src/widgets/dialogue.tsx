@@ -95,7 +95,12 @@ export function speak(
             break
          }
 
-         dialogue.speakContent.innerText += text[i]
+         if (text[i] === '\n') {
+            dialogue.speakContent.appendChild(<br />)
+         }
+         else {
+            dialogue.speakContent.textContent += text[i]
+         }
          await sleep(50)
       }
 

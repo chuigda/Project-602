@@ -55,7 +55,7 @@ async function continueLoadingOperation() {
       characters: {}
    };
 
-   (window.globalThis as any)['debug'] = createDebugConsole
+   createDebugConsole()
 
    await sleep(500)
    createStartMenu()

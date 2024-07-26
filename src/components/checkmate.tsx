@@ -85,7 +85,6 @@ export function createCheckmateWindow(
             textDiv.innerHTML += '&nbsp;'
          }
          else if (char === '\n') {
-            console.info('LF')
             textDiv.appendChild(<br/>)
          }
          else {

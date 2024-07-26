@@ -40,13 +40,13 @@ export function createStartMenu(): HTMLElement {
       startMenuButtons.style.height = 'calc(16pt * 3 + 4px)'
       await sleep(125)
       startMenuButtons.appendChild(<div onClick={runCustomMission}>自定战役</div>)
-      startMenuButtons.style.height = 'calc(16pt * 4 + 4px)'
+      startMenuButtons.style.height = 'calc(16pt * 4 + 6px)'
       await sleep(125)
       startMenuButtons.appendChild(<div onClick={showSettingsWindow}>系统设定</div>)
-      startMenuButtons.style.height = 'calc(16pt * 5 + 4px)'
+      startMenuButtons.style.height = 'calc(16pt * 5 + 8px)'
       await sleep(125)
       startMenuButtons.appendChild(<div onClick={showAboutWindow}>关于</div>)
-      startMenuButtons.style.height = 'calc(16pt * 6 + 6px)'
+      startMenuButtons.style.height = 'calc(16pt * 6 + 10px)'
       await sleep(125)
    }
    asyncUpdates()
