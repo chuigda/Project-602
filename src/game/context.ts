@@ -4,6 +4,7 @@ import {
    createChessGameFromFen,
    createEmptyChessGame,
    DrawReason,
+   getPieceOfSide,
    isPlayerPiece,
    Piece,
    PlayerSide,
@@ -34,21 +35,22 @@ export type SupportedVariant =
    | 'captureall310'
    | 'singleplayer'
 
-export type GenericEventHandler = (cx: Context, ...args: any[]) => Promise<void> | void
 export type SceneEvent = (cx: Context) => Promise<void> | void
 export type SquareClickHandler = (cx: Context, square: string) => Promise<void> | void
 export type MovePlayedHandler = (cx: Context, side: PlayerSide, uciMove: string) => Promise<void> | void
 export type PositionChangedHandler = (cx: Context) => Promise<void> | void
-export type GameTerminationHandler = (cx: Context, winner: PlayerSide) => Promise<void> | void
+export type GameWLHandler = (cx: Context, winner: PlayerSide) => Promise<void> | void
 export type GameDrawHandler = (cx: Context, reason: DrawReason) => Promise<void> | void
 
 export class Context {
+   // UI 组件
    zIndex: number
    chessboardCanvas: HTMLCanvasElement
    chessboard: Chessboard3D
    dialogue: Dialogue
    systemPrompt: SystemPrompt
 
+   // 游戏逻辑数据
    chessgame: ChessGame = createEmptyChessGame()
    playerSide: PlayerSide = 'white'
    currentFen: string = '8/8/8/8/8/8/8/8 w - - 0 1'
@@ -56,28 +58,32 @@ export class Context {
    validMoves: string[] = []
    checkers: string[] = []
 
+   halfMovesSinceLastCaptureOrPawnMove: number = 0
+   positionHistory: Record<string, number> = {}
+
+   // 棋盘交互数据
    chessboardInteract: boolean = true
    persistHighlightSquares: [string, string][] = []
+   selectedSquare: [number, number] | undefined = undefined
 
+   // 变量与事件处理
+   eventPool: Record<string, SceneEvent> = {}
    variables: Record<string, ContextVariable> = {}
-   eventPool: Record<string, GenericEventHandler> = {}
-   sceneEvents: SceneEvent[] = []
-
    onSquareClicked: Set<SquareClickHandler> = new Set()
    onMovePlayed: Set<MovePlayedHandler> = new Set()
    onPositionChanged: Set<PositionChangedHandler> = new Set()
+   // 对局结束事件
+   onCheckmate: Set<GameWLHandler> = new Set()
+   onCaptureAll: Set<GameWLHandler> = new Set()
+   onDraw: Set<GameDrawHandler> = new Set()
 
-   onCheckmate: Set<GameTerminationHandler> = new Set()
-   onStalemate: Set<GameTerminationHandler> = new Set()
-   onThreefold: Set<GameTerminationHandler> = new Set()
-   onInsufficientMaterial: Set<GameTerminationHandler> = new Set()
-   onCaptureAll: Set<GameTerminationHandler> = new Set()
+   // 场景事件队列
+   sceneEvents: SceneEvent[] = []
 
+   // 常量表
    constants: Record<string, any> = {
       ...chessboardColor
    }
-
-   selectedSquare: [number, number] | undefined = undefined
 
    constructor(
       zIndex: number,
@@ -184,22 +190,13 @@ export class Context {
 
    updateFenFromChessgame() {
       this.currentFen = chessGameToFen(this.chessgame)
-      this.postprocessFen()
+      this.postProcessPosition()
    }
 
-   postprocessFen() {
-      // if player is white, then replace all black immovable pieces (i) with white immovable pieces (I)
-      // so that immovable pieces act as barriers for white player
-      if (this.playerSide === 'white') {
-         this.currentFen = this.currentFen.replace(/i/g, 'I')
-      }
-      // on the contray, if player is black, then replace all white immovable pieces (I) with black immovable pieces (i)
-      else {
-         this.currentFen = this.currentFen.replace(/I/g, 'i')
-      }
-
-      // when in single player mode, always set turn to this.playerSide
+   postProcessPosition() {
+      // 当处于单人模式时，需要手动切换棋手
       if (this.variant === 'singleplayer') {
+         this.chessgame.turn = this.playerSide
          if (this.playerSide === 'white') {
             this.currentFen = this.currentFen.replace('b', 'w')
          }
@@ -207,10 +204,21 @@ export class Context {
             this.currentFen = this.currentFen.replace('w', 'b')
          }
       }
+
+      if (this.chessgame.turn === 'white') {
+         // 如果当前轮到白棋走，把所有的屏障单位都设置为白方单位，这样就能阻止白方吃掉屏障单位
+         this.currentFen = this.currentFen.replace(/i/g, 'I')
+      }
+      else {
+         // 同样地，如果当前轮到黑棋走，把所有的屏障单位都设置为黑方单位
+         this.currentFen = this.currentFen.replace(/I/g, 'i')
+      }
+      // 如此一来屏障单位就对游戏双方表现为完全的屏障
    }
 
    async updateValidMoves() {
       if (this.currentFen.startsWith('8/8/8/8/8/8/8/8')) {
+         // 在特定的游戏模式下，喂给 fairy-stockfish 一个空棋盘可能引起崩溃
          this.validMoves = []
       }
       else {
@@ -221,7 +229,7 @@ export class Context {
 
    async updateCheckers() {
       if (this.variant !== 'chess' && this.variant !== 'chesswith310') {
-         // in single player or capture all mode, we don't need to check for checkers
+         // 在单人模式或者 captureall 模式下没有将军的概念
          this.checkers = []
          return
       }
@@ -230,29 +238,47 @@ export class Context {
    }
 
    updateHighlightSquares() {
+      // 清空所有高亮
       this.chessboard.highlightSquares = []
-      // first, highlight squares that are persisted
-      for (const [square, color] of this.persistHighlightSquares) {
-         const [rank, file] = square2rankfileZeroBased(square)
-         this.chessboard.highlightSquares.push({ rank, file, color: this.constants[color] })
-      }
 
-      // then, draw check highlights
+      // 高亮所有将军者
       for (const square of this.checkers) {
          const [rank, file] = square2rankfileZeroBased(square)
          this.chessboard.highlightSquares.push({ rank, file, color: this.constants.red })
+      }
+
+      if (this.checkers.length > 0) {
+         // 高亮被将军的王
+         const kingPiece = getPieceOfSide('k', this.chessgame.turn)
+         const kingSquare = this.chessgame.position
+            .flatMap((r, rank) => r.map((p, file) => ({ p, rank, file })))
+            .find(({ p }) => p === kingPiece)
+
+         if (kingSquare) {
+            this.chessboard.highlightSquares.push({
+               rank: kingSquare.rank,
+               file: kingSquare.file,
+               color: this.constants.red
+            })
+         }
+      }
+
+      // 高亮被持久化的方格
+      for (const [square, color] of this.persistHighlightSquares) {
+         const [rank, file] = square2rankfileZeroBased(square)
+         this.chessboard.highlightSquares.push({ rank, file, color: this.constants[color] })
       }
    }
 
    async runEndgameCheck() {
       if (this.variant === 'singleplayer') {
-         // game principally never ends in singleplayer mode,
-         // so we don't need to check for endgame
+         // 原则上来说单人模式下游戏不会结束，结束场景是使用用户定义事件来实现的
+         // 这里不需要考虑
          return
       }
    }
 
-   // debug API
+   // 调试用 API
    async setPiece(square: string, piece: Piece | undefined) {
       const [rank, file] = square2rankfileZeroBased(square)
       this.chessgame.position[rank][file] = piece
@@ -262,7 +288,7 @@ export class Context {
       await this.updateCheckers()
    }
 
-   // public APIs
+   // 公共 API，可以给剧本代码使用
    async setChessboardInteract(enable: boolean) {
       this.chessboardInteract = enable
    }
@@ -304,10 +330,10 @@ export class Context {
    async setVariant(variant: SupportedVariant) {
       this.variant = variant
       if (variant === 'singleplayer') {
-         // use "chesswith310" rules, and we will manually switch side
-         // when in normal chess mode, when there's no opponent king, fairy-stockfish could search moves for one player normally
-         // but if captureall rule is used, fairy-stockfish will determine the position is winning for one side
-         // and will not do any search
+         // 使用 chesswith310 规则并手动切换控制方
+
+         // 当使用常规国际象棋（包括 chesswith310）规则时，如果一方没有王，fairy-stockfish 仍然会为另一方继续
+         // 生成合法的着法；然而如果使用 captureall 规则，fairy-stockfish 会认为这是一方胜利的局面，不会继续搜索
          await globalResource.value.fairyStockfish.setVariant('chesswith310')
          if (this.chessgame.turn != this.playerSide) {
             this.chessgame.turn = this.playerSide
@@ -315,6 +341,12 @@ export class Context {
       }
       else {
          await globalResource.value.fairyStockfish.setVariant(variant)
+      }
+
+      if (variant === 'chess' || variant === 'chesswith310') {
+         // 重置三次重复局面和五十步计数器
+         this.halfMovesSinceLastCaptureOrPawnMove = 0
+         this.positionHistory = {}
       }
 
       this.updateFenFromChessgame()
@@ -346,10 +378,16 @@ export class Context {
 
       this.chessgame = createChessGameFromFen(fen)
       this.currentFen = fen
-      this.postprocessFen()
+      this.postProcessPosition()
       gamePositionToChessboard(this.chessgame, this.chessboard)
       await this.updateValidMoves()
       await this.updateCheckers()
+
+      if (this.variant === 'chess' || this.variant === 'chesswith310') {
+         // 重置三次重复局面和五十步计数器
+         this.halfMovesSinceLastCaptureOrPawnMove = 0
+         this.positionHistory = {}
+      }
 
       if (!noAutoFade && this.chessboardCanvas.style.opacity === '0') {
          this.chessboardCanvas.style.opacity = '1'
@@ -360,11 +398,27 @@ export class Context {
    async playMoveUCI(uciMove: string) {
       const currentSide = this.chessgame.turn
 
+      const isCapture = isCaptureMove(this.chessgame, uciMove)
+      if (this.variant === 'chess' || this.variant === 'chesswith310') {
+         const movedPawn = isPawnMove(this.chessgame, uciMove)
+         if (isCapture || movedPawn) {
+            this.halfMovesSinceLastCaptureOrPawnMove = 0
+         }
+         else {
+            this.halfMovesSinceLastCaptureOrPawnMove++
+         }
+      }
+
       const fairyStockfish = globalResource.value.fairyStockfish
       await fairyStockfish.setPositionWithMoves(this.currentFen, [uciMove])
 
       this.currentFen = trimFEN(await fairyStockfish.getCurrentFen())
-      this.postprocessFen()
+      this.postProcessPosition()
+
+      if (this.variant === 'chess' || this.variant === 'chesswith310') {
+         const fenCount = this.positionHistory[this.currentFen] || 0
+         this.positionHistory[this.currentFen] = fenCount + 1
+      }
 
       this.chessgame = createChessGameFromFen(this.currentFen)
       gamePositionToChessboard(this.chessgame, this.chessboard)
@@ -447,12 +501,8 @@ export class Context {
       })
    }
 
-   async addCheckmateHandler(handler: GameTerminationHandler) {
+   async addCheckmateHandler(handler: GameWLHandler) {
       this.onCheckmate.add(handler)
-   }
-
-   async addStalemateHandler(handler: GameTerminationHandler) {
-      this.onStalemate.add(handler)
    }
 
    async showDialogue() {
@@ -525,4 +575,16 @@ function isPromoteMove(game: ChessGame, startRank: number, startFile: number, ta
    }
 
    return false
+}
+
+function isCaptureMove(game: ChessGame, uciMove: string) {
+   const targetSquare = uciMove.slice(2, 4)
+   const [targetRank, targetFile] = square2rankfileZeroBased(targetSquare)
+   return game.position[targetRank][targetFile] !== undefined
+}
+
+function isPawnMove(game: ChessGame, uciMove: string) {
+   const startSquare = uciMove.slice(0, 2)
+   const [startRank, startFile] = square2rankfileZeroBased(startSquare)
+   return game.position[startRank][startFile] === 'p' || game.position[startRank][startFile] === 'P'
 }
