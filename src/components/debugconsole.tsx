@@ -103,6 +103,7 @@ function setPiece(args: string[]) {
        || square.charCodeAt(0) < 'a'.charCodeAt(0) || square.charCodeAt(0) > 'i'.charCodeAt(0)
        || square.charCodeAt(1) < '1'.charCodeAt(0) || square.charCodeAt(1) > '8'.charCodeAt(0)) {
       dbgError('setpiece: 棋盘坐标格式错误')
+      return
    }
 
    const piece = args.length > 1
@@ -204,6 +205,7 @@ function makeError(args: string[]) {
 
 function resetFlags() {
    localStorage.removeItem('warn_custom_mission')
+   dbgInfo('resetflags: 已重置所有标志')
 }
 
 async function babyDontHurtMe() {
