@@ -1,4 +1,3 @@
-import { h } from 'tsx-dom'
 import { globalResource } from '..'
 import {
    ChessGame,
@@ -225,6 +224,7 @@ export class Context {
       // 如此一来屏障单位就对游戏双方表现为完全的屏障
 
       // 更新小地图显示
+      console.info(this.chessgame)
       this.minimap.innerHTML = ''
       this.minimap.append(...create2DChessboardFromChessGame(this.chessgame))
    }
@@ -426,6 +426,7 @@ export class Context {
       await fairyStockfish.setPositionWithMoves(this.currentFen, [uciMove])
 
       this.currentFen = trimFEN(await fairyStockfish.getCurrentFen())
+      this.chessgame = createChessGameFromFen(this.currentFen)
       this.postProcessPosition()
 
       if (this.variant === 'chess' || this.variant === 'chesswith310') {
@@ -433,7 +434,6 @@ export class Context {
          this.positionHistory[this.currentFen] = fenCount + 1
       }
 
-      this.chessgame = createChessGameFromFen(this.currentFen)
       gamePositionToChessboard(this.chessgame, this.chessboard)
 
       await this.updateValidMoves()

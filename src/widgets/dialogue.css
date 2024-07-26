@@ -4,7 +4,7 @@
 
    left: 0;
    top: 0;
-   width: 100vw;
+   width: calc(100vw - 320px);
    height: 100vh;
 }
 
@@ -14,7 +14,7 @@
    position: absolute;
    transition: 0.125s ease;
 
-   width: calc(100% - 2em);
+   width: calc(100vw - 320px - 1.5em);
    bottom: 0px;
    left: 0px;
 
@@ -50,4 +50,7 @@
    background-color: black;
    cursor: pointer;
    line-height: 125%;
+
+   margin: 0;
+   font: inherit;
 }

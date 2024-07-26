@@ -35,10 +35,11 @@ export function create2DChessboardFromFen(fen: string): HTMLElement[] {
 export function create2DChessboardFromChessGame(chessgame: ChessGame): HTMLElement[] {
    const elements = []
 
-   for (let rank = 0; rank < 8; rank++) {
+   for (let i = 0; i < 8; i++) {
       for (let file = 0; file < 8; file++) {
+         const rank = 7 - i
          const piece = chessgame.position[rank][file]
-         const color = (rank + file) % 2 === 0 ? 'light-square' : 'dark-square'
+         const color = (i + file) % 2 === 0 ? 'light-square' : 'dark-square'
          elements.push(
             <div class={`chessboard-square ${color}`}>
                {piece && <span class={`chesspiece chesspiece-${piece}`} />}

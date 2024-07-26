@@ -21,7 +21,7 @@ export async function createDialogue(zIndex: number): Promise<Dialogue> {
    ) as HTMLCanvasElement
    const container = <div class="dialogue" style={{ opacity: '0', zIndex: `${zIndex + 1}` }}/>
    const speaker = <div class="speaker" />
-   const speakContent = <div class="speak-content" />
+   const speakContent = <pre class="speak-content" />
    container.appendChild(speaker)
    container.appendChild(speakContent)
    document.body.appendChild(portrait)
@@ -95,12 +95,7 @@ export function speak(
             break
          }
 
-         if (text[i] === '\n') {
-            dialogue.speakContent.appendChild(<br />)
-         }
-         else {
-            dialogue.speakContent.textContent += text[i]
-         }
+         dialogue.speakContent.innerText += text[i]
          await sleep(50)
       }
 
