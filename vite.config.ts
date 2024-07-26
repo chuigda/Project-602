@@ -14,11 +14,6 @@ const advancedCors: Plugin = {
 export default defineConfig({
    base: '',
    plugins: [advancedCors],
-   server: {
-      watch: {
-         ignored: ['*.png', '*.webp']
-      }
-   },
    build: {
       target: 'es2018',
       cssCodeSplit: false,

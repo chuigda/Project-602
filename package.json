@@ -13,8 +13,8 @@
   },
   "devDependencies": {
     "fairy-stockfish-nnue.wasm": "^1.1.8",
-    "tsx-dom": "^2.0.0",
-    "tsx-dom-types": "^1.0.0",
+    "tsx-dom": "^3.0.1",
+    "tsx-dom-types": "^2.0.1",
     "typescript": "^5.0.2",
     "vite": "^5.0.0"
   }
