@@ -3,6 +3,7 @@ import {
    chessGameToFen,
    createChessGameFromFen,
    createEmptyChessGame,
+   DrawReason,
    isPlayerPiece,
    Piece,
    PlayerSide,
@@ -38,7 +39,8 @@ export type SceneEvent = (cx: Context) => Promise<void> | void
 export type SquareClickHandler = (cx: Context, square: string) => Promise<void> | void
 export type MovePlayedHandler = (cx: Context, side: PlayerSide, uciMove: string) => Promise<void> | void
 export type PositionChangedHandler = (cx: Context) => Promise<void> | void
-export type GameTerminationHandler = (cx: Context) => Promise<void> | void
+export type GameTerminationHandler = (cx: Context, winner: PlayerSide) => Promise<void> | void
+export type GameDrawHandler = (cx: Context, reason: DrawReason) => Promise<void> | void
 
 export class Context {
    zIndex: number
@@ -52,7 +54,10 @@ export class Context {
    currentFen: string = '8/8/8/8/8/8/8/8 w - - 0 1'
    variant: SupportedVariant = 'singleplayer'
    validMoves: string[] = []
+   checkers: string[] = []
+
    chessboardInteract: boolean = true
+   persistHighlightSquares: [string, string][] = []
 
    variables: Record<string, ContextVariable> = {}
    eventPool: Record<string, GenericEventHandler> = {}
@@ -121,7 +126,7 @@ export class Context {
 
          if (self.selectedSquare) {
             self.selectedSquare = undefined
-            self.chessboard.highlightSquares = []
+            self.updateHighlightSquares()
          }
       }
    }
@@ -133,6 +138,7 @@ export class Context {
       const openingBookPosition = globalResource.value.chessData.openingBook[this.currentFen]
       const startSquare = rankfile2squareZeroBased(rank, file)
 
+      this.updateHighlightSquares()
       for (const validMove of this.validMoves) {
          if (validMove.startsWith(startSquare)) {
             const targetSquare = validMove.slice(2, 4)
@@ -213,6 +219,39 @@ export class Context {
       }
    }
 
+   async updateCheckers() {
+      if (this.variant !== 'chess' && this.variant !== 'chesswith310') {
+         // in single player or capture all mode, we don't need to check for checkers
+         this.checkers = []
+         return
+      }
+
+      this.checkers = await globalResource.value.fairyStockfish.getCheckers()
+   }
+
+   updateHighlightSquares() {
+      this.chessboard.highlightSquares = []
+      // first, highlight squares that are persisted
+      for (const [square, color] of this.persistHighlightSquares) {
+         const [rank, file] = square2rankfileZeroBased(square)
+         this.chessboard.highlightSquares.push({ rank, file, color: this.constants[color] })
+      }
+
+      // then, draw check highlights
+      for (const square of this.checkers) {
+         const [rank, file] = square2rankfileZeroBased(square)
+         this.chessboard.highlightSquares.push({ rank, file, color: this.constants.red })
+      }
+   }
+
+   async runEndgameCheck() {
+      if (this.variant === 'singleplayer') {
+         // game principally never ends in singleplayer mode,
+         // so we don't need to check for endgame
+         return
+      }
+   }
+
    // debug API
    async setPiece(square: string, piece: Piece | undefined) {
       const [rank, file] = square2rankfileZeroBased(square)
@@ -220,6 +259,7 @@ export class Context {
       gamePositionToChessboard(this.chessgame, this.chessboard)
       this.updateFenFromChessgame()
       await this.updateValidMoves()
+      await this.updateCheckers()
    }
 
    // public APIs
@@ -279,6 +319,7 @@ export class Context {
 
       this.updateFenFromChessgame()
       await this.updateValidMoves()
+      await this.updateCheckers()
    }
 
    setPlayerSide(side: PlayerSide) {
@@ -308,6 +349,7 @@ export class Context {
       this.postprocessFen()
       gamePositionToChessboard(this.chessgame, this.chessboard)
       await this.updateValidMoves()
+      await this.updateCheckers()
 
       if (!noAutoFade && this.chessboardCanvas.style.opacity === '0') {
          this.chessboardCanvas.style.opacity = '1'
@@ -328,6 +370,7 @@ export class Context {
       gamePositionToChessboard(this.chessgame, this.chessboard)
 
       await this.updateValidMoves()
+      await this.updateCheckers()
       this.selectedSquare = undefined
       this.chessboard.highlightSquares = []
 
@@ -338,6 +381,8 @@ export class Context {
       for (const handler of this.onPositionChanged) {
          await handler(this)
       }
+
+      this.runEndgameCheck()
    }
 
    waitForSquareClicked(square: string): Promise<void> {
@@ -432,9 +477,15 @@ export class Context {
       await addPromptLine(this.systemPrompt, level, text)
    }
 
-   async highlightSquare(square: string, color: string) {
-      const [rank, file] = square2rankfileZeroBased(square)
-      this.chessboard.highlightSquares.push({ rank, file, color: this.constants[color] })
+   async highlightSquare(square: string, color: string, persist?: boolean) {
+      if (persist) {
+         this.persistHighlightSquares.push([square, color])
+      }
+      this.updateHighlightSquares()
+      if (!persist) {
+         const [rank, file] = square2rankfileZeroBased(square)
+         this.chessboard.highlightSquares.push({ rank, file, color: this.constants[color] })
+      }
    }
 
    async sleep(ms: number) {

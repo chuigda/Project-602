@@ -4,11 +4,12 @@ export type Piece =
    'W' | // WGC is only usable for white
    'I' | 'i'
 
-
 export type PieceName =
    'rook' | 'knight' | 'bishop' | 'queen' | 'king' | 'pawn' | 'wgc' | 'immovable'
 
 export type PlayerSide = 'white' | 'black'
+
+export type DrawReason = 'stalemate' | 'threefold' | 'insufficient' | 'fiftymoves'
 
 export const FileChars = 'abcdefgh'
 
