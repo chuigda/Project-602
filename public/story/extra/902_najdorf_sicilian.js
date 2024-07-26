@@ -5,6 +5,9 @@
    await cx.setVariant('chess')
    await cx.setPlayerSide('black')
    await cx.setFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -')
+   /* codeblock */
+   await cx.sleep(1000)
+   /* end codeblock */
    /* [dialogue] */ await cx.showDialogue()
    await cx.speak('黑王', `作为一名优秀的新秀执白棋手 —— 我没说你，从开局的那一刻一切就尽在他的掌握之中`)
    await cx.speak('黑王', `不幸的是，在真实的国际象棋对弈中，你有一半的时间都执不到白`)
@@ -12,11 +15,11 @@
    /* [/dialogue] */ await cx.hideDialogue()
    /* codeblock */
    await cx.playMoveUCI('e2e4')
-   await cx.sleep(500)
+   await cx.sleep(1000)
    /* end codeblock */
    /* [dialogue] */ await cx.showDialogue()
-   await cx.speak('黑王', `西西里防御是黑方应对白方王兵开局的重要武器之一
-现在，把你的 c 兵走到 c5`)
+   await cx.speak('黑王', `西西里防御是黑方应对白方王兵开局的重要武器之一`)
+   await cx.speak('黑王', `现在，把你的 c 兵走到 c5`)
    /* [/dialogue] */ await cx.hideDialogue()
    /* codeblock */
    let failCount = 0
@@ -31,7 +34,7 @@
       failCount += 1
 
       await cx.showDialogue()
-      if (failCount >= 4) {
+      if (failCount >= 5) {
          await cx.speak('黑王', '你是不是以为你自己很幽默？哈？按我说的做有那么难吗？', '生气')
       }
       else {
