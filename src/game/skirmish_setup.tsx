@@ -57,7 +57,13 @@ function tryBookMove(cx: Context, aiLevel: number): string | undefined {
       return
    }
 
-   const allMovesOrdered = position.moves.sort(([_move1, score1], [_move2, score2]) => score2 - score1)
+   const allMovesOrdered = position
+      .moves
+      .sort(([_move1, score1], [_move2, score2]) => score2 - score1)
+   if (allMovesOrdered.length === 0) {
+      return
+   }
+
    const allowedCPL = openingCPL[aiLevel - 1]
 
    const allowedMoves = allMovesOrdered.filter(([_move, score]) => score >= allowedCPL)
