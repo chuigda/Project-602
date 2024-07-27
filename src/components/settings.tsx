@@ -56,6 +56,7 @@ export function showSettingsWindow(): HTMLElement {
 
    const restoreDefault = () => {
       globalResource.value.config = copydeep(defaultConfig)
+      saveConfig(globalResource.value.config)
 
       setCurrentOption(chessNotationSelect, defaultConfig.chessNotation)
       setCurrentOption(chessPieceNotationSelect, defaultConfig.chessPieceNotation)
