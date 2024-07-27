@@ -26,6 +26,10 @@ export async function maybeSkirmishComputerPlayMove(cx: Context) {
       return
    }
 
+   if (cx.validMoves.length === 0) {
+      return
+   }
+
    const aiLevel = cx.variables['ai_level'].value
    const bookMove = tryBookMove(cx, aiLevel)
    if (bookMove) {
