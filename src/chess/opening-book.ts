@@ -9,3 +9,8 @@ export interface CommonOpeningPosition {
    name: string
    fen: string
 }
+
+export function isBookMove(openingPosition: OpeningPosition, uciMove: string) {
+   const move4chars = uciMove.slice(0, 4)
+   return openingPosition.moves.some(move => move[0].startsWith(move4chars))
+}

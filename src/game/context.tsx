@@ -1,3 +1,4 @@
+import { h } from 'tsx-dom'
 import { globalResource } from '..'
 import {
    ChessGame,
@@ -12,7 +13,9 @@ import {
    rankfile2squareZeroBased,
    square2rankfileZeroBased
 } from '../chess/chessgame'
-import { OpeningPosition } from '../chess/opening-book'
+import { isBookMove } from '../chess/opening-book'
+import { uci2san } from '../chess/uci2san'
+import { uci2lan } from '../chess/uci2lan'
 import { trimFEN } from '../chess/trimfen'
 import { Chessboard3D, chessboardColor, gamePositionToChessboard } from '../chessboard/chessboard'
 import { create2DChessboardFromChessGame } from '../chessboard/chessboard2d'
@@ -62,6 +65,9 @@ export class Context {
 
    halfMovesSinceLastCaptureOrPawnMove: number = 0
    positionHistory: Record<string, number> = {}
+
+   moveHistory: string[] = []
+   moveHistoryUCI: string[] = []
 
    // 棋盘交互数据
    chessboardInteract: boolean = true
@@ -143,6 +149,7 @@ export class Context {
       }
 
       this.minimap.append(...create2DChessboardFromChessGame(this.chessgame))
+      this.resetMoveHistory()
    }
 
    async selectSquare(rank: number, file: number) {
@@ -196,11 +203,17 @@ export class Context {
       await this.playMoveUCI(uci)
    }
 
+   /**
+    * 根据 chessgame 的状态更新 FEN 字符串
+    */
    updateFenFromChessgame() {
       this.currentFen = chessGameToFen(this.chessgame)
       this.postProcessPosition()
    }
 
+   /**
+    * 局面更新之后，根据当前的游戏模式进行后处理并更新小地图显示
+    */
    postProcessPosition() {
       // 当处于单人模式时，需要手动切换棋手
       if (this.variant === 'singleplayer') {
@@ -229,6 +242,9 @@ export class Context {
       this.minimap.append(...create2DChessboardFromChessGame(this.chessgame))
    }
 
+   /**
+    * 局面更新之后，重新计算所有可选着法
+    */
    async updateValidMoves() {
       if (this.currentFen.startsWith('8/8/8/8/8/8/8/8')) {
          // 在特定的游戏模式下，喂给 fairy-stockfish 一个空棋盘可能引起崩溃
@@ -240,6 +256,9 @@ export class Context {
       }
    }
 
+   /**
+    * 局面更新之后，重新计算所有正在将军的棋子
+    */
    async updateCheckers() {
       if (this.variant !== 'chess' && this.variant !== 'chesswith310') {
          // 在单人模式或者 captureall 模式下没有将军的概念
@@ -250,6 +269,40 @@ export class Context {
       this.checkers = await globalResource.value.fairyStockfish.getCheckers()
    }
 
+   /**
+    * 更新棋局记录和 UI
+    */
+   updateRecord(prevChessgame: ChessGame, uciMove: string) {
+      this.moveHistoryUCI.push(uciMove)
+      let humanReadableMove = uciMove
+      const inCheck = this.checkers.length !== 0
+      const checkmateOrStalemate = this.validMoves.length === 0
+      switch (globalResource.value.config.chessNotation) {
+         case 'san':
+            humanReadableMove = uci2san(prevChessgame, uciMove, inCheck, checkmateOrStalemate)
+            break
+         case 'lan':
+            humanReadableMove = uci2lan(prevChessgame, uciMove, inCheck, checkmateOrStalemate)
+            break
+      }
+      this.moveHistory.push(humanReadableMove)
+
+      if (prevChessgame.turn === 'white') {
+         this.scoreSheet.appendChild(<div>{Math.ceil(this.moveHistoryUCI.length / 2)}.</div>)
+      }
+      this.scoreSheet.appendChild(<div>{humanReadableMove}</div>)
+      this.scoreSheet.scrollTop = this.scoreSheet.scrollHeight
+
+      if (this.chessgame.turn === prevChessgame.turn) {
+         this.moveHistoryUCI.push('-')
+         this.moveHistory.push('-')
+         this.scoreSheet.appendChild(<div>-</div>)
+      }
+   }
+
+   /**
+    * 局面更新之后，重新计算所有高亮的方格
+    */
    updateHighlightSquares() {
       // 清空所有高亮
       this.chessboard.highlightSquares = []
@@ -365,6 +418,7 @@ export class Context {
       this.updateFenFromChessgame()
       await this.updateValidMoves()
       await this.updateCheckers()
+      this.resetMoveHistory()
    }
 
    setPlayerSide(side: PlayerSide) {
@@ -402,6 +456,7 @@ export class Context {
          this.positionHistory = {}
       }
 
+      this.resetMoveHistory()
       if (!noAutoFade && this.chessboardCanvas.style.opacity === '0') {
          this.chessboardCanvas.style.opacity = '1'
          await sleep(300)
@@ -426,6 +481,7 @@ export class Context {
       await fairyStockfish.setPositionWithMoves(this.currentFen, [uciMove])
 
       this.currentFen = trimFEN(await fairyStockfish.getCurrentFen())
+      const prevChessgame = this.chessgame
       this.chessgame = createChessGameFromFen(this.currentFen)
       this.postProcessPosition()
 
@@ -440,6 +496,7 @@ export class Context {
       await this.updateCheckers()
       this.selectedSquare = undefined
       this.chessboard.highlightSquares = []
+      this.updateRecord(prevChessgame, uciMove)
 
       for (const handler of this.onMovePlayed) {
          await handler(this, currentSide, uciMove)
@@ -450,6 +507,32 @@ export class Context {
       }
 
       this.runEndgameCheck()
+   }
+
+   saveMoveHistory(): [string[], string[], HTMLElement[]] {
+      return [
+         this.moveHistory,
+         this.moveHistoryUCI,
+         Array.from(this.scoreSheet.children) as HTMLElement[]
+      ]
+   }
+
+   restoreMoveHistory(moveHistory: string[], moveHistoryUCI: string[], scoreSheet: HTMLElement[]) {
+      this.moveHistory = moveHistory
+      this.moveHistoryUCI = moveHistoryUCI
+      this.scoreSheet.innerHTML = ''
+      this.scoreSheet.append(...scoreSheet)
+   }
+
+   resetMoveHistory() {
+      this.moveHistory = []
+      this.moveHistoryUCI = []
+      this.scoreSheet.innerHTML = ''
+
+      if (this.chessgame.turn === 'black') {
+         this.scoreSheet.appendChild(<div>1.</div>)
+         this.scoreSheet.appendChild(<div>...</div>)
+      }
    }
 
    waitForSquareClicked(square: string): Promise<void> {
@@ -570,11 +653,6 @@ export class Context {
          await eventFn(this)
       }
    }
-}
-
-function isBookMove(openingPosition: OpeningPosition, uciMove: string) {
-   const move4chars = uciMove.slice(0, 4)
-   return openingPosition.moves.some(move => move[0].startsWith(move4chars))
 }
 
 function isPromoteMove(game: ChessGame, startRank: number, startFile: number, targetRank: number) {

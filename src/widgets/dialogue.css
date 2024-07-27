@@ -19,6 +19,7 @@
    left: 0px;
 
    padding: 1em;
+   padding-bottom: 10px;
    display: flex;
    flex-direction: column;
    row-gap: 0.5em;
@@ -49,8 +50,8 @@
 
    background-color: black;
    cursor: pointer;
-   line-height: 125%;
 
    margin: 0;
    font: inherit;
+   line-height: 125%;
 }

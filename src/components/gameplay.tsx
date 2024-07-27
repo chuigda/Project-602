@@ -4,7 +4,7 @@ import { chessboardColor, createChessboard3D, gamePositionToChessboard } from '.
 import { ChessGame, PlayerSide, chessGameToFen, createChessGameFromFen, getPieceOfSide, isPlayerPiece, rankfile2squareZeroBased, square2rankfileZeroBased } from '../chess/chessgame'
 import { Ref, ref } from '../util/ref'
 import { sleep } from '../util/sleep'
-import { OpeningPosition } from '../chess/opening-book'
+import { isBookMove, OpeningPosition } from '../chess/opening-book'
 import { globalResource } from '..'
 
 import { openPromotionWindow } from '../widgets/promote'
@@ -29,11 +29,6 @@ function pickBookMove(aiLevel: number, openingPosition: OpeningPosition): string
 
    const moveIndex = Math.floor(Math.pow(Math.random(), 2) * possibleMoves.length)
    return possibleMoves[moveIndex][0]
-}
-
-function isBookMove(openingPosition: OpeningPosition, uciMove: string) {
-   const move4chars = uciMove.slice(0, 4)
-   return openingPosition.moves.some(move => move[0].startsWith(move4chars))
 }
 
 export function createSkirmishGameplayWindow(
