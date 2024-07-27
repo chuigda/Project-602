@@ -24,8 +24,6 @@ export async function createDialogue(zIndex: number): Promise<Dialogue> {
    const speakContent = <pre class="speak-content" />
    container.appendChild(speaker)
    container.appendChild(speakContent)
-   document.body.appendChild(portrait)
-   document.body.appendChild(container)
 
    await sleep(125)
    return { portrait, container, speaker, speakContent }

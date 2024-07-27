@@ -1,5 +1,5 @@
 import { h } from 'tsx-dom'
-import { startGameplay } from './gameplay_v2'
+import { startGameplay } from './gameplay'
 import { showConfirmWindow } from '../widgets/confirm-window'
 import './custom.css'
 

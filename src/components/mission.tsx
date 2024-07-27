@@ -1,5 +1,5 @@
 import './mission.css'
-import { startGameplay } from './gameplay_v2'
+import { startGameplay } from './gameplay'
 
 export async function showTestMissionWindow(zIndex: number) {
    await startGameplay(zIndex, async cx => {

@@ -31,6 +31,10 @@ export interface ContextVariable {
    onChange: ((value: any) => void)[]
 }
 
+export function createContextVariable(value: any): ContextVariable {
+   return { value, onChange: [] }
+}
+
 export type SupportedVariant =
    'chess'
    | 'captureall'
@@ -58,6 +62,7 @@ export class Context {
    // 游戏逻辑数据
    chessgame: ChessGame = createEmptyChessGame()
    playerSide: PlayerSide = 'white'
+   startFen: string = '8/8/8/8/8/8/8/8 w - - 0 1'
    currentFen: string = '8/8/8/8/8/8/8/8 w - - 0 1'
    variant: SupportedVariant = 'singleplayer'
    validMoves: string[] = []
@@ -237,7 +242,6 @@ export class Context {
       // 如此一来屏障单位就对游戏双方表现为完全的屏障
 
       // 更新小地图显示
-      console.info(this.chessgame)
       this.minimap.innerHTML = ''
       this.minimap.append(...create2DChessboardFromChessGame(this.chessgame))
    }
@@ -342,6 +346,42 @@ export class Context {
          // 这里不需要考虑
          return
       }
+
+      if (this.variant === 'chess') {
+         if (this.validMoves.length === 0) {
+            if (this.checkers.length > 0) {
+               for (const handler of this.onCheckmate) {
+                  await handler(this, this.chessgame.turn)
+               }
+            }
+            else {
+               for (const handler of this.onDraw) {
+                  await handler(this, 'stalemate')
+               }
+            }
+            return
+         }
+
+         if (this.halfMovesSinceLastCaptureOrPawnMove >= 100) {
+            for (const handler of this.onDraw) {
+               await handler(this, 'fiftymoves')
+            }
+            return
+         }
+
+         for (const positionCount of Object.values(this.positionHistory)) {
+            if (positionCount >= 3) {
+               for (const handler of this.onDraw) {
+                  await handler(this, 'threefold')
+               }
+               return
+            }
+         }
+
+         // TODO implement insufficient materal draw
+      }
+
+      // TODO implement captureall rule victory/draw
    }
 
    // 调试用 API
@@ -444,6 +484,7 @@ export class Context {
       }
 
       this.chessgame = createChessGameFromFen(fen)
+      this.startFen = fen
       this.currentFen = fen
       this.postProcessPosition()
       gamePositionToChessboard(this.chessgame, this.chessboard)
@@ -495,7 +536,7 @@ export class Context {
       await this.updateValidMoves()
       await this.updateCheckers()
       this.selectedSquare = undefined
-      this.chessboard.highlightSquares = []
+      this.updateHighlightSquares()
       this.updateRecord(prevChessgame, uciMove)
 
       for (const handler of this.onMovePlayed) {

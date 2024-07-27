@@ -1,11 +1,12 @@
 import { h } from 'tsx-dom'
 import * as fischer from 'fischer960'
+import { maybeSkirmishComputerPlayMove, useSkirmishSetup } from '../game/skirmish_setup'
+import { startGameplay } from './gameplay'
 import { DoubleOpenScreen } from '../widgets/double-open-screen'
 import { createSelect } from '../widgets/select'
 import { Window } from '../widgets/window'
 import { sleep } from '../util/sleep'
 import { Button } from '../widgets/button'
-import { createSkirmishGameplayWindow } from './gameplay'
 import { Ref, ref } from '../util/ref'
 import { globalResource } from '..'
 import { PlayerSide } from '../chess/chessgame'
@@ -109,12 +110,14 @@ export function showSkirmishWindow(): HTMLElement {
    }
 
    const startGame = async () => {
-      createSkirmishGameplayWindow(
-         startPosition.value,
-         playerSide.value,
-         aiLevel.value,
-         false
-      )
+      startGameplay(3000, async cx => {
+         await cx.setVariant('chess')
+         await cx.setFen(startPosition.value)
+         await cx.setPlayerSide(playerSide.value)
+
+         useSkirmishSetup(cx, aiLevel.value)
+         await maybeSkirmishComputerPlayMove(cx)
+      })
 
       await sleep(300)
       windowBackground.remove()
