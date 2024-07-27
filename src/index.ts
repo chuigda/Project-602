@@ -53,7 +53,7 @@ async function continueLoadingOperation() {
       fairyStockfish,
       chessData,
       characters: {}
-   };
+   }
 
    createDebugConsole()
 

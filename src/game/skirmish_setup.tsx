@@ -3,6 +3,7 @@ import { Context, createContextVariable } from './context'
 import { sleep } from '../util/sleep'
 import { createCheckmateWindow } from '../components/checkmate'
 import { DrawReason } from '../chess/chessgame'
+import { randomPickParabola } from '../util/rand'
 
 export function useSkirmishSetup(context: Context, aiLevel: number) {
    useSkirmishAI(context, aiLevel)
@@ -15,6 +16,7 @@ export function useSkirmishAI(context: Context, aiLevel: number) {
    context.onMovePlayed.delete(maybeSkirmishComputerPlayMove)
 
    const elo = 500 + (aiLevel - 1) * 200
+   context.variables['ai_level'] = createContextVariable(aiLevel)
    context.variables['ai_elo'] = createContextVariable(elo)
    context.onMovePlayed.add(maybeSkirmishComputerPlayMove)
 }
@@ -24,8 +26,15 @@ export async function maybeSkirmishComputerPlayMove(cx: Context) {
       return
    }
 
-   const elo = cx.variables['ai_elo'].value
+   const aiLevel = cx.variables['ai_level'].value
+   const bookMove = tryBookMove(cx, aiLevel)
+   if (bookMove) {
+      await sleep(1500)
+      cx.playMoveUCI(bookMove)
+      return
+   }
 
+   const elo = cx.variables['ai_elo'].value
    const fairyStockfish = globalResource.value.fairyStockfish
    await fairyStockfish.setElo(elo)
    await fairyStockfish.setPosition(cx.currentFen)
@@ -34,6 +43,25 @@ export async function maybeSkirmishComputerPlayMove(cx: Context) {
       fairyStockfish.findBestMoveByDepth(20, 5000)
    ])
    cx.playMoveUCI(bestMove)
+}
+
+const openingCPL = [-225, -175, -125, -75, -50, -40, -30, -20]
+function tryBookMove(cx: Context, aiLevel: number): string | undefined {
+   const openingBook = globalResource.value.chessData.openingBook
+   const position = openingBook[cx.currentFen]
+   if (!position) {
+      return
+   }
+
+   const allMovesOrdered = position.moves.sort(([_move1, score1], [_move2, score2]) => score2 - score1)
+   const allowedCPL = openingCPL[aiLevel - 1]
+
+   const allowedMoves = allMovesOrdered.filter(([_move, score]) => score >= allowedCPL)
+   if (allowedMoves.length === 0) {
+      return allMovesOrdered[0][0]
+   }
+
+   return randomPickParabola(allowedMoves, 2)[0]
 }
 
 async function skirmishCheckmate(cx: Context) {
