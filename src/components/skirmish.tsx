@@ -112,8 +112,8 @@ export function showSkirmishWindow(): HTMLElement {
    const startGame = async () => {
       startGameplay(3000, async cx => {
          await cx.setVariant('chess')
-         await cx.setFen(startPosition.value)
          await cx.setPlayerSide(playerSide.value)
+         await cx.setFen(startPosition.value)
 
          useSkirmishSetup(cx, aiLevel.value)
          await maybeSkirmishComputerPlayMove(cx)
