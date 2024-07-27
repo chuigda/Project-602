@@ -55,7 +55,7 @@ export const CharacterDefs: Record<string, CharacterDef> = {
       width: 2000,
       height: 3000,
       drawX: 0,
-      drawY: 0
+      drawY: 0.05
    },
    '白骑士': {
       baseImage: '/portrait/white_knight_glow',
@@ -72,7 +72,7 @@ export const CharacterDefs: Record<string, CharacterDef> = {
       width: 2750 - 800,
       height: 3000,
       drawX: 0,
-      drawY: 0
+      drawY: 0.1
    },
    '黑王': {
       baseImage: '/portrait/black_king_glow',
@@ -122,7 +122,7 @@ export const CharacterDefs: Record<string, CharacterDef> = {
       width: 2500 - 500,
       height: 3000,
       drawX: 0,
-      drawY: 0
+      drawY: 0.05
    },
    '黑骑士': {
       baseImage: '/portrait/black_knight_glow',
@@ -139,6 +139,6 @@ export const CharacterDefs: Record<string, CharacterDef> = {
       width: 2750 - 800,
       height: 3000,
       drawX: 0,
-      drawY: 0
+      drawY: 0.1
    }
 }
