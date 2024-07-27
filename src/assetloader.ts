@@ -41,9 +41,7 @@ export interface CharacterDef {
    height: number,
 
    drawX: number,
-   drawY: number,
-   drawWidth: number,
-   drawHeight: number
+   drawY: number
 }
 
 export interface ChessData {

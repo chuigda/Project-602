@@ -54,8 +54,11 @@ export function speak(
    emotion: string,
    text: string
 ): Promise<void> {
-   dialogue.portrait.width = dialogue.portrait.clientWidth * (window.devicePixelRatio || 1)
-   dialogue.portrait.height = dialogue.portrait.clientHeight * (window.devicePixelRatio || 1)
+   const canvasWidth = dialogue.portrait.clientWidth * (window.devicePixelRatio || 1)
+   const canvasHeight = dialogue.portrait.clientHeight * (window.devicePixelRatio || 1)
+
+   dialogue.portrait.width = canvasWidth
+   dialogue.portrait.height = canvasHeight
    dialogue.speaker.innerText = speaker
    dialogue.speakContent.innerText = ''
    if (dialogue.portrait.style.opacity === '0') {
@@ -69,19 +72,24 @@ export function speak(
       console.error(`角色 ${speaker} 缺少表情图片序列 ${emotion}`)
    }
    else {
+      const widthOverHeight = character.width / character.height
+
+      const drawX = canvasWidth * character.drawX
+      const drawY = canvasHeight * character.drawY
+      const drawHeight = canvasHeight * (1 - character.drawY)
+      const drawWidth = drawHeight * widthOverHeight
+
       for (const image of emotionImages) {
          ctx.drawImage(
             image,
-            0, 0
-            // image,
-            // character.startX,
-            // character.startY,
-            // character.width,
-            // character.height,
-            // character.drawX,
-            // character.drawY,
-            // character.drawWidth,
-            // character.drawHeight
+            character.startX,
+            character.startY,
+            character.width,
+            character.height,
+            drawX,
+            drawY,
+            drawWidth,
+            drawHeight
          )
       }
    }

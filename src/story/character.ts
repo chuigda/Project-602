@@ -8,7 +8,5 @@ export interface Character {
    height: number,
 
    drawX: number,
-   drawY: number,
-   drawWidth: number,
-   drawHeight: number
+   drawY: number
 }

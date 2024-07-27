@@ -1,0 +1,27 @@
+[startscene 90301_all_present]
+[charuse 白杨,NeroRi,白主教,白骑士,黑王,黑后,黑主教,黑骑士]
+
+[scene 90301_all_present:所有人出场]
+[variant singleplayer]
+[fen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"]
+{ cx.setChessboardInteract(false) }
+
+[dialogue]
+白杨（大笑）：大烟杆嘴里塞，我只抽第五代！
+
+NeroRi：不用打火真痛快，byd 快尝尝，我现在肺痒痒！
+
+白主教：你想抽芙蓉王？
+
+白骑士：还不如抽喜之郎！
+
+黑王：抽~
+
+黑后：抽~
+
+黑主教：抽~
+
+黑骑士：抽~
+
+白杨：我测试你的二维码~
+[/dialogue]
