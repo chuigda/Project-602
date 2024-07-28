@@ -77,21 +77,21 @@ export function createCheckmateWindow(
 
       await appendLine('系统遇到致命错误，必须重新启动')
       await sleep(200)
-      const textDiv = <div />
-      checkmateDiagnose.appendChild(textDiv)
-      const typewriterText = getCheckmateText(data.title)
-      for (const char of typewriterText) {
-         if (char === ' ') {
-            textDiv.innerHTML += '&nbsp;'
-         }
-         else if (char === '\n') {
-            textDiv.appendChild(<br/>)
-         }
-         else {
-            textDiv.innerText += char
-         }
-         await sleep(32)
-      }
+      // const textDiv = <div />
+      // checkmateDiagnose.appendChild(textDiv)
+      // const typewriterText = getCheckmateText(data.title)
+      // for (const char of typewriterText) {
+      //    if (char === ' ') {
+      //       textDiv.innerHTML += '&nbsp;'
+      //    }
+      //    else if (char === '\n') {
+      //       textDiv.appendChild(<br/>)
+      //    }
+      //    else {
+      //       textDiv.innerText += char
+      //    }
+      //    await sleep(32)
+      // }
 
       await appendLine('')
       await appendLine('系统诊断')
