@@ -21,3 +21,4 @@ model.blend,石硴+Chuigda,CC-BY-SA 4.0
 - [缸脑](https://huajia.163.com/main/profile/YBPbpbqr)
 - [禾几木](https://space.bilibili.com/4962592)
 - [木火kika](https://huajia.163.com/main/profile/1Bym5M3B)
+- [石硴](https://huajia.163.com/main/profile/MrjmvONE)
