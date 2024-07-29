@@ -22,9 +22,10 @@ import { create2DChessboardFromChessGame } from '../chessboard/chessboard2d'
 import { showDialogue, hideDialogue, speak, Dialogue } from '../widgets/dialogue'
 import { openPromotionWindow } from '../widgets/promote'
 import { addPromptLine, clearPrompt, PromptLevel, SystemPrompt } from '../widgets/system-prompt'
-import { loadCharacter } from '../assetloader'
+import { CharacterDef, loadCharacter } from '../assetloader'
 import { CharacterDefs } from '../story/chardef'
 import { sleep } from '../util/sleep'
+import { createRelicWindow, relicPushSmallText, removeRelicWindow } from '../widgets/relic'
 
 export interface ContextVariable {
    value: any
@@ -408,28 +409,79 @@ export class Context {
    }
 
    async enterScript(scriptFile: string) {
-      const code = await importNoVite(scriptFile)
-      for (const characterName of code.CharacterUse) {
-         if (!globalResource.value.characters[characterName]) {
-            globalResource.value.characters[characterName] =
-               await loadCharacter(characterName, CharacterDefs[characterName], () => {})
+      const relic = await createRelicWindow(this.zIndex + 100)
+      await relicPushSmallText(relic, `正在建立作战控制连线，请稍候 ...`)
+      await sleep(200)
+      await relicPushSmallText(relic, `正在加载任务数据`)
+      const [_, code] = await Promise.all([sleep(200), importNoVite(scriptFile)])
+
+      const charDefsToLoad: [string, CharacterDef][] = code.CharacterUse
+         .filter((name: string) => !globalResource.value.characters[name])
+         .map((name: string) => [name, CharacterDefs[name]])
+      if (charDefsToLoad.length > 0) {
+         const e = await relicPushSmallText(relic, `正在加载人格化数据矩阵: 0%`)
+         let loadedCount = 0
+         for (const [name, def] of charDefsToLoad) {
+            globalResource.value.characters[name] = await loadCharacter(
+               name,
+               def,
+               progress => {
+                  const totalProgress = (progress + loadedCount) / charDefsToLoad.length
+                  e.innerText = `正在加载人格化数据矩阵: ${Math.floor(totalProgress * 100)}%`
+                  console.info(totalProgress)
+               }
+            )
+            loadedCount += 1
+            await sleep(100)
          }
+         e.innerText = `正在加载人格化数据矩阵: 100%`
       }
 
+      await relicPushSmallText(relic, `初始化控制协议`)
       this.eventPool = code
+      await sleep(500)
+      await removeRelicWindow(relic)
+      await sleep(500)
+
       this.pushEvent(code.StartingEvent)
    }
 
    async enterNonModuleScript(script: string) {
+      const relic = await createRelicWindow(this.zIndex + 100)
+      await relicPushSmallText(relic, `正在建立作战控制连线，请稍候 ...`)
+      await sleep(200)
+      await relicPushSmallText(relic, `正在加载任务数据`)
       const pseudoModule = eval(script)
-      for (const characterName of pseudoModule.CharacterUse) {
-         if (!globalResource.value.characters[characterName]) {
-            globalResource.value.characters[characterName] =
-               await loadCharacter(characterName, CharacterDefs[characterName], () => {})
+      await sleep(200)
+
+      const charDefsToLoad: [string, CharacterDef][] = pseudoModule.CharacterUse
+         .filter((name: string) => !globalResource.value.characters[name])
+         .map((name: string) => [name, CharacterDefs[name]])
+      if (charDefsToLoad.length > 0) {
+         const e = await relicPushSmallText(relic, `正在加载人格化数据矩阵: 0%`)
+         let loadedCount = 0
+         for (const [name, def] of charDefsToLoad) {
+            globalResource.value.characters[name] = await loadCharacter(
+               name,
+               def,
+               progress => {
+                  const totalProgress = (progress + loadedCount) / charDefsToLoad.length
+                  e.innerText = `正在加载人格化数据矩阵: ${Math.floor(totalProgress * 100)}%`
+                  console.info(totalProgress)
+               }
+            )
+            loadedCount += 1
+            await sleep(100)
          }
+         e.innerText = `正在加载人格化数据矩阵: 100%`
       }
 
+      await relicPushSmallText(relic, `初始化控制协议`)
       this.eventPool = pseudoModule
+      await sleep(500)
+      await removeRelicWindow(relic)
+      await sleep(500)
+
       this.pushEvent(pseudoModule.StartingEvent)
    }
 

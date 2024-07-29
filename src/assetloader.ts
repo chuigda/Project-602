@@ -2,6 +2,7 @@ import { globalResource } from '.'
 import { CommonOpeningPosition, OpeningPosition } from './chess/opening-book'
 import { Object3D, loadObject } from './chessboard/glx/object'
 import { Character } from './story/character'
+import { ref } from './util/ref'
 
 export interface GameAsset {
    // 2D chess piece CSS
@@ -146,10 +147,12 @@ export async function loadCharacter(
    const fileSuffix = globalResource.value.config.highResPortrait ? '.png' : '.webp'
 
    const loadedImages: Record<string, HTMLImageElement> = {}
-   for (const image of imagesToLoad) {
+   const loadCount = ref(0)
+   await Promise.all([...imagesToLoad].map(async image => {
       loadedImages[image] = await loadImage(`${image}${fileSuffix}`)
-      onProgress(Object.keys(loadedImages).length / imagesToLoad.size)
-   }
+      loadCount.value++
+      onProgress(loadCount.value / imagesToLoad.size)
+   }))
 
    if (def.baseImage) {
       loadedImages['base'] = loadedImages[def.baseImage]
