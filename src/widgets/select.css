@@ -29,7 +29,7 @@
    width: calc(12em + 8px);
    background-color: black;
    border: 1px solid var(--theme-color);
-   position: absolute;
+   position: fixed;
    font-family: Dengxian, sans-serif;
    font-size: 14pt;
    padding-top: 4px;

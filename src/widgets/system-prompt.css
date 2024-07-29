@@ -1,7 +1,5 @@
 .system-prompt {
-   position: absolute;
-   left: 0.5em;
-   top: 0.5em;
+   position: fixed;
 
    user-select: none;
    font-family: Dengxian, sans-serif;

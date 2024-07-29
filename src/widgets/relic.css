@@ -1,0 +1,36 @@
+* {
+   --relic-color: rgb(119, 175, 255);
+   --relic-color-medium: rgb(39, 67, 167);
+   --relic-color-dark: rgb(3, 37, 65);
+}
+
+.relic-window {
+   position: fixed;
+
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   padding: 0.5em;
+   border: 2px solid var(--relic-color-medium);
+   background: var(--relic-color-dark);
+
+   font-family: Dengxian, sans-serif;
+   font-size: 16pt;
+   color: var(--relic-color);
+   height: 0px;
+
+   display: flex;
+   flex-direction: column;
+   row-gap: 2px;
+
+   transition: 0.2s ease;
+   user-select: none;
+}
+
+.relic-window > span {
+   font-size: 16pt;
+}
+
+.relic-window > .small-text {
+   font-size: 14pt;
+}

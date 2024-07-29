@@ -1,5 +1,5 @@
 .dialogue-portrait {
-   position: absolute;
+   position: fixed;
    transition: 0.125s ease;
 
    left: 0;
@@ -11,7 +11,7 @@
 .dialogue {
    opacity: 0;
 
-   position: absolute;
+   position: fixed;
    transition: 0.125s ease;
 
    width: calc(100vw - 320px - 1.5em);
