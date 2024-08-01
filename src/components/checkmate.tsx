@@ -16,30 +16,30 @@ export interface CheckmateWindowData {
    moveCount: number
 }
 
-export const checkmateText: Record<string, string> = {
-   'CHECKMATE': `* 在国际象棋中，当你的王被将军，并且你没有任何方法来消除将军时，你就输掉了这局棋。这种情况被称为“将死”
-* 胜败乃兵家常事。我们可以从失败中学到很多东西：学会分析对手的威胁，学会寻找可行的战术，改进自己的策略。不要气馁，继续前进`,
-   'STALEMATE': `* 在国际象棋中，如果一方的王没有被将军，同时又无子可动，这种情况被称为“僵局”
-* 尽管这一方无路可走，但根据规则，这种情况是和棋
-* 如果你处于优势，特别是当你拥有很多子力而对方只剩下王和兵，要特别小心不要陷入僵局`,
-   'THREEFOLD': `* 在国际象棋中，如果一个局面重复三次，一方就可以提出和棋
-* 通常，这种情况发生在双方都无法取得优势的情况下
-* 如果你并不想和棋，要小心不要走出三次重复局面`,
-   'INSUFFICIENT': `* 在国际象棋中，如果双方的子力都不足将死对方，则棋局自动以和棋结束
-* 要获得更多信息，请查看交互式教学“什么能将杀，什么不能？”`,
-   'UNKNOWN': `* 说实话，我对这个错误完全没有头绪，你到底是怎么把它调用出来的？`
-}
+// export const checkmateText: Record<string, string> = {
+//    'CHECKMATE': `* 在国际象棋中，当你的王被将军，并且你没有任何方法来消除将军时，你就输掉了这局棋。这种情况被称为“将死”
+// * 胜败乃兵家常事。我们可以从失败中学到很多东西：学会分析对手的威胁，学会寻找可行的战术，改进自己的策略。不要气馁，继续前进`,
+//    'STALEMATE': `* 在国际象棋中，如果一方的王没有被将军，同时又无子可动，这种情况被称为“僵局”
+// * 尽管这一方无路可走，但根据规则，这种情况是和棋
+// * 如果你处于优势，特别是当你拥有很多子力而对方只剩下王和兵，要特别小心不要陷入僵局`,
+//    'THREEFOLD': `* 在国际象棋中，如果一个局面重复三次，一方就可以提出和棋
+// * 通常，这种情况发生在双方都无法取得优势的情况下
+// * 如果你并不想和棋，要小心不要走出三次重复局面`,
+//    'INSUFFICIENT': `* 在国际象棋中，如果双方的子力都不足将死对方，则棋局自动以和棋结束
+// * 要获得更多信息，请查看交互式教学“什么能将杀，什么不能？”`,
+//    'UNKNOWN': `* 说实话，我对这个错误完全没有头绪，你到底是怎么把它调用出来的？`
+// }
 
-function getCheckmateText(title?: string): string {
-   if (!title) {
-      return checkmateText['CHECKMATE']
-   }
+// function getCheckmateText(title?: string): string {
+//    if (!title) {
+//       return checkmateText['CHECKMATE']
+//    }
 
-   if (checkmateText[title]) {
-      return checkmateText[title]
-   }
-   return checkmateText['UNKNOWN']
-}
+//    if (checkmateText[title]) {
+//       return checkmateText[title]
+//    }
+//    return checkmateText['UNKNOWN']
+// }
 
 export function createCheckmateWindow(
    data: CheckmateWindowData
