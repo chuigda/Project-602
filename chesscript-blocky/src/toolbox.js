@@ -1,17 +1,3 @@
-/**
- * @license
- * Copyright 2023 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-
-/*
-This toolbox contains nearly every single built-in block that Blockly offers,
-in addition to the custom block 'add_text' this sample app adds.
-You probably don't need every single block, and should consider either rewriting
-your toolbox from scratch, or carefully choosing whether you need each block
-listed here.
-*/
-
 export const toolbox = {
    kind: 'categoryToolbox',
    contents: [
@@ -23,6 +9,10 @@ export const toolbox = {
             {
                kind: 'block',
                type: 'set_fen',
+            },
+            {
+               kind: 'block',
+               type: 'set_variant',
             },
             {
                kind: 'block',
@@ -39,6 +29,10 @@ export const toolbox = {
             {
                kind: 'block',
                type: 'wait_for_position',
+            },
+            {
+               kind: 'block',
+               type: 'setup_skirmish_mode'
             }
          ]
       },
@@ -661,7 +655,20 @@ export const toolbox = {
          kind: 'category',
          name: '变量',
          categorystyle: 'variable_category',
-         custom: 'VARIABLE',
+         contents: [
+            {
+               kind: 'block',
+               type: 'local_variable',
+            },
+            {
+               kind: 'block',
+               type: 'context_variable',
+            },
+            {
+               kind: 'block',
+               type: 'is_context_var_defined'
+            }
+         ]
       },
       {
          kind: 'category',
@@ -675,6 +682,14 @@ export const toolbox = {
             {
                kind: 'block',
                type: 'anonymous_fndef'
+            },
+            {
+               kind: 'block',
+               type: 'startup_event'
+            },
+            {
+               kind: 'block',
+               type: 'use_character'
             }
          ],
       },
