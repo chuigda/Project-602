@@ -1,9 +1,10 @@
 import * as Blockly from 'blockly'
-
+import {registerFieldMultilineInput} from '@blockly/field-multilineinput'
 import { javascriptGenerator } from 'blockly/javascript'
 import { save, load } from './serialization'
 import { toolbox } from './toolbox'
 
+import { BaseBlocks } from './blocks/base'
 import { ChessBlocks } from './blocks/chess'
 import { EventBlocks } from './blocks/event'
 import { DialogueBlocks } from './blocks/dialogue'
@@ -11,6 +12,9 @@ import { forBlock } from './generators/javascript'
 
 import './index.css'
 
+registerFieldMultilineInput()
+
+Blockly.defineBlocksWithJsonArray(BaseBlocks)
 Blockly.defineBlocksWithJsonArray(DialogueBlocks)
 Blockly.defineBlocksWithJsonArray(ChessBlocks)
 Blockly.defineBlocksWithJsonArray(EventBlocks)

@@ -384,6 +384,10 @@ export const toolbox = {
             },
             {
                kind: 'block',
+               type: 'multiline_text'
+            },
+            {
+               kind: 'block',
                type: 'text_join',
             },
             {

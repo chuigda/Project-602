@@ -1,6 +1,12 @@
-import { Order } from "blockly/javascript"
+import { Order } from 'blockly/javascript'
 
 export const forBlock = {
+   multiline_text(block, generator) {
+      const text = block.getFieldValue('TEXT')
+      const lines = text.split('\n')
+      const finalCode = `'${lines.join("\\n")}'`
+      return [finalCode, Order.ATOMIC]
+   },
    event_def(block, generator) {
       const name = block.getFieldValue('NAME')
       const statements = generator.statementToCode(block, 'STATEMENTS')
