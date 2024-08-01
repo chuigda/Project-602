@@ -27,19 +27,25 @@ ${statements}}
 `
       return code
    },
-   anonymous_fndef(block, generator) {
-      const statements = generator.statementToCode(block, 'STATEMENTS')
-      const code = `async (...args: any[]) => {
-${statements}}`
-      return code
-   },
-   startup_event(block, generator) {
+   startup_event(block) {
       const name = block.getFieldValue('NAME')
       return `export const StartingEvent = '${name}'\n`
    },
    use_character(block, generator) {
       const characters = generator.valueToCode(block, 'CHARACTERS', Order.ATOMIC)
       return `export const CharacterUse = ${characters}\n`
+   },
+   return_result(block, generator) {
+      const result = generator.valueToCode(block, 'RESULT', Order.ATOMIC)
+      return `return ${result}\n`
+   },
+   inline_javascript(block) {
+      const text = block.getFieldValue('TEXT')
+      return `${text}\n`
+   },
+   inline_javascript_expr(block) {
+      const text = block.getFieldValue('TEXT')
+      return [text, Order.ATOMIC]
    },
    speak(block, generator) {
       const name = block.getFieldValue('NAME')
@@ -87,9 +93,8 @@ ${statements}}`
    },
    wait_for_position(block, generator) {
       const condition = generator.statementToCode(block, 'CONDITION')
-      return `await cx.waitForPosition(
-${condition}
-)\n`
+      return `await cx.waitForPosition(chessGame => {
+${condition}})\n`
    },
    setup_skirmish_mode() {
       return `await cx.setupSkirmishMode()\n`

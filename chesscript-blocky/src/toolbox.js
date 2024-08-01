@@ -681,15 +681,23 @@ export const toolbox = {
             },
             {
                kind: 'block',
-               type: 'anonymous_fndef'
-            },
-            {
-               kind: 'block',
                type: 'startup_event'
             },
             {
                kind: 'block',
                type: 'use_character'
+            },
+            {
+               kind: 'block',
+               type: 'return_result'
+            },
+            {
+               kind: 'block',
+               type: 'inline_javascript'
+            },
+            {
+               kind: 'block',
+               type: 'inline_javascript_expr'
             }
          ],
       },

@@ -16,18 +16,6 @@ export const EventBlocks = [
       colour: '%{BKY_PROCEDURES_HUE}'
    },
    {
-      type: 'anonymous_fndef',
-      message0: '匿名函数\n%1',
-      args0: [
-         {
-            type: 'input_statement',
-            name: 'STATEMENTS'
-         }
-      ],
-      colour: '%{BKY_PROCEDURES_HUE}',
-      output: null
-   },
-   {
       type: 'startup_event',
       message0: '定义事件 %1 为起始事件',
       args0: [
@@ -50,5 +38,44 @@ export const EventBlocks = [
          }
       ],
       colour: '%{BKY_PROCEDURES_HUE}'
+   },
+   {
+      type: 'return_result',
+      message0: '返回结果 %1',
+      args0: [
+         {
+            type: 'input_value',
+            name: 'RESULT'
+         }
+      ],
+      colour: '%{BKY_PROCEDURES_HUE}',
+      previousStatement: null
+   },
+   {
+      type: 'inline_javascript',
+      message0: '内联 JavaScript 语句\n%1',
+      args0: [
+         {
+            type: 'field_multilinetext',
+            name: 'TEXT',
+            check: 'String'
+         }
+      ],
+      colour: '%{BKY_PROCEDURES_HUE}',
+      previousStatement: null,
+      nextStatement: null
+   },
+   {
+      type: 'inline_javascript_expr',
+      message0: '内联 JavaScript 表达式\n%1',
+      args0: [
+         {
+            type: 'field_multilinetext',
+            name: 'TEXT',
+            check: 'String'
+         }
+      ],
+      colour: '%{BKY_PROCEDURES_HUE}',
+      output: null
    }
 ]

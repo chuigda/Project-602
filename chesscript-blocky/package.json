@@ -2,8 +2,8 @@
   "name": "chesscript-blocky",
   "version": "1.0.0",
   "description": "A sample app using Blockly",
-  "main": "index.js",
-  "private": true,
+  "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -15,8 +15,6 @@
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
-    "source-map-loader": "^4.0.1",
-    "style-loader": "^3.3.1",
     "vite": "^5.3.5"
   },
   "dependencies": {

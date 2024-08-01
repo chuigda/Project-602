@@ -78,7 +78,7 @@ export const ChessBlocks = [
       message0: '等待局面（按条件）\n%1',
       args0: [
          {
-            type: 'input_value',
+            type: 'input_statement',
             name: 'CONDITION'
          }
       ],
