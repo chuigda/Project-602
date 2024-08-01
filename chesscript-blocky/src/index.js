@@ -24,6 +24,15 @@ Blockly.defineBlocksWithJsonArray(ChessBlocks)
 Blockly.defineBlocksWithJsonArray(EventBlocks)
 Object.assign(javascriptGenerator.forBlock, forBlock)
 
+let anotherWindow = window.open("/code-preview.html")
+anotherWindow.onload = () => {
+   updateGeneratedCode()
+}
+
+window.onbeforeunload = () => {
+   anotherWindow.close()
+}
+
 const blocklyDiv = $('blocklyDiv')
 const ws = Blockly.inject(blocklyDiv, {
    toolbox,
@@ -36,7 +45,6 @@ const ws = Blockly.inject(blocklyDiv, {
    }
 })
 load(ws)
-updateGeneratedCode()
 
 ws.addChangeListener((e) => {
    if (e.isUiEvent) return
@@ -56,5 +64,5 @@ ws.addChangeListener((e) => {
 
 function updateGeneratedCode() {
    const code = javascriptGenerator.workspaceToCode(ws)
-   $('generatedCode').textContent = code
+   anotherWindow.document.getElementById('mainTextArea').textContent = code
 }

@@ -17,17 +17,6 @@ code {
 }
 
 #blocklyDiv {
-  flex: 1 1 60%;
+  flex: 1 1 auto;
   min-width: 600px;
-}
-
-#generatedCode {
-  flex: 1 1 40%;
-  border: none;
-  outline: none;
-  border-radius: 0;
-  border-left: 1px solid black;
-
-  font-family: 'Courier New', 'Courier', Dengxian, monospace;
-  resize: none;
 }

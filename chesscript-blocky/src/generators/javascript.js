@@ -85,11 +85,17 @@ ${statements}}
    disable_chessboard() {
       return `cx.disableChessboard()\n`
    },
-   highlight_square(block, generator) {
+   highlight_square_const(block) {
       const square = block.getFieldValue('SQUARE')
       const color = block.getFieldValue('COLOR')
       const persist = block.getFieldValue('PERSIST') === 'TRUE'
       return `await cx.highlightSquare('${square}', '${color}', ${persist})\n`
+   },
+   highlight_square(block, generator) {
+      const square = generator.valueToCode(block, 'SQUARE', Order.ATOMIC)
+      const color = block.getFieldValue('COLOR')
+      const persist = block.getFieldValue('PERSIST') === 'TRUE'
+      return `await cx.highlightSquare(${square}, '${color}', ${persist})\n`
    },
    wait_for_position(block, generator) {
       const condition = generator.statementToCode(block, 'CONDITION')

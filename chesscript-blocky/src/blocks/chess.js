@@ -47,11 +47,38 @@ export const ChessBlocks = [
       nextStatement: null
    },
    {
-      type: 'highlight_square',
+      type: 'highlight_square_const',
       message0: '高亮方格 %1 为颜色 %2 持久化 %3',
       args0: [
          {
             type: 'field_input',
+            name: 'SQUARE',
+            check: 'String'
+         },
+         {
+            type: 'field_dropdown',
+            name: 'COLOR',
+            options: [
+               ['绿色', 'green'],
+               ['青色', 'cyan'],
+               ['橘红', 'orangered']
+            ]
+         },
+         {
+            type: 'field_checkbox',
+            name: 'PERSIST'
+         }
+      ],
+      colour: 30,
+      previousStatement: null,
+      nextStatement: null
+   },
+   {
+      type: 'highlight_square',
+      message0: '高亮方格 %1 为颜色 %2 持久化 %3',
+      args0: [
+         {
+            type: 'input_value',
             name: 'SQUARE',
             check: 'String'
          },

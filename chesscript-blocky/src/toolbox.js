@@ -24,6 +24,10 @@ export const toolbox = {
             },
             {
                kind: 'block',
+               type: 'highlight_square_const',
+            },
+            {
+               kind: 'block',
                type: 'highlight_square',
             },
             {
@@ -550,10 +554,6 @@ export const toolbox = {
          name: '列表',
          categorystyle: 'list_category',
          contents: [
-            {
-               kind: 'block',
-               type: 'lists_create_with',
-            },
             {
                kind: 'block',
                type: 'lists_create_with',
