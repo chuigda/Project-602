@@ -1,30 +1,62 @@
-/**
- * @license
- * Copyright 2023 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
+import { Order } from "blockly/javascript"
 
-import {Order} from 'blockly/javascript';
-
-// Export all the code generators for our custom blocks,
-// but don't register them with Blockly yet.
-// This file has no side effects!
-export const forBlock = Object.create(null);
-
-forBlock['add_text'] = function (block, generator) {
-  const text = generator.valueToCode(block, 'TEXT', Order.NONE) || "''";
-  const addText = generator.provideFunction_(
-    'addText',
-    `function ${generator.FUNCTION_NAME_PLACEHOLDER_}(text) {
-
-  // Add text to the output area.
-  const outputDiv = document.getElementById('output');
-  const textEl = document.createElement('p');
-  textEl.innerText = text;
-  outputDiv.appendChild(textEl);
-}`,
-  );
-  // Generate the function call for this block.
-  const code = `${addText}(${text});\n`;
-  return code;
-};
+export const forBlock = {
+   event_def(block, generator) {
+      const name = block.getFieldValue('NAME')
+      const statements = generator.statementToCode(block, 'STATEMENTS')
+      const code = `export const Event_${name} = async cx => {
+${statements}}
+`
+      return code
+   },
+   anonymous_fndef(block, generator) {
+      const statements = generator.statementToCode(block, 'STATEMENTS')
+      const code = `async (...args: any[]) => {
+${statements}}`
+      return code
+   },
+   speak(block, generator) {
+      const name = block.getFieldValue('NAME')
+      const emotion = block.getFieldValue('EMOTION')
+      const text = generator.valueToCode(block, 'TEXT', Order.ATOMIC)
+      if (emotion) {
+         return `await cx.speak('${name}', ${text}, '${emotion}')\n`
+      } else {
+         return `await cx.speak('${name}', ${text})\n`
+      }
+   },
+   system_info(block, generator) {
+      const text = generator.valueToCode(block, 'TEXT', Order.ATOMIC)
+      return `await cx.showPrompt('system', ${text})\n`
+   },
+   prompt_info(block, generator) {
+      const text = generator.valueToCode(block, 'TEXT', Order.ATOMIC)
+      return `await cx.showPrompt('prompt', ${text})\n`
+   },
+   set_fen(block, generator) {
+      const fen = generator.valueToCode(block, 'FEN', Order.ATOMIC)
+      return `await cx.setFen(${fen})\n`
+   },
+   show_dialogue() {
+      return `await cx.showDialogue()\n`
+   },
+   hide_dialogue() {
+      return `await cx.hideDialogue()\n`
+   },
+   enable_chessboard() {
+      return `cx.enableChessboard()\n`
+   },
+   disable_chessboard() {
+      return `cx.disableChessboard()\n`
+   },
+   highlight_square(block, generator) {
+      const square = block.getFieldValue('SQUARE')
+      return `await cx.highlightSquare('${square}')\n`
+   },
+   wait_for_position(block, generator) {
+      const condition = generator.statementToCode(block, 'CONDITION')
+      return `await cx.waitForPosition(
+${condition}
+)\n`
+   }
+}

@@ -17,7 +17,61 @@ export const toolbox = {
    contents: [
       {
          kind: 'category',
-         name: 'Logic',
+         name: '棋盘',
+         colour: 30,
+         contents: [
+            {
+               kind: 'block',
+               type: 'set_fen',
+            },
+            {
+               kind: 'block',
+               type: 'enable_chessboard',
+            },
+            {
+               kind: 'block',
+               type: 'disable_chessboard',
+            },
+            {
+               kind: 'block',
+               type: 'highlight_square',
+            },
+            {
+               kind: 'block',
+               type: 'wait_for_position',
+            }
+         ]
+      },
+      {
+         kind: 'category',
+         name: '对话',
+         colour: 30,
+         contents: [
+            {
+               kind: 'block',
+               type: 'speak'
+            },
+            {
+               kind: 'block',
+               type: 'system_info'
+            },
+            {
+               kind: 'block',
+               type: 'prompt_info'
+            },
+            {
+               kind: 'block',
+               type: 'show_dialogue'
+            },
+            {
+               kind: 'block',
+               type: 'hide_dialogue'
+            }
+         ]
+      },
+      {
+         kind: 'category',
+         name: '逻辑',
          categorystyle: 'logic_category',
          contents: [
             {
@@ -52,7 +106,7 @@ export const toolbox = {
       },
       {
          kind: 'category',
-         name: 'Loops',
+         name: '循环',
          categorystyle: 'loop_category',
          contents: [
             {
@@ -115,7 +169,7 @@ export const toolbox = {
       },
       {
          kind: 'category',
-         name: 'Math',
+         name: '数学',
          categorystyle: 'math_category',
          contents: [
             {
@@ -321,7 +375,7 @@ export const toolbox = {
       },
       {
          kind: 'category',
-         name: 'Text',
+         name: '文本',
          categorystyle: 'text_category',
          contents: [
             {
@@ -495,7 +549,7 @@ export const toolbox = {
       },
       {
          kind: 'category',
-         name: 'Lists',
+         name: '列表',
          categorystyle: 'list_category',
          contents: [
             {
@@ -601,15 +655,24 @@ export const toolbox = {
       },
       {
          kind: 'category',
-         name: 'Variables',
+         name: '变量',
          categorystyle: 'variable_category',
          custom: 'VARIABLE',
       },
       {
          kind: 'category',
-         name: 'Functions',
+         name: '事件',
          categorystyle: 'procedure_category',
-         custom: 'PROCEDURE',
+         contents: [
+            {
+               kind: 'block',
+               type: 'event_def',
+            },
+            {
+               kind: 'block',
+               type: 'anonymous_fndef'
+            }
+         ],
       },
    ],
 };
