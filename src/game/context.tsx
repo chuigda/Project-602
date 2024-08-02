@@ -22,7 +22,7 @@ import { create2DChessboardFromChessGame } from '../chessboard/chessboard2d'
 import { showDialogue, hideDialogue, speak, Dialogue } from '../widgets/dialogue'
 import { openPromotionWindow } from '../widgets/promote'
 import { addPromptLine, clearPrompt, PromptLevel, SystemPrompt } from '../widgets/system-prompt'
-import { createRelicWindow, relicPushSmallText, removeRelicWindow } from '../widgets/relic'
+import { createRelicWindow, relicPushSmallText, RelicWindow, removeRelicWindow } from '../widgets/relic'
 import { CharacterDef, loadCharacter } from '../assetloader'
 import { CharacterDefs } from '../story/chardef'
 import { sleep } from '../util/sleep'
@@ -382,6 +382,34 @@ export class Context {
       // TODO implement captureall rule victory/draw
    }
 
+   async loadCharacters(characterUse: string[], relic: RelicWindow) {
+      const charDefsToLoad: [string, CharacterDef][] = characterUse
+         .filter((name: string) => !globalResource.value.characters[name])
+         .map((name: string) => [name, CharacterDefs[name]])
+      if (charDefsToLoad.length > 0) {
+            const e = await relicPushSmallText(relic, `正在加载人格化数据矩阵: 0%`)
+            let loadedCount = 0
+            for (const [name, def] of charDefsToLoad) {
+               if (!def) {
+                  dbgWarn(`未找到角色定义: ${name}`)
+                  continue
+               }
+
+               globalResource.value.characters[name] = await loadCharacter(
+                  name,
+                  def,
+                  progress => {
+                     const totalProgress = (progress + loadedCount) / charDefsToLoad.length
+                     e.innerText = `正在加载人格化数据矩阵: ${Math.floor(totalProgress * 100)}%`
+                  }
+               )
+               loadedCount += 1
+               await sleep(100)
+            }
+            e.innerText = `正在加载人格化数据矩阵: 100%`
+         }
+   }
+
    // 调试用 API
    async setPiece(square: string, piece: Piece | undefined) {
       const [rank, file] = square2rankfileZeroBased(square)
@@ -412,33 +440,9 @@ export class Context {
       await relicPushSmallText(relic, `正在加载任务数据`)
       const [_, code] = await Promise.all([sleep(200), importNoVite(scriptFile)])
 
-      const charDefsToLoad: [string, CharacterDef][] = code.CharacterUse
-         .filter((name: string) => !globalResource.value.characters[name])
-         .map((name: string) => [name, CharacterDefs[name]])
-      if (charDefsToLoad.length > 0) {
-         const e = await relicPushSmallText(relic, `正在加载人格化数据矩阵: 0%`)
-         let loadedCount = 0
-         for (const [name, def] of charDefsToLoad) {
-            if (!def) {
-               dbgWarn(`未找到角色定义: ${name}`)
-               continue
-            }
+      this.loadCharacters(code.CharacterUse, relic)
 
-            globalResource.value.characters[name] = await loadCharacter(
-               name,
-               def,
-               progress => {
-                  const totalProgress = (progress + loadedCount) / charDefsToLoad.length
-                  e.innerText = `正在加载人格化数据矩阵: ${Math.floor(totalProgress * 100)}%`
-               }
-            )
-            loadedCount += 1
-            await sleep(100)
-         }
-         e.innerText = `正在加载人格化数据矩阵: 100%`
-      }
-
-      await relicPushSmallText(relic, `初始化控制协议`)
+      await await relicPushSmallText(relic, `初始化控制协议`)
       this.eventPool = code
       await sleep(500)
       await removeRelicWindow(relic)
@@ -455,31 +459,7 @@ export class Context {
       const pseudoModule = eval(script)
       await sleep(200)
 
-      const charDefsToLoad: [string, CharacterDef][] = pseudoModule.CharacterUse
-         .filter((name: string) => !globalResource.value.characters[name])
-         .map((name: string) => [name, CharacterDefs[name]])
-      if (charDefsToLoad.length > 0) {
-         const e = await relicPushSmallText(relic, `正在加载人格化数据矩阵: 0%`)
-         let loadedCount = 0
-         for (const [name, def] of charDefsToLoad) {
-            if (!def) {
-               dbgWarn(`未找到角色定义: ${name}`)
-               continue
-            }
-
-            globalResource.value.characters[name] = await loadCharacter(
-               name,
-               def,
-               progress => {
-                  const totalProgress = (progress + loadedCount) / charDefsToLoad.length
-                  e.innerText = `正在加载人格化数据矩阵: ${Math.floor(totalProgress * 100)}%`
-               }
-            )
-            loadedCount += 1
-            await sleep(100)
-         }
-         e.innerText = `正在加载人格化数据矩阵: 100%`
-      }
+      await this.loadCharacters(pseudoModule.CharacterUse, relic)
 
       await relicPushSmallText(relic, `初始化控制协议`)
       this.eventPool = pseudoModule
@@ -708,9 +688,14 @@ export class Context {
    }
 
    async speak(speaker: string, text: string, emotion?: string): Promise<void> {
+      const speakerCharacter = globalResource.value.characters[speaker]
+      if (!speakerCharacter) {
+         dbgWarn(`speak: 引用的角色 ${speaker} 未定义或者未加载`)
+      }
+
       await speak(
          this.dialogue,
-         globalResource.value.characters[speaker],
+         speakerCharacter,
          speaker,
          emotion || '常态',
          text

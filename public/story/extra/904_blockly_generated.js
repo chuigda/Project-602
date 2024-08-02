@@ -25,4 +25,4 @@
      await cx.setupSkirmishMode(1)
      await cx.showPrompt('prompt', '现在你可以操作棋盘了')
    },
- }))()
+}))()

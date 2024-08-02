@@ -1,4 +1,5 @@
 import { h } from 'tsx-dom'
+import { dbgWarn } from '../components/debugconsole'
 import { Character } from '../story/character'
 import { sleep } from '../util/sleep'
 import { ref } from '../util/ref'
@@ -71,7 +72,7 @@ export function speak(
    if (character) {
       const emotionImages = character.emotions[emotion]
       if (!emotionImages) {
-         console.error(`角色 ${speaker} 缺少表情图片序列 ${emotion}`)
+         dbgWarn(`speak: 角色 ${speaker} 缺少表情图片序列 ${emotion}`)
       }
       else {
          const widthOverHeight = character.width / character.height

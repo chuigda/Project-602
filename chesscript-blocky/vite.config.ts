@@ -19,6 +19,9 @@ export default defineConfig({
       cssCodeSplit: false,
       copyPublicDir: true,
       rollupOptions: {
+         input: {
+            app: 'mission-editor.html'
+         },
          output: {
             entryFileNames: 'index.js',
             assetFileNames: 'index.css',
