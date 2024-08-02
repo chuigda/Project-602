@@ -49,7 +49,7 @@ export async function hideDialogue(dialogue: Dialogue) {
 
 export function speak(
    dialogue: Dialogue,
-   character: Character,
+   character: Character | null | undefined,
    speaker: string,
    emotion: string,
    text: string
@@ -57,40 +57,43 @@ export function speak(
    const canvasWidth = dialogue.portrait.clientWidth * (window.devicePixelRatio || 1)
    const canvasHeight = dialogue.portrait.clientHeight * (window.devicePixelRatio || 1)
 
-   dialogue.portrait.width = canvasWidth
-   dialogue.portrait.height = canvasHeight
    dialogue.speaker.innerText = speaker
    dialogue.speakContent.innerText = ''
+   dialogue.portrait.width = canvasWidth
+   dialogue.portrait.height = canvasHeight
    if (dialogue.portrait.style.opacity === '0') {
       dialogue.portrait.style.opacity = '1'
    }
 
    const ctx = dialogue.portrait.getContext('2d')!
    ctx.clearRect(0, 0, dialogue.portrait.width, dialogue.portrait.height)
-   const emotionImages = character.emotions[emotion]
-   if (!emotionImages) {
-      console.error(`角色 ${speaker} 缺少表情图片序列 ${emotion}`)
-   }
-   else {
-      const widthOverHeight = character.width / character.height
 
-      const drawX = canvasWidth * character.drawX
-      const drawY = canvasHeight * character.drawY
-      const drawHeight = canvasHeight * (1 - character.drawY)
-      const drawWidth = drawHeight * widthOverHeight
+   if (character) {
+      const emotionImages = character.emotions[emotion]
+      if (!emotionImages) {
+         console.error(`角色 ${speaker} 缺少表情图片序列 ${emotion}`)
+      }
+      else {
+         const widthOverHeight = character.width / character.height
 
-      for (const image of emotionImages) {
-         ctx.drawImage(
-            image,
-            character.startX,
-            character.startY,
-            character.width,
-            character.height,
-            drawX,
-            drawY,
-            drawWidth,
-            drawHeight
-         )
+         const drawX = canvasWidth * character.drawX
+         const drawY = canvasHeight * character.drawY
+         const drawHeight = canvasHeight * (1 - character.drawY)
+         const drawWidth = drawHeight * widthOverHeight
+
+         for (const image of emotionImages) {
+            ctx.drawImage(
+               image,
+               character.startX,
+               character.startY,
+               character.width,
+               character.height,
+               drawX,
+               drawY,
+               drawWidth,
+               drawHeight
+            )
+         }
       }
    }
 

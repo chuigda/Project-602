@@ -27,6 +27,7 @@ import { CharacterDef, loadCharacter } from '../assetloader'
 import { CharacterDefs } from '../story/chardef'
 import { sleep } from '../util/sleep'
 import { maybeSkirmishComputerPlayMove, useSkirmishSetup } from './skirmish_setup'
+import { dbgWarn } from '../components/debugconsole'
 
 export interface ContextVariable {
    value: any
@@ -225,12 +226,7 @@ export class Context {
       // 当处于单人模式时，需要手动切换棋手
       if (this.variant === 'singleplayer') {
          this.chessgame.turn = this.playerSide
-         if (this.playerSide === 'white') {
-            this.currentFen = this.currentFen.replace('b', 'w')
-         }
-         else {
-            this.currentFen = this.currentFen.replace('w', 'b')
-         }
+         this.currentFen = chessGameToFen(this.chessgame)
       }
 
       if (this.chessgame.turn === 'white') {
@@ -423,13 +419,17 @@ export class Context {
          const e = await relicPushSmallText(relic, `正在加载人格化数据矩阵: 0%`)
          let loadedCount = 0
          for (const [name, def] of charDefsToLoad) {
+            if (!def) {
+               dbgWarn(`未找到角色定义: ${name}`)
+               continue
+            }
+
             globalResource.value.characters[name] = await loadCharacter(
                name,
                def,
                progress => {
                   const totalProgress = (progress + loadedCount) / charDefsToLoad.length
                   e.innerText = `正在加载人格化数据矩阵: ${Math.floor(totalProgress * 100)}%`
-                  console.info(totalProgress)
                }
             )
             loadedCount += 1
@@ -462,13 +462,17 @@ export class Context {
          const e = await relicPushSmallText(relic, `正在加载人格化数据矩阵: 0%`)
          let loadedCount = 0
          for (const [name, def] of charDefsToLoad) {
+            if (!def) {
+               dbgWarn(`未找到角色定义: ${name}`)
+               continue
+            }
+
             globalResource.value.characters[name] = await loadCharacter(
                name,
                def,
                progress => {
                   const totalProgress = (progress + loadedCount) / charDefsToLoad.length
                   e.innerText = `正在加载人格化数据矩阵: ${Math.floor(totalProgress * 100)}%`
-                  console.info(totalProgress)
                }
             )
             loadedCount += 1

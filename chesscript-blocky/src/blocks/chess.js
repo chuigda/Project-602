@@ -59,7 +59,7 @@ export const ChessBlocks = [
             type: 'field_dropdown',
             name: 'COLOR',
             options: [
-               ['绿色', 'green'],
+               ['绿色', 'greenyellow'],
                ['青色', 'cyan'],
                ['橘红', 'orangered']
             ]
@@ -115,7 +115,14 @@ export const ChessBlocks = [
    },
    {
       type: 'setup_skirmish_mode',
-      message0: '启用遭遇战模式逻辑',
+      message0: '启用遭遇战模式逻辑，AI 等级 %1',
+      args0: [
+         {
+            type: 'field_input',
+            name: 'LEVEL',
+            check: 'Number'
+         }
+      ],
       colour: 30,
       previousStatement: null,
       nextStatement: null

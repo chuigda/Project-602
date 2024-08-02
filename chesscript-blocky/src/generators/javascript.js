@@ -101,7 +101,13 @@ ${statements}},`
       return `await cx.waitForPosition(chessGame => {
 ${condition}})\n`
    },
-   setup_skirmish_mode() {
-      return `await cx.setupSkirmishMode()\n`
+   setup_skirmish_mode(block) {
+      const level = block.getFieldValue('LEVEL')
+      if (level) {
+         return `await cx.setupSkirmishMode(${level})\n`
+      }
+      else {
+         return `await cx.setupSkirmishMode()\n`
+      }
    }
 }
