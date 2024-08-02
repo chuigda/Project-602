@@ -8,6 +8,10 @@ export const toolbox = {
          contents: [
             {
                kind: 'block',
+               type: 'current_fen'
+            },
+            {
+               kind: 'block',
                type: 'set_fen',
             },
             {
@@ -36,7 +40,15 @@ export const toolbox = {
             },
             {
                kind: 'block',
-               type: 'setup_skirmish_mode'
+               type: 'setup_skirmish_mode',
+            },
+            {
+               kind: 'block',
+               type: 'sleep',
+            },
+            {
+               kind: 'block',
+               type: 'play_move',
             }
          ]
       },
@@ -698,6 +710,10 @@ export const toolbox = {
             {
                kind: 'block',
                type: 'inline_javascript_expr'
+            },
+            {
+               kind: 'block',
+               type: 'push_next_event'
             }
          ],
       },

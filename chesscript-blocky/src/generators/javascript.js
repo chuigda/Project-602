@@ -46,6 +46,10 @@ ${statements}},`
       const text = block.getFieldValue('TEXT')
       return [text, Order.ATOMIC]
    },
+   push_next_event(block) {
+      const event = block.getFieldValue('EVENT')
+      return `cx.pushEvent('${event}')\n`
+   },
    speak(block, generator) {
       const name = block.getFieldValue('NAME')
       const emotion = block.getFieldValue('EMOTION')
@@ -63,6 +67,9 @@ ${statements}},`
    prompt_info(block, generator) {
       const text = generator.valueToCode(block, 'TEXT', Order.ATOMIC)
       return `await cx.showPrompt('prompt', ${text})\n`
+   },
+   current_fen() {
+      return [`cx.currentFen`, Order.ATOMIC]
    },
    set_fen(block, generator) {
       const fen = generator.valueToCode(block, 'FEN', Order.ATOMIC)
@@ -109,5 +116,13 @@ ${condition}})\n`
       else {
          return `await cx.setupSkirmishMode()\n`
       }
+   },
+   sleep(block) {
+      const time = block.getFieldValue('TIME')
+      return `await cx.sleep(${time})\n`
+   },
+   play_move(block) {
+      const move = block.getFieldValue('MOVE')
+      return `await cx.playMoveUCI('${move}')\n`
    }
 }

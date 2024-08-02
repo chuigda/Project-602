@@ -1,5 +1,11 @@
 export const ChessBlocks = [
    {
+      type: 'current_fen',
+      message0: '当前局面',
+      output: 'String',
+      colour: 30
+   },
+   {
       type: 'set_fen',
       message0: '设置局面 %1',
       args0: [
@@ -23,6 +29,7 @@ export const ChessBlocks = [
             options: [
                ['标准国际象棋', 'chess'],
                ['吃光敌子', 'captureall'],
+               ['单人游戏', 'singleplayer'],
                ['标准国际象棋 + WGC0310', 'chesswith310'],
                ['吃光敌子 + WGC0310', 'captureall310']
             ]
@@ -86,7 +93,7 @@ export const ChessBlocks = [
             type: 'field_dropdown',
             name: 'COLOR',
             options: [
-               ['绿色', 'green'],
+               ['绿色', 'greenyellow'],
                ['青色', 'cyan'],
                ['橘红', 'orangered']
             ]
@@ -121,6 +128,34 @@ export const ChessBlocks = [
             type: 'field_input',
             name: 'LEVEL',
             check: 'Number'
+         }
+      ],
+      colour: 30,
+      previousStatement: null,
+      nextStatement: null
+   },
+   {
+      type: 'sleep',
+      message0: '等待 %1 毫秒',
+      args0: [
+         {
+            type: 'field_input',
+            name: 'TIME',
+            check: 'Number'
+         }
+      ],
+      colour: 30,
+      previousStatement: null,
+      nextStatement: null
+   },
+   {
+      type: 'play_move',
+      message0: '走棋 (UCI) %1',
+      args0: [
+         {
+            type: 'field_input',
+            name: 'MOVE',
+            check: 'String'
          }
       ],
       colour: 30,

@@ -77,5 +77,19 @@ export const EventBlocks = [
       ],
       colour: '%{BKY_PROCEDURES_HUE}',
       output: null
+   },
+   {
+      type: 'push_next_event',
+      message0: '将事件 %1 加入事件队列',
+      args0: [
+         {
+            type: 'field_input',
+            name: 'EVENT',
+            check: 'String'
+         }
+      ],
+      colour: '%{BKY_PROCEDURES_HUE}',
+      previousStatement: null,
+      nextStatement: null
    }
 ]
