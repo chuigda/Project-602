@@ -129,7 +129,7 @@ ${indentCode(javascriptGenerator.workspaceToCode(ws))}
 
    const executeWindow = window.open('/index.html')
    executeWindow.addEventListener('message', (e) => {
-      if (e.type === 'ready') {
+      if (e.data.type === 'ready') {
          executeWindow.postMessage({
             type: 'start-gameplay',
             script

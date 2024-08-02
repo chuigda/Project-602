@@ -27,3 +27,7 @@ dist-ssr
 
 # misc
 *.exe
+
+# build output of chesscript-blocky, put into public dir for convenience
+/public/code-preview.html
+/public/mission-editor.*
