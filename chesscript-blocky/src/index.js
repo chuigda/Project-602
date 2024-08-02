@@ -24,18 +24,7 @@ Blockly.defineBlocksWithJsonArray(ChessBlocks)
 Blockly.defineBlocksWithJsonArray(EventBlocks)
 Object.assign(javascriptGenerator.forBlock, forBlock)
 
-let anotherWindow = window.open("/code-preview.html")
-anotherWindow.onload = () => {
-   updateGeneratedCode()
-}
-
-anotherWindow.onbeforeunload = () => {
-   anotherWindow = null
-}
-
-window.onbeforeunload = () => {
-   anotherWindow.close()
-}
+let previewWindow = null
 
 const blocklyDiv = $('blocklyDiv')
 const ws = Blockly.inject(blocklyDiv, {
@@ -63,7 +52,7 @@ ws.addChangeListener((e) => {
    ) {
       return
    }
-   updateGeneratedCode()
+   updateCodePreview()
 })
 
 $('createnew').onclick = () => {
@@ -86,7 +75,7 @@ $('load').onclick = () => {
          Blockly.Events.enable()
 
          save(ws)
-         updateGeneratedCode()
+         updateCodePreview()
       }
       reader.readAsText(file)
    }
@@ -105,6 +94,21 @@ $('save').onclick = () => {
    a.href = url
    a.download = 'workspace.json'
    a.click()
+}
+
+$('preview').onclick = () => {
+   previewWindow = window.open("/code-preview.html")
+   previewWindow.onload = () => {
+      updateCodePreview()
+   }
+
+   previewWindow.onbeforeunload = () => {
+      previewWindow = null
+   }
+
+   window.onbeforeunload = () => {
+      previewWindow.close()
+   }
 }
 
 $('compile').onclick = () => {
@@ -138,12 +142,16 @@ ${indentCode(javascriptGenerator.workspaceToCode(ws))}
    })
 }
 
-function updateGeneratedCode() {
+function updateCodePreview() {
+   if (!previewWindow) {
+      return
+   }
+
    const code = `(() => ({
 ${indentCode(javascriptGenerator.workspaceToCode(ws))}
 }))()
 `
-   anotherWindow.document.getElementById('mainTextArea').textContent = code
+   previewWindow.document.getElementById('mainTextArea').textContent = code
 }
 
 function indentCode(code) {
