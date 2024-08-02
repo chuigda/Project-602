@@ -5,19 +5,21 @@ import { createCheckmateWindow } from '../components/checkmate'
 import { DrawReason } from '../chess/chessgame'
 import { randomPickParabola } from '../util/rand'
 
-export function useSkirmishSetup(context: Context, aiLevel: number) {
+export function useSkirmishSetup(context: Context, aiLevel?: number) {
    useSkirmishAI(context, aiLevel)
 
    context.onCheckmate.add(skirmishCheckmate)
    context.onDraw.add(skirmishDraw)
 }
 
-export function useSkirmishAI(context: Context, aiLevel: number) {
+export function useSkirmishAI(context: Context, aiLevel?: number) {
    context.onMovePlayed.delete(maybeSkirmishComputerPlayMove)
 
-   const elo = 500 + (aiLevel - 1) * 200
-   context.variables['ai_level'] = createContextVariable(aiLevel)
-   context.variables['ai_elo'] = createContextVariable(elo)
+   if (aiLevel) {
+      const elo = 500 + (aiLevel - 1) * 200
+      context.variables['ai_level'] = createContextVariable(aiLevel)
+      context.variables['ai_elo'] = createContextVariable(elo)
+   }
    context.onMovePlayed.add(maybeSkirmishComputerPlayMove)
 }
 
@@ -30,7 +32,7 @@ export async function maybeSkirmishComputerPlayMove(cx: Context) {
       return
    }
 
-   const aiLevel = cx.variables['ai_level'].value
+   const aiLevel = cx.variables['ai_level'] ? cx.variables['ai_level'].value : undefined
    const bookMove = tryBookMove(cx, aiLevel)
    if (bookMove) {
       await sleep(1500)
@@ -38,9 +40,14 @@ export async function maybeSkirmishComputerPlayMove(cx: Context) {
       return
    }
 
-   const elo = cx.variables['ai_elo'].value
    const fairyStockfish = globalResource.value.fairyStockfish
-   await fairyStockfish.setElo(elo)
+   if (aiLevel) {
+      const elo = cx.variables['ai_elo'].value
+      await fairyStockfish.setElo(elo)
+   }
+   else {
+      await fairyStockfish.unsetElo()
+   }
    await fairyStockfish.setPosition(cx.currentFen)
    const [_, bestMove] = await Promise.all([
       sleep(1000),
@@ -50,7 +57,7 @@ export async function maybeSkirmishComputerPlayMove(cx: Context) {
 }
 
 const openingCPL = [-225, -175, -125, -75, -50, -40, -30, -20]
-function tryBookMove(cx: Context, aiLevel: number): string | undefined {
+function tryBookMove(cx: Context, aiLevel?: number): string | undefined {
    const openingBook = globalResource.value.chessData.openingBook
    const position = openingBook[cx.currentFen]
    if (!position) {
@@ -62,6 +69,10 @@ function tryBookMove(cx: Context, aiLevel: number): string | undefined {
       .sort(([_move1, score1], [_move2, score2]) => score2 - score1)
    if (allMovesOrdered.length === 0) {
       return
+   }
+
+   if (!aiLevel) {
+      return allMovesOrdered[0][0]
    }
 
    const allowedCPL = openingCPL[aiLevel - 1]

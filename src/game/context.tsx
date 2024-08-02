@@ -22,10 +22,11 @@ import { create2DChessboardFromChessGame } from '../chessboard/chessboard2d'
 import { showDialogue, hideDialogue, speak, Dialogue } from '../widgets/dialogue'
 import { openPromotionWindow } from '../widgets/promote'
 import { addPromptLine, clearPrompt, PromptLevel, SystemPrompt } from '../widgets/system-prompt'
+import { createRelicWindow, relicPushSmallText, removeRelicWindow } from '../widgets/relic'
 import { CharacterDef, loadCharacter } from '../assetloader'
 import { CharacterDefs } from '../story/chardef'
 import { sleep } from '../util/sleep'
-import { createRelicWindow, relicPushSmallText, removeRelicWindow } from '../widgets/relic'
+import { maybeSkirmishComputerPlayMove, useSkirmishSetup } from './skirmish_setup'
 
 export interface ContextVariable {
    value: any
@@ -745,6 +746,11 @@ export class Context {
 
          await eventFn(this)
       }
+   }
+
+   async setupSkirmishMode(aiLevel?: number) {
+      useSkirmishSetup(this, aiLevel)
+      await maybeSkirmishComputerPlayMove(this)
    }
 }
 
