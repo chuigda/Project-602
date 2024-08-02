@@ -440,9 +440,9 @@ export class Context {
       await relicPushSmallText(relic, `正在加载任务数据`)
       const [_, code] = await Promise.all([sleep(200), importNoVite(scriptFile)])
 
-      this.loadCharacters(code.CharacterUse, relic)
+      await this.loadCharacters(code.CharacterUse, relic)
 
-      await await relicPushSmallText(relic, `初始化控制协议`)
+      await relicPushSmallText(relic, `初始化控制协议`)
       this.eventPool = code
       await sleep(500)
       await removeRelicWindow(relic)
