@@ -23,17 +23,16 @@ export const forBlock = {
       const name = block.getFieldValue('NAME')
       const statements = generator.statementToCode(block, 'STATEMENTS')
       const code = `Event_${name}: async cx => {
-${statements}},
-`
+${statements}},`
       return code
    },
    startup_event(block) {
       const name = block.getFieldValue('NAME')
-      return `StartingEvent: '${name}',\n`
+      return `StartingEvent: '${name}',`
    },
    use_character(block, generator) {
       const characters = generator.valueToCode(block, 'CHARACTERS', Order.ATOMIC)
-      return `CharacterUse: ${characters},\n`
+      return `CharacterUse: ${characters},`
    },
    return_result(block, generator) {
       const result = generator.valueToCode(block, 'RESULT', Order.ATOMIC)
