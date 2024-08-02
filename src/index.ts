@@ -58,6 +58,7 @@ async function continueLoadingOperation() {
    createDebugConsole()
 
    await sleep(500)
+   window.postMessage({ type: 'ready' })
    createStartMenu()
 }
 

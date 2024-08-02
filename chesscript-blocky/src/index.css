@@ -8,11 +8,22 @@ code {
   overflow: auto;
 }
 
+#mainContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+#mainMenu {
+  display: flex;
+}
+
 #pageContainer {
+  flex: 1 1 auto;
+
   display: flex;
   width: 100%;
   max-width: 100vw;
-  height: 100vh;
   flex-direction: row;
 }
 

@@ -66,6 +66,78 @@ ws.addChangeListener((e) => {
    updateGeneratedCode()
 })
 
+$('createnew').onclick = () => {
+   ws.clear()
+   save(ws)
+}
+
+$('load').onclick = () => {
+   const fileInput = document.createElement('input')
+   fileInput.type = 'file'
+   fileInput.accept = '.json'
+   fileInput.onchange = () => {
+      const file = fileInput.files[0]
+      const reader = new FileReader()
+      reader.onload = (e) => {
+         const jsonText = e.target.result
+         const workspaceObject = JSON.parse(jsonText)
+         Blockly.Events.disable()
+         Blockly.serialization.workspaces.load(workspaceObject, ws, false)
+         Blockly.Events.enable()
+
+         save(ws)
+         updateGeneratedCode()
+      }
+      reader.readAsText(file)
+   }
+   fileInput.click()
+}
+
+$('save').onclick = () => {
+   save(ws)
+
+   const workspaceObject = Blockly.serialization.workspaces.save(ws)
+   const jsonText = JSON.stringify(workspaceObject)
+
+   const blob = new Blob([jsonText], { type: 'application/json' })
+   const url = URL.createObjectURL(blob)
+   const a = document.createElement('a')
+   a.href = url
+   a.download = 'workspace.json'
+   a.click()
+}
+
+$('compile').onclick = () => {
+   const code = `(() => ({
+${indentCode(javascriptGenerator.workspaceToCode(ws))}
+}))()
+`
+
+   const blob = new Blob([code], { type: 'text/javascript' })
+   const url = URL.createObjectURL(blob)
+   const a = document.createElement('a')
+   a.href = url
+   a.download = 'code.js'
+   a.click()
+}
+
+$('run').onclick = () => {
+   const script = `(() => ({
+${indentCode(javascriptGenerator.workspaceToCode(ws))}
+}))()
+`
+
+   const executeWindow = window.open('/index.html')
+   executeWindow.addEventListener('message', (e) => {
+      if (e.type === 'ready') {
+         executeWindow.postMessage({
+            type: 'start-gameplay',
+            script
+         })
+      }
+   })
+}
+
 function updateGeneratedCode() {
    const code = `(() => ({
 ${indentCode(javascriptGenerator.workspaceToCode(ws))}

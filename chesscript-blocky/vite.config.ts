@@ -14,6 +14,9 @@ const advancedCors: Plugin = {
 export default defineConfig({
    base: '',
    plugins: [advancedCors],
+   server: {
+      open: '/mission-editor.html',
+   },
    build: {
       target: 'es2018',
       cssCodeSplit: false,
@@ -23,8 +26,8 @@ export default defineConfig({
             app: 'mission-editor.html'
          },
          output: {
-            entryFileNames: 'index.js',
-            assetFileNames: 'index.css',
+            entryFileNames: 'mission-editor.js',
+            assetFileNames: 'mission-editor.css',
          }
       }
    }

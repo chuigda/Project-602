@@ -44,3 +44,12 @@ export async function startGameplay(
 
    afterSetup(cx)
 }
+
+window.addEventListener('message', async (event: MessageEvent) => {
+   if (event.data.type === 'start-gameplay') {
+      await startGameplay(3500, async cx => {
+         await cx.enterNonModuleScript(event.data.script)
+         await cx.handleEvents()
+      })
+   }
+})
