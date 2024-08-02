@@ -29,6 +29,10 @@ anotherWindow.onload = () => {
    updateGeneratedCode()
 }
 
+anotherWindow.onbeforeunload = () => {
+   anotherWindow = null
+}
+
 window.onbeforeunload = () => {
    anotherWindow.close()
 }
@@ -63,6 +67,13 @@ ws.addChangeListener((e) => {
 })
 
 function updateGeneratedCode() {
-   const code = javascriptGenerator.workspaceToCode(ws)
+   const code = `(() => ({
+${indentCode(javascriptGenerator.workspaceToCode(ws))}
+}))()
+`
    anotherWindow.document.getElementById('mainTextArea').textContent = code
+}
+
+function indentCode(code) {
+   return code.split('\n').map((line) => `  ${line}`).join('\n')
 }
