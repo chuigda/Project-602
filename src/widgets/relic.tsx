@@ -22,7 +22,7 @@ export async function createRelicWindow(zIndex: number, width?: string): Promise
 }
 
 function calcRelicWindowHeight(relic: RelicWindow) {
-   return `calc(${relic.smallCount * 23}pt + ${relic.normalCount * 26}pt + ${(relic.smallCount + relic.normalCount) * 2}px)`
+   return `calc(${relic.smallCount * 16}pt + ${relic.normalCount * 18}pt + ${(relic.smallCount + relic.normalCount) * 2}px)`
 }
 
 export async function relicPushSmallText(relic: RelicWindow, text: string): Promise<HTMLElement> {
