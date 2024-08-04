@@ -27,7 +27,7 @@ import { CharacterDef, loadCharacter } from '../assetloader'
 import { CharacterDefs } from '../story/chardef'
 import { sleep } from '../util/sleep'
 import { maybeSkirmishComputerPlayMove, useSkirmishSetup } from './skirmish_setup'
-import { dbgWarn } from '../components/debugconsole'
+import { dbgError, dbgWarn } from '../components/debugconsole'
 
 export interface ContextVariable {
    value: any
@@ -93,8 +93,9 @@ export class Context {
    onCaptureAll: Set<GameWLHandler> = new Set()
    onDraw: Set<GameDrawHandler> = new Set()
 
-   // 场景事件队列
-   sceneEvents: SceneEvent[] = []
+   // 当前事件和下一事件
+   currentEvent?: string
+   nextEvent?: string
 
    // 常量表
    constants: Record<string, any> = {
@@ -722,18 +723,28 @@ export class Context {
    }
 
    pushEvent(handlerName: string) {
-      this.sceneEvents.push(this.eventPool[`Event_${handlerName}`])
+      if (this.nextEvent) {
+         dbgWarn(`pushEvent: 已经入队的事件 ${this.nextEvent} 尚未执行就被覆盖`)
+      }
+      this.nextEvent = handlerName
    }
 
    async handleEvents(): Promise<void> {
-      while (true) {
-         const eventFn = this.sceneEvents.shift()
+      while (this.nextEvent) {
+         const eventFn = this.eventPool[`Event_${this.nextEvent}`]
+         this.currentEvent = this.nextEvent
+         this.nextEvent = undefined
          clearPrompt(this.systemPrompt)
          if (!eventFn) {
+            dbgError(`handleEvents: 未找到事件: ${this.currentEvent}`)
             break
          }
 
-         await eventFn(this)
+         try {
+            await eventFn(this)
+         } catch (e) {
+            dbgError(`handleEvents: 事件 ${this.currentEvent} 执行过程中抛出异常: ${e}`)
+         }
       }
    }
 
