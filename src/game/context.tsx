@@ -808,13 +808,15 @@ async function playMoveAnimation(chessgame: ChessGame, chessboard: Chessboard3D,
    console.info(startPiece, endPiece)
 
    removePieceFromChessboard(chessboard, rank0, file0)
-   if (endPiece
-      && getPieceSide(startPiece) === getPieceSide(endPiece)
-      && getPieceName(startPiece) === 'king'
-      && getPieceName(endPiece) === 'rook') {
-      removePieceFromChessboard(chessboard, rank1, file1)
-
-      console.info('castling move')
+   if (getPieceName(startPiece) === 'king'
+      && file0 === 4
+      && rank0 === (getPieceSide(startPiece) === 'white' ? 0 : 7)
+      && rank1 === rank0
+      && (file1 === 2 || file1 === 6))
+   {
+      const fileRook = file1 === 2 ? 0 : 7
+      removePieceFromChessboard(chessboard, rank0, fileRook)
+      const fileRookDest = file1 === 2 ? 3 : 5
 
       await new Promise(resolve => {
          chessboard.animatingPieces.push({
@@ -827,19 +829,19 @@ async function playMoveAnimation(chessgame: ChessGame, chessboard: Chessboard3D,
             resolve,
 
             frameCount: 0,
-            totalFrameCount: 30
+            totalFrameCount: 20
          })
          chessboard.animatingPieces.push({
-            piece: getPieceName(endPiece),
-            color: getPieceSide(endPiece),
-            startRank: rank1,
-            startFile: file1,
+            piece: 'rook',
+            color: getPieceSide(startPiece),
+            startRank: rank0,
+            startFile: fileRook,
             endRank: rank0,
-            endFile: file0,
+            endFile: fileRookDest,
             resolve: () => {},
 
             frameCount: 0,
-            totalFrameCount: 30
+            totalFrameCount: 20
          })
       })
    }
@@ -869,7 +871,7 @@ async function playMoveAnimation(chessgame: ChessGame, chessboard: Chessboard3D,
             resolve,
 
             frameCount: 0,
-            totalFrameCount: 30
+            totalFrameCount: 20
          })
       })
    }
@@ -886,7 +888,7 @@ async function playMoveAnimation(chessgame: ChessGame, chessboard: Chessboard3D,
             resolve,
 
             frameCount: 0,
-            totalFrameCount: 30
+            totalFrameCount: 20
          })
       })
    }

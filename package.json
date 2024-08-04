@@ -12,6 +12,7 @@
     "fischer960": "^1.0.0"
   },
   "devDependencies": {
+    "bezier-easing": "^2.1.0",
     "fairy-stockfish-nnue.wasm": "^1.1.8",
     "tsx-dom": "^3.0.1",
     "tsx-dom-types": "^2.0.1",

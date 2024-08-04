@@ -148,7 +148,6 @@ export async function evaluatePositionCPL(
    uciMoves: string[],
    reportProgress?: (progress: number) => void
 ): Promise<EvaluationScore[]> {
-   console.info("analysing uci moves:", uciMoves)
    const fairyStockfish = globalResource.value.fairyStockfish
    const scores: EvaluationScore[] = []
 

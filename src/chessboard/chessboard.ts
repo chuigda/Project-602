@@ -15,6 +15,7 @@ import {
    chessboardSquareCoordinates as cscoord,
    rankfile2linearZeroBased as rf2linear,
 } from './coordinate.ts'
+import bezier from '../util/bezier.json'
 
 export const chessboardColor: Record<string, [number, number, number, number]> = {
    cyan: [0.0, 0.85, 0.8, 1.0],
@@ -51,7 +52,7 @@ export interface AnimatingPiece {
    fading?: 'in' | 'out'
 
    frameCount: number
-   totalFrameCount: number
+   totalFrameCount: 10 | 15 | 20 | 30 | 45 | 60 | 90
 
    resolve: (...args: any[]) => void
 }
@@ -245,7 +246,8 @@ export function createChessboard3D(
       }
 
       for (const animatingPiece of self.animatingPieces) {
-         const t = easeBezier(animatingPiece.frameCount / animatingPiece.totalFrameCount)
+         const curve = bezier[`bezier${animatingPiece.totalFrameCount}`]
+         const t = animatingPiece.frameCount >= animatingPiece.totalFrameCount ? 1.0 : curve[animatingPiece.frameCount]
 
          let x, z
          const [x0, y0] = cscoord[rf2linear(animatingPiece.startRank, animatingPiece.startFile)]
@@ -409,12 +411,4 @@ function choosePieceHoverColor(piece: PieceName, side: PlayerSide): [number, num
       return chessboardColor.cyan_20
    }
    return chessboardColor.orangered_20
-}
-
-function cubizBezier(t: number, p0: number, p1: number, p2: number, p3: number): number {
-   return (1 - t) ** 3 * p0 + 3 * (1 - t) ** 2 * t * p1 + 3 * (1 - t) * t ** 2 * p2 + t ** 3 * p3
-}
-
-function easeBezier(t: number) {
-   return cubizBezier(t, 0.25, 0.1, 0.25, 1.0)
 }
