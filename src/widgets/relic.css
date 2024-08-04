@@ -33,4 +33,10 @@
 
 .relic-window > .small-text {
    font-size: 14pt;
+   line-height: 23pt;
+}
+
+.relic-window > .normal-text {
+   font-size: 16pt;
+   line-height: 26pt;
 }
