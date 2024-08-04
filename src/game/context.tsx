@@ -714,14 +714,18 @@ export class Context {
    }
 
    async highlightSquare(square: string, color: string, persist?: boolean) {
+      const [rank, file] = square2rankfileZeroBased(square)
       if (persist) {
          this.persistHighlightSquares.push([square, color])
-         this.updateHighlightSquares()
+         // 此时更新高亮方格可能会干扰到已经高亮的方格
+         // this.updateHighlightSquares()
       }
-      else {
-         const [rank, file] = square2rankfileZeroBased(square)
-         this.chessboard.highlightSquares.push({ rank, file, color: this.constants[color] })
-      }
+      this.chessboard.highlightSquares.push({ rank, file, color: this.constants[color] })
+   }
+
+   async clearHighlightSquares() {
+      this.persistHighlightSquares = []
+      this.updateHighlightSquares()
    }
 
    async sleep(ms: number) {
