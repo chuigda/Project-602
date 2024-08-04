@@ -6,6 +6,7 @@ import * as mat4 from './gl_matrix/mat4.mjs'
 import { Framebuffer, createFrameBuffer } from './glx/framebuffer_object.ts'
 import { GameAsset } from '../assetloader.ts'
 import { ChessGame, getPieceName, getPieceSide, PieceName, PlayerSide } from '../chess/chessgame.ts'
+import { blackMvMatrics, whiteMvMatrics, whiteViewMatrix } from './coordinate.ts'
 
 export const chessboardColor: Record<string, [number, number, number, number]> = {
    cyan: [0.0, 0.85, 0.8, 1.0],
@@ -144,42 +145,7 @@ export function createChessboard3D(
    self.program.useProgram(gl)
    self.program.uniformMatrix4fv(gl, 'u_ProjectionMatrix', false, projection)
 
-   const whiteViewMatrix = mat4.create()
-   mat4.lookAt(whiteViewMatrix, [0, 17, 13], [0, 0, 0], [0, 1, 0])
-
-   const centreMatrix = mat4.create()
-   mat4.copy(centreMatrix, whiteViewMatrix)
-
-   const whiteMvMatrics: any[] = []
-   for (let file = 0; file < 8; file++) {
-      for (let rank = 0; rank < 8; rank++) {
-         const x = (file - 3.5) * 1.1
-         const z = (3.5 - rank) * 1.1
-
-         const thisMatrix = mat4.create()
-         mat4.copy(thisMatrix, whiteViewMatrix)
-         mat4.translate(thisMatrix, thisMatrix, [x, 0, z])
-         mat4.rotate(thisMatrix, thisMatrix, -Math.PI / 2, [0, 1, 0])
-         whiteMvMatrics.push(thisMatrix)
-      }
-   }
-
-   const blackViewMatrix = mat4.create()
-   mat4.lookAt(blackViewMatrix, [0, 17, -13], [0, 0, 0], [0, 1, 0])
-
-   const blackMvMatrics: any[] = []
-   for (let file = 0; file < 8; file++) {
-      for (let rank = 0; rank < 8; rank++) {
-         const x = (file - 3.5) * 1.1
-         const z = (3.5 - rank) * 1.1
-
-         const thisMatrix = mat4.create()
-         mat4.copy(thisMatrix, blackViewMatrix)
-         mat4.translate(thisMatrix, thisMatrix, [x, 0, z])
-         mat4.rotate(thisMatrix, thisMatrix, Math.PI / 2, [0, 1, 0])
-         blackMvMatrics.push(thisMatrix)
-      }
-   }
+   const centreMatrix = whiteViewMatrix
 
    const windowResizeHandler = () => {
       canvas.width = canvas.clientWidth * (window.devicePixelRatio || 1.0)
