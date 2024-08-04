@@ -40,6 +40,7 @@ export interface StaticPiece {
 
 export interface AnimatingPiece {
    piece: PieceName
+   color: PlayerSide
 
    startRank: number
    startFile: number
@@ -52,7 +53,7 @@ export interface AnimatingPiece {
    frameCount: number
    totalFrameCount: number
 
-   resolve: () => void
+   resolve: (...args: any[]) => void
 }
 
 export interface HighlightSquare {
@@ -244,12 +245,14 @@ export function createChessboard3D(
       }
 
       for (const animatingPiece of self.animatingPieces) {
+         const t = easeBezier(animatingPiece.frameCount / animatingPiece.totalFrameCount)
+
          let x, z
          const [x0, y0] = cscoord[rf2linear(animatingPiece.startRank, animatingPiece.startFile)]
          if (animatingPiece.endRank !== undefined && animatingPiece.endFile !== undefined) {
-            const [x1, y1] = cscoord[rf2linear(animatingPiece.startRank, animatingPiece.startFile)]
-            x = x0 + (x1 - x0) * animatingPiece.frameCount / animatingPiece.totalFrameCount
-            z = y0 + (y1 - y0) * animatingPiece.frameCount / animatingPiece.totalFrameCount
+            const [x1, y1] = cscoord[rf2linear(animatingPiece.endRank, animatingPiece.endFile)]
+            x = x0 + (x1 - x0) * t
+            z = y0 + (y1 - y0) * t
          } else {
             x = x0
             z = y0
@@ -263,18 +266,23 @@ export function createChessboard3D(
 
          let fadeOut = 0.0
          if (animatingPiece.fading === 'in') {
-            fadeOut = 1.0 - animatingPiece.frameCount / animatingPiece.totalFrameCount
+            fadeOut = 1.0 - t
          } else if (animatingPiece.fading === 'out') {
-            fadeOut = animatingPiece.frameCount / animatingPiece.totalFrameCount
+            fadeOut = t
          }
          self.program.uniform1f(gl, 'u_FadeOut', fadeOut)
 
          self.program.uniform4fv(gl, 'u_ObjectColor', [0, 0, 0, 1.0])
          const vbo = self.vbo[animatingPiece.piece]
          vbo.draw(gl)
-         self.program.uniform4fv(gl, 'u_ObjectColor', choosePieceColor(animatingPiece.piece, 'white'))
+         self.program.uniform4fv(gl, 'u_ObjectColor', choosePieceColor(animatingPiece.piece, animatingPiece.color))
          const vboLine = self.vbo[`${animatingPiece.piece}Line`]
          vboLine.draw(gl)
+
+         animatingPiece.frameCount++
+         if (animatingPiece.frameCount >= animatingPiece.totalFrameCount) {
+            animatingPiece.resolve()
+         }
       }
 
       self.program.uniform1f(gl, 'u_FadeOut', 0.0)
@@ -377,6 +385,12 @@ export function gamePositionToChessboard(game: ChessGame, chessboard: Chessboard
    }
 }
 
+export function removePieceFromChessboard(chessboard: Chessboard3D, rank: number, file: number) {
+   chessboard.staticPieces = chessboard
+      .staticPieces
+      .filter(piece => piece.rank !== rank || piece.file !== file)
+}
+
 function choosePieceColor(piece: PieceName, side: PlayerSide): [number, number, number, number] {
    if (piece === 'immovable') {
       return chessboardColor.yellow
@@ -395,4 +409,12 @@ function choosePieceHoverColor(piece: PieceName, side: PlayerSide): [number, num
       return chessboardColor.cyan_20
    }
    return chessboardColor.orangered_20
+}
+
+function cubizBezier(t: number, p0: number, p1: number, p2: number, p3: number): number {
+   return (1 - t) ** 3 * p0 + 3 * (1 - t) ** 2 * t * p1 + 3 * (1 - t) * t ** 2 * p2 + t ** 3 * p3
+}
+
+function easeBezier(t: number) {
+   return cubizBezier(t, 0.25, 0.1, 0.25, 1.0)
 }

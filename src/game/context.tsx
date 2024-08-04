@@ -6,7 +6,9 @@ import {
    createChessGameFromFen,
    createEmptyChessGame,
    DrawReason,
+   getPieceName,
    getPieceOfSide,
+   getPieceSide,
    isPlayerPiece,
    Piece,
    PlayerSide,
@@ -17,7 +19,7 @@ import { isBookMove } from '../chess/opening-book'
 import { uci2san } from '../chess/uci2san'
 import { uci2lan } from '../chess/uci2lan'
 import { trimFEN } from '../chess/trimfen'
-import { Chessboard3D, chessboardColor, gamePositionToChessboard } from '../chessboard/chessboard'
+import { Chessboard3D, chessboardColor, gamePositionToChessboard, removePieceFromChessboard } from '../chessboard/chessboard'
 import { create2DChessboardFromChessGame } from '../chessboard/chessboard2d'
 import { showDialogue, hideDialogue, speak, Dialogue } from '../widgets/dialogue'
 import { openPromotionWindow } from '../widgets/promote'
@@ -549,6 +551,9 @@ export class Context {
    }
 
    async playMoveUCI(uciMove: string) {
+      this.updateHighlightSquares()
+      await playMoveAnimation(this.chessgame, this.chessboard, uciMove)
+
       const currentSide = this.chessgame.turn
 
       const isCapture = isCaptureMove(this.chessgame, uciMove)
@@ -788,3 +793,105 @@ function isPawnMove(game: ChessGame, uciMove: string) {
    const [startRank, startFile] = square2rankfileZeroBased(startSquare)
    return game.position[startRank][startFile] === 'p' || game.position[startRank][startFile] === 'P'
 }
+
+async function playMoveAnimation(chessgame: ChessGame, chessboard: Chessboard3D, uciMove: string) {
+   const startSquare = uciMove.slice(0, 2)
+   const endSquare = uciMove.slice(2, 4)
+
+   const [rank0, file0] = square2rankfileZeroBased(startSquare)
+   const [rank1, file1] = square2rankfileZeroBased(endSquare)
+
+   // first, if this is castling
+   const startPiece = chessgame.position[rank0][file0]!
+   const endPiece = chessgame.position[rank1][file1]
+
+   console.info(startPiece, endPiece)
+
+   removePieceFromChessboard(chessboard, rank0, file0)
+   if (endPiece
+      && getPieceSide(startPiece) === getPieceSide(endPiece)
+      && getPieceName(startPiece) === 'king'
+      && getPieceName(endPiece) === 'rook') {
+      removePieceFromChessboard(chessboard, rank1, file1)
+
+      console.info('castling move')
+
+      await new Promise(resolve => {
+         chessboard.animatingPieces.push({
+            piece: getPieceName(startPiece),
+            color: getPieceSide(startPiece),
+            startRank: rank0,
+            startFile: file0,
+            endRank: rank1,
+            endFile: file1,
+            resolve,
+
+            frameCount: 0,
+            totalFrameCount: 30
+         })
+         chessboard.animatingPieces.push({
+            piece: getPieceName(endPiece),
+            color: getPieceSide(endPiece),
+            startRank: rank1,
+            startFile: file1,
+            endRank: rank0,
+            endFile: file0,
+            resolve: () => {},
+
+            frameCount: 0,
+            totalFrameCount: 30
+         })
+      })
+   }
+   // otherwise, if it is capture
+   else if (endPiece) {
+      removePieceFromChessboard(chessboard, rank1, file1)
+      await new Promise(resolve => {
+         chessboard.animatingPieces.push({
+            piece: getPieceName(endPiece),
+            color: getPieceSide(endPiece),
+            startRank: rank1,
+            startFile: file1,
+            fading: 'out',
+            resolve: () => {},
+
+            frameCount: 0,
+            totalFrameCount: 10
+         })
+
+         chessboard.animatingPieces.push({
+            piece: getPieceName(startPiece),
+            color: getPieceSide(startPiece),
+            startRank: rank0,
+            startFile: file0,
+            endRank: rank1,
+            endFile: file1,
+            resolve,
+
+            frameCount: 0,
+            totalFrameCount: 30
+         })
+      })
+   }
+   // otherwise, simply move the piece
+   else {
+      await new Promise(resolve => {
+         chessboard.animatingPieces.push({
+            piece: getPieceName(startPiece),
+            color: getPieceSide(startPiece),
+            startRank: rank0,
+            startFile: file0,
+            endRank: rank1,
+            endFile: file1,
+            resolve,
+
+            frameCount: 0,
+            totalFrameCount: 30
+         })
+      })
+   }
+
+   // finally, clear all animating pieces
+   chessboard.animatingPieces = []
+}
+
