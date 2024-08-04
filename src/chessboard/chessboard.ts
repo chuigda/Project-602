@@ -6,7 +6,15 @@ import * as mat4 from './gl_matrix/mat4.mjs'
 import { Framebuffer, createFrameBuffer } from './glx/framebuffer_object.ts'
 import { GameAsset } from '../assetloader.ts'
 import { ChessGame, getPieceName, getPieceSide, PieceName, PlayerSide } from '../chess/chessgame.ts'
-import { blackMvMatrics, whiteMvMatrics, whiteViewMatrix } from './coordinate.ts'
+import {
+   blackMvMatrics,
+   blackViewMatrix,
+   whiteMvMatrics,
+   whiteViewMatrix,
+
+   chessboardSquareCoordinates as cscoord,
+   rankfile2linearZeroBased as rf2linear,
+} from './coordinate.ts'
 
 export const chessboardColor: Record<string, [number, number, number, number]> = {
    cyan: [0.0, 0.85, 0.8, 1.0],
@@ -31,13 +39,20 @@ export interface StaticPiece {
 }
 
 export interface AnimatingPiece {
+   piece: PieceName
+
    startRank: number
    startFile: number
    endRank?: number
    endFile?: number
+   horseJump?: boolean
 
-   fading: boolean
-   fade?: number
+   fading?: 'in' | 'out'
+
+   frameCount: number
+   totalFrameCount: number
+
+   resolve: () => void
 }
 
 export interface HighlightSquare {
@@ -186,6 +201,7 @@ export function createChessboard3D(
       self.vbo.boardFrame.draw(gl)
 
       const mvMatrics = self.orientation === 'white' ? whiteMvMatrics : blackMvMatrics
+      const viewMatrix = self.orientation === 'white' ? whiteViewMatrix : blackViewMatrix
 
       for (let rank = 0; rank < 8; rank++) {
          for (let file = 0; file < 8; file++) {
@@ -193,7 +209,7 @@ export function createChessboard3D(
                continue
             }
 
-            const mvMatrix = mvMatrics[file * 8 + rank]
+            const mvMatrix = mvMatrics[rf2linear(rank, file)]
             self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, mvMatrix)
             self.vbo.square.draw(gl)
          }
@@ -202,49 +218,68 @@ export function createChessboard3D(
       if (self.currentObjectId !== undefined) {
          const rank = Math.floor(self.currentObjectId / 8)
          const file = self.currentObjectId % 8
-         const mvMatrix = mvMatrics[file * 8 + rank]
+         const mvMatrix = mvMatrics[rf2linear(rank, file)]
          self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, mvMatrix)
          self.program.uniform4fv(gl, 'u_ObjectColor', chessboardColor.aquamarine_66)
          self.vbo.squareFrame.draw(gl)
       }
 
       for (const staticPiece of self.staticPieces) {
-         const mvMatrix = mvMatrics[staticPiece.file * 8 +staticPiece.rank]
+         const mvMatrix = mvMatrics[rf2linear(staticPiece.rank, staticPiece.file)]
          self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, mvMatrix)
 
-         const linearIndex = staticPiece.rank * 8 + staticPiece.file
-         let color = [0.0, 0.0, 0.0, 1.0]
-         if (self.currentObjectId !== undefined && self.currentObjectId === linearIndex) {
-            if (staticPiece.piece === 'immovable') {
-               color = chessboardColor.yellow_20
-            }
-            else if (staticPiece.color === 'white') {
-               color = chessboardColor.cyan_20
-            }
-            else {
-               color = chessboardColor.orangered_20
-            }
+         const objectId = staticPiece.rank * 8 + staticPiece.file
+         if (objectId === self.currentObjectId) {
+            self.program.uniform4fv(gl, 'u_ObjectColor', choosePieceHoverColor(staticPiece.piece, staticPiece.color))
          }
-
-         self.program.uniform4fv(gl, 'u_ObjectColor', color)
+         else {
+            self.program.uniform4fv(gl, 'u_ObjectColor', [0, 0, 0, 1.0])
+         }
          const vbo = self.vbo[staticPiece.piece]
          vbo.draw(gl)
 
-         if (staticPiece.piece === 'immovable') {
-            self.program.uniform4fv(gl, 'u_ObjectColor', chessboardColor.yellow)
-         }
-         else if (staticPiece.color === 'white') {
-            self.program.uniform4fv(gl, 'u_ObjectColor', chessboardColor.cyan)
-         }
-         else {
-            self.program.uniform4fv(gl, 'u_ObjectColor', chessboardColor.orangered)
-         }
+         self.program.uniform4fv(gl, 'u_ObjectColor', choosePieceColor(staticPiece.piece, staticPiece.color))
          const vboLine = self.vbo[`${staticPiece.piece}Line`]
          vboLine.draw(gl)
       }
 
+      for (const animatingPiece of self.animatingPieces) {
+         let x, z
+         const [x0, y0] = cscoord[rf2linear(animatingPiece.startRank, animatingPiece.startFile)]
+         if (animatingPiece.endRank !== undefined && animatingPiece.endFile !== undefined) {
+            const [x1, y1] = cscoord[rf2linear(animatingPiece.startRank, animatingPiece.startFile)]
+            x = x0 + (x1 - x0) * animatingPiece.frameCount / animatingPiece.totalFrameCount
+            z = y0 + (y1 - y0) * animatingPiece.frameCount / animatingPiece.totalFrameCount
+         } else {
+            x = x0
+            z = y0
+         }
+
+         const mvMatrix = mat4.create()
+         mat4.copy(mvMatrix, viewMatrix)
+         mat4.translate(mvMatrix, mvMatrix, [x, 0, z])
+         mat4.rotate(mvMatrix, mvMatrix, -Math.PI / 2, [0, 1, 0])
+         self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, mvMatrix)
+
+         let fadeOut = 0.0
+         if (animatingPiece.fading === 'in') {
+            fadeOut = 1.0 - animatingPiece.frameCount / animatingPiece.totalFrameCount
+         } else if (animatingPiece.fading === 'out') {
+            fadeOut = animatingPiece.frameCount / animatingPiece.totalFrameCount
+         }
+         self.program.uniform1f(gl, 'u_FadeOut', fadeOut)
+
+         self.program.uniform4fv(gl, 'u_ObjectColor', [0, 0, 0, 1.0])
+         const vbo = self.vbo[animatingPiece.piece]
+         vbo.draw(gl)
+         self.program.uniform4fv(gl, 'u_ObjectColor', choosePieceColor(animatingPiece.piece, 'white'))
+         const vboLine = self.vbo[`${animatingPiece.piece}Line`]
+         vboLine.draw(gl)
+      }
+
+      self.program.uniform1f(gl, 'u_FadeOut', 0.0)
       for (const highlightSquare of self.highlightSquares) {
-         const mvMatrix = mvMatrics[highlightSquare.file * 8 + highlightSquare.rank]
+         const mvMatrix = mvMatrics[rf2linear(highlightSquare.rank, highlightSquare.file)]
          self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, mvMatrix)
          self.program.uniform4fv(gl, 'u_ObjectColor', highlightSquare.color)
          self.vbo.squareFrame.draw(gl)
@@ -258,7 +293,7 @@ export function createChessboard3D(
 
       for (let rank = 0; rank < 8; rank++) {
          for (let file = 0; file < 8; file++) {
-            const mvMatrix = mvMatrics[file * 8 + rank]
+            const mvMatrix = mvMatrics[rf2linear(rank, file)]
             const linearIndex = rank * 8 + file
             self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, mvMatrix)
             self.program.uniform4fv(gl, 'u_ObjectColor', [linearIndex / 64.0, 0, 0, 1])
@@ -267,7 +302,7 @@ export function createChessboard3D(
       }
 
       for (const staticPiece of self.staticPieces) {
-         const mvMatrix = mvMatrics[staticPiece.file * 8 + staticPiece.rank]
+         const mvMatrix = mvMatrics[rf2linear(staticPiece.rank, staticPiece.file)]
          const linearIndex = staticPiece.rank * 8 + staticPiece.file
          self.program.uniformMatrix4fv(gl, 'u_ModelViewMatrix', false, mvMatrix)
          self.program.uniform4fv(gl, 'u_ObjectColor', [linearIndex / 64.0, 0, 0, 1])
@@ -307,6 +342,10 @@ export function createChessboard3D(
    })
 
    canvas.addEventListener('click', () => {
+      if (self.animatingPieces.length !== 0) {
+         return
+      }
+
       if (self.onClickSquare && self.currentObjectId !== undefined) {
          const rank = Math.floor(self.currentObjectId / 8)
          const file = self.currentObjectId % 8
@@ -336,4 +375,24 @@ export function gamePositionToChessboard(game: ChessGame, chessboard: Chessboard
          }
       }
    }
+}
+
+function choosePieceColor(piece: PieceName, side: PlayerSide): [number, number, number, number] {
+   if (piece === 'immovable') {
+      return chessboardColor.yellow
+   }
+   if (side === 'white') {
+      return chessboardColor.cyan
+   }
+   return chessboardColor.orangered
+}
+
+function choosePieceHoverColor(piece: PieceName, side: PlayerSide): [number, number, number, number] {
+   if (piece === 'immovable') {
+      return chessboardColor.yellow_20
+   }
+   if (side === 'white') {
+      return chessboardColor.cyan_20
+   }
+   return chessboardColor.orangered_20
 }
