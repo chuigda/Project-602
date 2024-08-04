@@ -445,6 +445,9 @@ export class Context {
 
       await relicPushSmallText(relic, `初始化控制协议`)
       this.eventPool = code
+      if (this.eventPool['Event_Init']) {
+         await this.eventPool['Event_Init'](this)
+      }
       await sleep(500)
       await removeRelicWindow(relic)
       await sleep(500)
@@ -464,6 +467,9 @@ export class Context {
 
       await relicPushSmallText(relic, `初始化控制协议`)
       this.eventPool = pseudoModule
+      if (this.eventPool['Event_Init']) {
+         await this.eventPool['Event_Init'](this)
+      }
       await sleep(500)
       await removeRelicWindow(relic)
       await sleep(500)
