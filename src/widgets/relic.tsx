@@ -21,9 +21,13 @@ export async function createRelicWindow(zIndex: number, width?: string): Promise
    return { element, zIndex, smallCount: 0, normalCount: 0 }
 }
 
+function calcRelicWindowHeight(relic: RelicWindow) {
+   return `calc(${relic.smallCount * 23}pt + ${relic.normalCount * 26}pt + ${(relic.smallCount + relic.normalCount) * 2}px)`
+}
+
 export async function relicPushSmallText(relic: RelicWindow, text: string): Promise<HTMLElement> {
    relic.smallCount++
-   relic.element.style.height = `calc(${relic.smallCount * 14}pt + ${relic.normalCount * 16}pt + ${(relic.smallCount + relic.normalCount) * 2}px)`
+   relic.element.style.height = calcRelicWindowHeight(relic)
    await sleep(200)
    const smallText = <span class="small-text">{text}</span>
    relic.element.appendChild(smallText)
@@ -32,7 +36,7 @@ export async function relicPushSmallText(relic: RelicWindow, text: string): Prom
 
 export async function relicPushNormalText(relic: RelicWindow, text: string): Promise<HTMLElement> {
    relic.normalCount++
-   relic.element.style.height = `calc(${relic.smallCount * 14}pt + ${relic.normalCount * 16}pt + ${(relic.smallCount + relic.normalCount) * 2}px)`
+   relic.element.style.height = calcRelicWindowHeight(relic)
    await sleep(200)
    const normalText = <span class="normal-text">{text}</span>
    relic.element.appendChild(normalText)

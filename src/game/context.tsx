@@ -387,27 +387,27 @@ export class Context {
          .filter((name: string) => !globalResource.value.characters[name])
          .map((name: string) => [name, CharacterDefs[name]])
       if (charDefsToLoad.length > 0) {
-            const e = await relicPushSmallText(relic, `正在加载人格化数据矩阵: 0%`)
-            let loadedCount = 0
-            for (const [name, def] of charDefsToLoad) {
-               if (!def) {
-                  dbgWarn(`未找到角色定义: ${name}`)
-                  continue
-               }
-
-               globalResource.value.characters[name] = await loadCharacter(
-                  name,
-                  def,
-                  progress => {
-                     const totalProgress = (progress + loadedCount) / charDefsToLoad.length
-                     e.innerText = `正在加载人格化数据矩阵: ${Math.floor(totalProgress * 100)}%`
-                  }
-               )
-               loadedCount += 1
-               await sleep(100)
+         const e = await relicPushSmallText(relic, `正在加载人格化数据矩阵: 0%`)
+         let loadedCount = 0
+         for (const [name, def] of charDefsToLoad) {
+            if (!def) {
+               dbgWarn(`未找到角色定义: ${name}`)
+               continue
             }
-            e.innerText = `正在加载人格化数据矩阵: 100%`
+
+            globalResource.value.characters[name] = await loadCharacter(
+               name,
+               def,
+               progress => {
+                  const totalProgress = (progress + loadedCount) / charDefsToLoad.length
+                  e.innerText = `正在加载人格化数据矩阵: ${Math.floor(totalProgress * 100)}%`
+               }
+            )
+            loadedCount += 1
+            await sleep(100)
          }
+         e.innerText = `正在加载人格化数据矩阵: 100%`
+      }
    }
 
    // 调试用 API
