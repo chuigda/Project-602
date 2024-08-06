@@ -30,6 +30,8 @@ import { CharacterDefs } from '../story/chardef'
 import { sleep } from '../util/sleep'
 import { maybeSkirmishComputerPlayMove, useSkirmishSetup } from './skirmish_setup'
 import { dbgError, dbgWarn } from '../components/debugconsole'
+import { loadGameSaveData, saveGameData } from './saves'
+import { addToolbarButton, Toolbar } from '../components/toolbar'
 
 export interface ContextVariable {
    value: any
@@ -47,6 +49,9 @@ export type SupportedVariant =
    | 'captureall310'
    | 'singleplayer'
 
+export type ScriptType = 'module' | 'nonmodule'
+export type CurrentScript = [ScriptType, string] | null
+
 export type SceneEvent = (cx: Context) => Promise<void> | void
 export type SquareClickHandler = (cx: Context, square: string) => Promise<void> | void
 export type MovePlayedHandler = (cx: Context, side: PlayerSide, uciMove: string) => Promise<void> | void
@@ -61,6 +66,7 @@ export class Context {
    chessboard: Chessboard3D
    dialogue: Dialogue
    systemPrompt: SystemPrompt
+   toolbar: Toolbar
    minimap: HTMLElement
    scoreSheet: HTMLElement
 
@@ -99,6 +105,8 @@ export class Context {
    currentEvent?: string
    nextEvent?: string
 
+   currentScript: CurrentScript = null
+
    // 常量表
    constants: Record<string, any> = {
       ...chessboardColor
@@ -110,6 +118,7 @@ export class Context {
       chessboard: Chessboard3D,
       dialogue: Dialogue,
       systemPrompt: SystemPrompt,
+      toolbar: Toolbar,
       minimap: HTMLElement,
       scoreSheet: HTMLElement
    ) {
@@ -118,6 +127,7 @@ export class Context {
       this.chessboard = chessboard
       this.dialogue = dialogue
       this.systemPrompt = systemPrompt
+      this.toolbar = toolbar
       this.minimap = minimap
       this.scoreSheet = scoreSheet
 
@@ -158,6 +168,11 @@ export class Context {
             self.updateHighlightSquares()
          }
       }
+
+      addToolbarButton(this.toolbar, '保存游戏', async () => {
+         self.saveGame()
+         self.showPrompt('system', '游戏已保存')
+      })
 
       this.minimap.append(...create2DChessboardFromChessGame(this.chessgame))
       this.resetMoveHistory()
@@ -436,12 +451,12 @@ export class Context {
       this.chessboardInteract = false
    }
 
-   async enterScript(scriptFile: string) {
+   async enterScriptWithLoadFunc(loadFunc: (cx: Context) => Promise<any>, event?: string) {
       const relic = await createRelicWindow(this.zIndex + 100)
       await relicPushSmallText(relic, `正在建立作战控制连线，请稍候 ...`)
       await sleep(200)
       await relicPushSmallText(relic, `正在加载任务数据`)
-      const [_, code] = await Promise.all([sleep(200), importNoVite(scriptFile)])
+      const code = await loadFunc(this)
 
       await this.loadCharacters(code.CharacterUse, relic)
 
@@ -454,29 +469,25 @@ export class Context {
       await removeRelicWindow(relic)
       await sleep(500)
 
-      this.pushEvent(code.StartingEvent)
+      this.pushEvent(event ?? code.StartingEvent)
+
    }
 
-   async enterNonModuleScript(script: string) {
-      const relic = await createRelicWindow(this.zIndex + 100)
-      await relicPushSmallText(relic, `正在建立作战控制连线，请稍候 ...`)
-      await sleep(200)
-      await relicPushSmallText(relic, `正在加载任务数据`)
-      const pseudoModule = eval(script)
-      await sleep(200)
+   async enterScript(scriptFile: string, event?: string) {
+      await this.enterScriptWithLoadFunc(async _cx => {
+         const [_, code] = await Promise.all([sleep(200), importNoVite(scriptFile)])
+         return code
+      }, event)
+      this.currentScript = ['module', scriptFile]
+   }
 
-      await this.loadCharacters(pseudoModule.CharacterUse, relic)
-
-      await relicPushSmallText(relic, `初始化控制协议`)
-      this.eventPool = pseudoModule
-      if (this.eventPool['Event_Init']) {
-         await this.eventPool['Event_Init'](this)
-      }
-      await sleep(500)
-      await removeRelicWindow(relic)
-      await sleep(500)
-
-      this.pushEvent(pseudoModule.StartingEvent)
+   async enterNonModuleScript(script: string, event?: string) {
+      await this.enterScriptWithLoadFunc(async _cx => {
+         const pseudoModule = eval(script)
+         await sleep(200)
+         return pseudoModule
+      }, event)
+      this.currentScript = ['nonmodule', script]
    }
 
    async setVariant(variant: SupportedVariant) {
@@ -766,6 +777,41 @@ export class Context {
    async setupSkirmishMode(aiLevel?: number) {
       useSkirmishSetup(this, aiLevel)
       await maybeSkirmishComputerPlayMove(this)
+   }
+
+   saveGameAsString(): string {
+      return JSON.stringify({
+         currentEvent: this.currentEvent,
+         currentScript: this.currentScript,
+      })
+   }
+
+   async loadGameFromString(s: string) {
+      const data = JSON.parse(s)
+      const currentScript = data.currentScript
+      this.resetMoveHistory()
+      if (currentScript === null) {
+         return
+      }
+      if (currentScript[0] === 'module') {
+         await this.enterScript(currentScript[1], data.currentEvent)
+      } else {
+         await this.enterNonModuleScript(currentScript[1], data.currentEvent)
+      }
+   }
+
+   saveGame(name: string = '') {
+      saveGameData(this.saveGameAsString(), name)
+   }
+
+   async loadGame(name: string = ''): Promise<boolean> {
+      const saveData = loadGameSaveData(name)
+      if (saveData) {
+         await this.loadGameFromString(saveData)
+         return true
+      }
+      dbgWarn(`loadGame: 未找到存档 ${name}`)
+      return false
    }
 }
 

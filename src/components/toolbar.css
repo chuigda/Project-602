@@ -1,0 +1,36 @@
+.toolbar {
+   position: fixed;
+
+   width: calc(100vw - 320px - 1.5em);
+   top: 0px;
+   left: 0px;
+
+   padding: 1em;
+   padding-top: 10px;
+   display: flex;
+   flex-direction: row-reverse;
+   column-gap: 0.5em;
+
+   font-size: 16pt;
+   font-family: Dengxian, sans-serif;
+}
+
+.toolbar > .toolbar-button {
+   width: 8em;
+   border: 1px solid var(--theme-color);
+   /* padding: 4px; */
+   height: 2em;
+
+   font-weight: bold;
+   text-align: center;
+
+   background-color: var(--theme-color);
+   border-radius: 4px;
+   cursor: pointer;
+
+   transition-duration: 0.4s;
+}
+
+.toolbar > .toolbar-button:hover {
+   background-color: rgb(184, 232, 220);
+}
