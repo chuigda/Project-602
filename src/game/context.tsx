@@ -31,7 +31,6 @@ import { sleep } from '../util/sleep'
 import { maybeSkirmishComputerPlayMove, useSkirmishSetup } from './skirmish_setup'
 import { dbgError, dbgWarn } from '../components/debugconsole'
 import { loadGameSaveData, saveGameData } from './saves'
-import { addToolbarButton, Toolbar } from '../components/toolbar'
 
 export interface ContextVariable {
    value: any
@@ -66,7 +65,6 @@ export class Context {
    chessboard: Chessboard3D
    dialogue: Dialogue
    systemPrompt: SystemPrompt
-   toolbar: Toolbar
    minimap: HTMLElement
    scoreSheet: HTMLElement
 
@@ -118,7 +116,6 @@ export class Context {
       chessboard: Chessboard3D,
       dialogue: Dialogue,
       systemPrompt: SystemPrompt,
-      toolbar: Toolbar,
       minimap: HTMLElement,
       scoreSheet: HTMLElement
    ) {
@@ -127,7 +124,6 @@ export class Context {
       this.chessboard = chessboard
       this.dialogue = dialogue
       this.systemPrompt = systemPrompt
-      this.toolbar = toolbar
       this.minimap = minimap
       this.scoreSheet = scoreSheet
 
@@ -168,11 +164,6 @@ export class Context {
             self.updateHighlightSquares()
          }
       }
-
-      addToolbarButton(this.toolbar, '保存游戏', async () => {
-         self.saveGame()
-         self.showPrompt('system', '游戏已保存')
-      })
 
       this.minimap.append(...create2DChessboardFromChessGame(this.chessgame))
       this.resetMoveHistory()
@@ -470,7 +461,6 @@ export class Context {
       await sleep(500)
 
       this.pushEvent(event ?? code.StartingEvent)
-
    }
 
    async enterScript(scriptFile: string, event?: string) {
