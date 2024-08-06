@@ -9,7 +9,6 @@ import { sleep } from '../util/sleep'
 import { dbg_PlayingContext } from './debugconsole'
 
 import './gameplay.css'
-import { createToolbar } from './toolbar'
 
 export async function startGameplay(
    zIndex: number,
@@ -26,7 +25,6 @@ export async function startGameplay(
    const gameplayHud = <div class="gameplay-hud" />
    const systemPrompt = createSystemPrompt(zIndex + 20)
    const dialogue = await createDialogue(zIndex + 10)
-   const toolbar = await createToolbar(zIndex + 15)
 
    windowBackground.appendChild(
       <div class="gameplay-container">
@@ -41,7 +39,7 @@ export async function startGameplay(
    await sleep(300)
 
    const chessboard = createChessboard3D(gameplayCanvas, globalResource.value.gameAsset, 'white')
-   const cx = new Context(zIndex, gameplayCanvas, chessboard, dialogue, systemPrompt, toolbar, minimap, scoreSheet)
+   const cx = new Context(zIndex, gameplayCanvas, chessboard, dialogue, systemPrompt, minimap, scoreSheet)
    dbg_PlayingContext.value = cx
 
    afterSetup(cx)
