@@ -1,0 +1,72 @@
+.saves-list {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.save-row {
+    margin: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: flex;
+    column-gap: 10px;
+    transition: all ease 0.3s;
+    overflow: hidden;
+}
+
+@keyframes deleteAnimation {
+    0% {}
+
+    100% {
+        max-height: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+}
+
+/* Apply the animation to the save-row when it is being deleted */
+.save-row.deleting {
+    animation: deleteAnimation 1s ease;
+}
+
+.save-item-detail {
+    padding: 5px;
+    line-height: 1.4em;
+    flex-grow: 1;
+    cursor: pointer;
+
+    border: none;
+    border-radius: 5px;
+    background-image: linear-gradient(to right, rgb(3, 86, 75), black, black);
+    background-size: 200%;
+    background-position: 100% 0;
+    transition: all ease 0.3s;
+}
+
+.save-item-detail:hover {
+    background-position: 0 0;
+}
+
+.save-name {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.delete-save-btn {
+    background-color: rgb(252, 116, 116);
+    width: 6em;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    cursor: pointer;
+
+    transition: all ease 0.3s;
+}
+
+.delete-save-btn:hover {
+    background-color: rgb(255, 0, 0);
+}

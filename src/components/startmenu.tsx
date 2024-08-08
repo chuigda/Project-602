@@ -1,11 +1,12 @@
 import { h } from 'tsx-dom'
 import { DoubleOpenScreen } from '../widgets/double-open-screen'
-import { loadGame, showTestMissionWindow } from './mission'
+import { showTestMissionWindow } from './mission'
 import { showSkirmishWindow } from './skirmish'
 import { runCustomMission } from './custom'
 import { showSettingsWindow } from './settings'
 import { showAboutWindow } from './about'
 import { sleep } from '../util/sleep'
+import { showLoadGameWindow } from './loadgame'
 
 import './startmenu.css'
 
@@ -33,7 +34,7 @@ export function createStartMenu(): HTMLElement {
       startMenuButtons.appendChild(<div onClick={() => showTestMissionWindow(2000)}>新战役</div>)
       startMenuButtons.style.height = '16pt'
       await sleep(125)
-      startMenuButtons.appendChild(<div onClick={async () => loadGame(2000)}>载入储存游戏</div>)
+      startMenuButtons.appendChild(<div onClick={showLoadGameWindow}>载入储存游戏</div>)
       startMenuButtons.style.height = 'calc(16pt * 2 + 2px)'
       await sleep(125)
       startMenuButtons.appendChild(<div onClick={showSkirmishWindow}>遭遇战</div>)

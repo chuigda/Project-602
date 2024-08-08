@@ -30,7 +30,7 @@ import { CharacterDefs } from '../story/chardef'
 import { sleep } from '../util/sleep'
 import { maybeSkirmishComputerPlayMove, useSkirmishSetup } from './skirmish_setup'
 import { dbgError, dbgWarn } from '../components/debugconsole'
-import { loadGameSaveData, saveGameData } from './saves'
+import { loadAllGameSaveData, saveNewGameData } from './saves'
 
 export interface ContextVariable {
    value: any
@@ -50,6 +50,11 @@ export type SupportedVariant =
 
 export type ScriptType = 'module' | 'nonmodule'
 export type CurrentScript = [ScriptType, string] | null
+export type ContextSave = {
+   currentEvent?: string
+   currentScript: CurrentScript
+   variables: Record<string, Omit<ContextVariable, 'onChange'>>
+}
 
 export type SceneEvent = (cx: Context) => Promise<void> | void
 export type SquareClickHandler = (cx: Context, square: string) => Promise<void> | void
@@ -769,15 +774,17 @@ export class Context {
       await maybeSkirmishComputerPlayMove(this)
    }
 
-   saveGameAsString(): string {
-      return JSON.stringify({
+   saveGame(name: string) {
+      saveNewGameData<ContextSave>(name, {
          currentEvent: this.currentEvent,
          currentScript: this.currentScript,
+         variables: Object.fromEntries(
+            Object.entries(this.variables).map(([key, { value }]) => [key, value])
+         )
       })
    }
 
-   async loadGameFromString(s: string) {
-      const data = JSON.parse(s)
+   async loadGame(data: ContextSave) {
       const currentScript = data.currentScript
       this.resetMoveHistory()
       if (currentScript === null) {
@@ -788,20 +795,6 @@ export class Context {
       } else {
          await this.enterNonModuleScript(currentScript[1], data.currentEvent)
       }
-   }
-
-   saveGame(name: string = '') {
-      saveGameData(this.saveGameAsString(), name)
-   }
-
-   async loadGame(name: string = ''): Promise<boolean> {
-      const saveData = loadGameSaveData(name)
-      if (saveData) {
-         await this.loadGameFromString(saveData)
-         return true
-      }
-      dbgWarn(`loadGame: 未找到存档 ${name}`)
-      return false
    }
 }
 
