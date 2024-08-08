@@ -23,16 +23,16 @@ export function showLoadGameWindow(): HTMLElement {
          <div class="saves-list">
             {saves.reverse().map((save, i) => {
                const saveRow = (
-                  <div class="save-row" onClick={async () => {
-                     const p = startGameplay(2000, async cx => {
-                        await cx.loadGame(save.data)
-                        await cx.handleEvents()
-                     });
-                     await sleep(500);
-                     windowBackground.remove()
-                     await p
-                  }}>
-                     <div class="save-item-detail">
+                  <div class="save-row">
+                     <div class="save-item-detail" onClick={async () => {
+                        const p = startGameplay(2000, async cx => {
+                           await cx.loadGame(save.data)
+                           await cx.handleEvents()
+                        });
+                        await sleep(500);
+                        windowBackground.remove()
+                        await p
+                     }}>
                         <div class="save-name">{save.name}</div>
                         <div class="save-timestamp">{new Date(save.timestamp).toLocaleString()}</div>
                      </div>
