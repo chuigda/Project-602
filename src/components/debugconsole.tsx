@@ -81,6 +81,7 @@ function handleCommand(inputValue: string) {
       case 'error': makeError(args); break
       case 'help': showHelp(); break
       case 'resetflags': resetFlags(); break
+      case 'savegame': saveGame(); break
 
       case 'love': babyDontHurtMe(); break
       default: dbgError(`"${cmd}" 不是内部或外部命令，也不是可运行的程序或批处理文件`)
@@ -180,6 +181,11 @@ function showHelp() {
                <td>重置所有标志</td>
             </tr>
             <tr>
+               <td>savegame</td>
+               <td />
+               <td>保存游戏</td>
+            </tr>
+            <tr>
                <td>setpiece</td>
                <td>&lt;坐标&gt; &lt;棋子&gt;</td>
                <td>在指定坐标放置棋子，第二个参数留空或设为 - 表示清空该格</td>
@@ -206,6 +212,16 @@ function makeError(args: string[]) {
 function resetFlags() {
    localStorage.removeItem('warn_custom_mission')
    dbgInfo('resetflags: 已重置所有标志')
+}
+
+function saveGame() {
+   if (dbg_PlayingContext.value === undefined) {
+      dbgError('savegame: 没有正在进行中的对局，请先开始一个对局')
+      return
+   }
+
+   dbg_PlayingContext.value.saveGame("autosave")
+   dbgInfo('savegame: 已保存对局')
 }
 
 async function babyDontHurtMe() {

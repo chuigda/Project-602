@@ -10,7 +10,9 @@ export interface SystemPrompt {
 }
 
 export function createSystemPrompt(zIndex: number): SystemPrompt {
-   const element = <div class="system-prompt" style={{ zIndex: `${zIndex}` }} />
+   let element = document.querySelector('.system-prompt') as HTMLElement
+   if (!element)
+      element = <div class="system-prompt" style={{ zIndex: `${zIndex}` }} />
    const subElements: HTMLElement[] = []
    const timeouts: any[] = []
    document.body.appendChild(element)

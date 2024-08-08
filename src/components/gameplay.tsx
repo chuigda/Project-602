@@ -23,8 +23,8 @@ export async function startGameplay(
    const scoreSheetContainer = <div class="scoresheet-container">{scoreSheet}</div>
    const gameplayCanvas = <canvas class="gameplay-canvas" style={{ opacity: '0%' }} /> as HTMLCanvasElement
    const gameplayHud = <div class="gameplay-hud" />
-   const systemPrompt = createSystemPrompt(zIndex + 1)
-   const dialogue = await createDialogue(zIndex + 2)
+   const systemPrompt = createSystemPrompt(zIndex + 20)
+   const dialogue = await createDialogue(zIndex + 10)
 
    windowBackground.appendChild(
       <div class="gameplay-container">
