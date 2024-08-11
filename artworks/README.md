@@ -7,6 +7,8 @@ black_king.psd,缸脑,CC-BY-SA 4.0
 black_queen.psd,缸脑,CC-BY-SA 4.0
 white_king.psd,昏睡白糖+缸脑,CC-BY-SA 4.0
 white_queen.psd,禾几木+缸脑,私有
+white_rook.psd,缸脑,CC-BY-SA 4.0
+black_rook.psd,缸脑,CC-BY-SA 4.0
 bishop,木火kika,CC-BY-SA 4.0
 knight,木火kika,CC-BY-SA 4.0
 ```
