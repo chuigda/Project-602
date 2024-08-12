@@ -8,6 +8,10 @@
    height: 100vh;
 }
 
+.dialogue-portrait.full-screen {
+   width: 100vw;
+}
+
 .dialogue {
    opacity: 0;
 
@@ -29,6 +33,10 @@
 
    color: var(--theme-color);
    user-select: none;
+}
+
+.dialogue.full-screen {
+   width: calc(100vw - 1.5em);
 }
 
 .dialogue .speaker {

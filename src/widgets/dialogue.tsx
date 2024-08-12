@@ -14,13 +14,15 @@ export interface Dialogue {
    speakContent: HTMLElement
 }
 
-export async function createDialogue(zIndex: number): Promise<Dialogue> {
+export async function createDialogue(zIndex: number, fullScreen?: boolean): Promise<Dialogue> {
    const portrait = (
-      <canvas class="dialogue-portrait"
+      <canvas class={`dialogue-portrait ${fullScreen ? 'full-screen' : ''}`}
               style={{ opacity: '0', zIndex: `${zIndex}` }}
       />
    ) as HTMLCanvasElement
-   const container = <div class="dialogue" style={{ opacity: '0', zIndex: `${zIndex + 1}` }}/>
+   const container = <div class={`dialogue ${fullScreen ? 'full-screen' : ''}`}
+                          style={{ opacity: '0', zIndex: `${zIndex + 1}` }}
+                     />
    const speaker = <div class="speaker" />
    const speakContent = <pre class="speak-content" />
    container.appendChild(speaker)
