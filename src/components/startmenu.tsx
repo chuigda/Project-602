@@ -10,8 +10,9 @@ import { showLoadGameWindow } from './loadgame'
 
 import './startmenu.css'
 
-export function createStartMenu(): HTMLElement {
+export async function createStartMenu(): Promise<HTMLElement> {
    const startMenu = <DoubleOpenScreen backgroundColor="black" zIndex={1000} />
+   document.body.appendChild(startMenu)
 
    const startMenuButtons = <div class="start-menu-buttons" />
 
@@ -23,36 +24,31 @@ export function createStartMenu(): HTMLElement {
       </div>
    )
 
-   const asyncUpdates = async () => {
-      await sleep(300)
-      startMenu.appendChild(startMenuButtonList)
+   await sleep(300)
+   startMenu.appendChild(startMenuButtonList)
 
-      await sleep(300)
-      startMenuButtonList.style.left = '64px'
+   await sleep(300)
+   startMenuButtonList.style.left = '64px'
 
-      await sleep(300)
-      startMenuButtons.appendChild(<div onClick={() => showTestMissionWindow(2000)}>新战役</div>)
-      startMenuButtons.style.height = '16pt'
-      await sleep(125)
-      startMenuButtons.appendChild(<div onClick={showLoadGameWindow}>载入储存游戏</div>)
-      startMenuButtons.style.height = 'calc(16pt * 2 + 2px)'
-      await sleep(125)
-      startMenuButtons.appendChild(<div onClick={showSkirmishWindow}>遭遇战</div>)
-      startMenuButtons.style.height = 'calc(16pt * 3 + 4px)'
-      await sleep(125)
-      startMenuButtons.appendChild(<div onClick={runCustomMission}>自定战役</div>)
-      startMenuButtons.style.height = 'calc(16pt * 4 + 6px)'
-      await sleep(125)
-      startMenuButtons.appendChild(<div onClick={showSettingsWindow}>系统设定</div>)
-      startMenuButtons.style.height = 'calc(16pt * 5 + 8px)'
-      await sleep(125)
-      startMenuButtons.appendChild(<div onClick={showAboutWindow}>关于</div>)
-      startMenuButtons.style.height = 'calc(16pt * 6 + 10px)'
-      await sleep(125)
-   }
-   asyncUpdates()
-
-   document.body.appendChild(startMenu)
+   await sleep(300)
+   startMenuButtons.appendChild(<div onClick={() => showTestMissionWindow(2000)}>新战役</div>)
+   startMenuButtons.style.height = '16pt'
+   await sleep(125)
+   startMenuButtons.appendChild(<div onClick={showLoadGameWindow}>载入储存游戏</div>)
+   startMenuButtons.style.height = 'calc(16pt * 2 + 2px)'
+   await sleep(125)
+   startMenuButtons.appendChild(<div onClick={showSkirmishWindow}>遭遇战</div>)
+   startMenuButtons.style.height = 'calc(16pt * 3 + 4px)'
+   await sleep(125)
+   startMenuButtons.appendChild(<div onClick={runCustomMission}>自定战役</div>)
+   startMenuButtons.style.height = 'calc(16pt * 4 + 6px)'
+   await sleep(125)
+   startMenuButtons.appendChild(<div onClick={showSettingsWindow}>系统设定</div>)
+   startMenuButtons.style.height = 'calc(16pt * 5 + 8px)'
+   await sleep(125)
+   startMenuButtons.appendChild(<div onClick={showAboutWindow}>关于</div>)
+   startMenuButtons.style.height = 'calc(16pt * 6 + 10px)'
+   await sleep(125)
 
    return startMenu
 }

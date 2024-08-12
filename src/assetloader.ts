@@ -2,6 +2,7 @@ import { globalResource } from '.'
 import { CommonOpeningPosition, OpeningPosition } from './chess/opening-book'
 import { Object3D, loadObject } from './chessboard/glx/object'
 import { Character } from './story/character'
+import { loadImage } from './util/image'
 import { ref } from './util/ref'
 
 export interface GameAsset {
@@ -164,22 +165,4 @@ export async function loadCharacter(
    }
 
    return { ...def, name, emotions }
-}
-
-async function loadImage(url: string): Promise<HTMLImageElement> {
-   const img = new Image()
-   img.style.display = 'none'
-   img.src = url
-
-   document.body.appendChild(img)
-   return new Promise((resolve, reject) => {
-      img.onload = () => {
-         resolve(img)
-         img.remove()
-      }
-      img.onerror = () => {
-         reject(new Error(`Failed to load image ${url}`))
-         img.remove()
-      }
-   })
 }

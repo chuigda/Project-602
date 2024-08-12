@@ -2,7 +2,7 @@ import { h } from 'tsx-dom'
 import * as fischer from 'fischer960'
 import { maybeSkirmishComputerPlayMove, useSkirmishSetup } from '../game/skirmish_setup'
 import { startGameplay } from './gameplay'
-import { DoubleOpenScreen } from '../widgets/double-open-screen'
+import { closeDoubleOpenScreen, DoubleOpenScreen } from '../widgets/double-open-screen'
 import { createSelect } from '../widgets/select'
 import { Window } from '../widgets/window'
 import { sleep } from '../util/sleep'
@@ -157,12 +157,7 @@ export function showSkirmishWindow(): HTMLElement {
    )
 
    const skirmishWindow = (
-      <Window title="遭遇战" height="65vh" onClose={async () => {
-         (windowBackground.children[0] as HTMLElement).style.height = '0';
-         (windowBackground.children[1] as HTMLElement).style.height = '0';
-         await sleep(300)
-         windowBackground.remove()
-      }}>
+      <Window title="遭遇战" height="65vh" onClose={() => closeDoubleOpenScreen(windowBackground)}>
          <div class="skirmish-content">
             <div class="skirmish-settings">
                { gameModeSelect.element }

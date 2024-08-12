@@ -1,7 +1,6 @@
 import { h } from 'tsx-dom'
-import { DoubleOpenScreen } from '../widgets/double-open-screen'
+import { closeDoubleOpenScreen, DoubleOpenScreen } from '../widgets/double-open-screen'
 import { Window } from '../widgets/window'
-import { sleep } from '../util/sleep'
 
 import './about.css'
 
@@ -9,12 +8,7 @@ export function showAboutWindow(): HTMLElement {
    const windowBackground = <DoubleOpenScreen backgroundColor="black" zIndex={2000} />
 
    const aboutWindow = (
-      <Window title="关于" height="65vh" onClose={async () => {
-         (windowBackground.children[0] as HTMLElement).style.height = '0';
-         (windowBackground.children[1] as HTMLElement).style.height = '0';
-         await sleep(300)
-         windowBackground.remove()
-      }}>
+      <Window title="关于" height="65vh" onClose={() => closeDoubleOpenScreen(windowBackground)}>
          <div class="about-content">
             <div>第七通用设计公司荣誉出品</div>
             <br />

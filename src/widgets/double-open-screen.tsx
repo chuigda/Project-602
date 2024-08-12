@@ -1,4 +1,6 @@
 import { h } from 'tsx-dom'
+import { sleep } from '../util/sleep'
+
 import './double-open-screen.css'
 
 export function DoubleOpenScreen(props: {
@@ -31,4 +33,15 @@ export function DoubleOpenScreen(props: {
    }, 50)
 
    return ret
+}
+
+export async function closeDoubleOpenScreen(screen: HTMLElement) {
+   const upperDiv = screen.children[0] as HTMLElement
+   const lowerDiv = screen.children[1] as HTMLElement
+
+   upperDiv.style.height = '0'
+   lowerDiv.style.height = '0'
+
+   await sleep(300)
+   screen.remove()
 }

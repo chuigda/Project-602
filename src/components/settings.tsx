@@ -1,11 +1,10 @@
 import { h } from 'tsx-dom'
 import { globalResource } from '..'
 import { ChessNotation, ChessPieceNotation, defaultConfig, saveConfig } from '../config'
-import { DoubleOpenScreen } from '../widgets/double-open-screen'
+import { closeDoubleOpenScreen, DoubleOpenScreen } from '../widgets/double-open-screen'
 import { createSelect, setCurrentOption } from '../widgets/select'
 import { Window } from '../widgets/window'
 import { Button } from '../widgets/button'
-import { sleep } from '../util/sleep'
 import { copydeep } from '../util/copydeep'
 
 import './settings.css'
@@ -64,12 +63,7 @@ export function showSettingsWindow(): HTMLElement {
    }
 
    const settingsWindow = (
-      <Window title="系统设定" height="65vh" onClose={async () => {
-         (windowBackground.children[0] as HTMLElement).style.height = '0';
-         (windowBackground.children[1] as HTMLElement).style.height = '0';
-         await sleep(300)
-         windowBackground.remove()
-      }}>
+      <Window title="系统设定" height="65vh" onClose={() => closeDoubleOpenScreen(windowBackground)}>
          <div class="settings-content">
             {/* <Select title="颜色主题" options={[
                { text: "青色", value: "127, 255, 212" },

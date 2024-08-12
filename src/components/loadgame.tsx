@@ -1,5 +1,5 @@
 import { h } from 'tsx-dom'
-import { DoubleOpenScreen } from '../widgets/double-open-screen'
+import { closeDoubleOpenScreen, DoubleOpenScreen } from '../widgets/double-open-screen'
 import { Window } from '../widgets/window';
 import { sleep } from '../util/sleep';
 import { loadAllGameSaveData, saveFullGameData } from '../game/saves';
@@ -14,12 +14,7 @@ export function showLoadGameWindow(): HTMLElement {
    const saves = loadAllGameSaveData<ContextSave>()
 
    const loadWindow = (
-      <Window title="载入游戏" height="65vh" onClose={async () => {
-         (windowBackground.children[0] as HTMLElement).style.height = '0';
-         (windowBackground.children[1] as HTMLElement).style.height = '0';
-         await sleep(300)
-         windowBackground.remove()
-      }}>
+      <Window title="载入游戏" height="65vh" onClose={() => closeDoubleOpenScreen(windowBackground)}>
          <div class="saves-list">
             {saves.reverse().map((save, i) => {
                const saveRow = (
