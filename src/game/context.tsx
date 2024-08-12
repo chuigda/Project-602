@@ -30,7 +30,7 @@ import { CharacterDefs } from '../story/chardef'
 import { sleep } from '../util/sleep'
 import { maybeSkirmishComputerPlayMove, useSkirmishSetup } from './skirmish_setup'
 import { dbgError, dbgWarn } from '../components/debugconsole'
-import { loadAllGameSaveData, saveNewGameData } from './saves'
+import { saveNewGameData } from './saves'
 
 export interface ContextVariable {
    value: any
@@ -456,8 +456,17 @@ export class Context {
 
       await this.loadCharacters(code.CharacterUse, relic)
 
-      await relicPushSmallText(relic, `初始化控制协议`)
       this.eventPool = code
+      if (this.eventPool.CustomRelicLoadText) {
+         for (const text of this.eventPool['CustomRelicLoadText'] as any) {
+            await relicPushSmallText(relic, text)
+            await sleep(200)
+         }
+      }
+      else {
+         await relicPushSmallText(relic, `初始化控制协议`)
+      }
+
       if (this.eventPool['Event_Init']) {
          await this.eventPool['Event_Init'](this)
       }
@@ -705,18 +714,19 @@ export class Context {
       await hideDialogue(this.dialogue)
    }
 
-   async speak(speaker: string, text: string, emotion?: string): Promise<void> {
+   async speak(speaker: string, text: string, emotion?: string, options?: string[]): Promise<number | void> {
       const speakerCharacter = globalResource.value.characters[speaker]
       if (!speakerCharacter) {
          dbgWarn(`speak: 引用的角色 ${speaker} 未定义或者未加载`)
       }
 
-      await speak(
+      return await speak(
          this.dialogue,
          speakerCharacter,
          speaker,
          emotion || '常态',
-         text
+         text,
+         options
       )
    }
 

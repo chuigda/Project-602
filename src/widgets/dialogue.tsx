@@ -5,6 +5,7 @@ import { sleep } from '../util/sleep'
 import { ref } from '../util/ref'
 
 import './dialogue.css'
+import { Button } from './button'
 
 export interface Dialogue {
    portrait: HTMLCanvasElement
@@ -55,8 +56,9 @@ export function speak(
    character: Character | null | undefined,
    speaker: string,
    emotion: string,
-   text: string
-): Promise<void> {
+   text: string,
+   options?: string[]
+): Promise<number | void> {
    const canvasWidth = dialogue.portrait.clientWidth * (window.devicePixelRatio || 1)
    const canvasHeight = dialogue.portrait.clientHeight * (window.devicePixelRatio || 1)
 
@@ -100,8 +102,18 @@ export function speak(
       }
    }
 
+   const interruption = () => {
+      if (options) {
+         return
+      }
+
+      interrupted.value = true
+      dialogue.speakContent.innerText = text
+      dialogue.speakContent.removeEventListener('click', interruption)
+   }
+
    const interrupted = ref(false)
-   const promise = new Promise<void>(async resolve => {
+   const promise = new Promise<number | void>(async resolve => {
       for (let i = 0; i < text.length; i++) {
          if (interrupted.value) {
             break
@@ -113,20 +125,23 @@ export function speak(
 
       dialogue.speakContent.removeEventListener('click', interruption)
       dialogue.portrait.removeEventListener('click', interruption)
-      const resolveAndRemoveListener = () => {
-         dialogue.speakContent.removeEventListener('click', resolveAndRemoveListener)
-         dialogue.portrait.removeEventListener('click', resolveAndRemoveListener)
-         resolve()
+
+      if (!options) {
+         const resolveAndRemoveListener = () => {
+            dialogue.speakContent.removeEventListener('click', resolveAndRemoveListener)
+            dialogue.portrait.removeEventListener('click', resolveAndRemoveListener)
+            resolve()
+         }
+
+         dialogue.speakContent.addEventListener('click', resolveAndRemoveListener)
+         dialogue.portrait.addEventListener('click', resolveAndRemoveListener)
+      } else {
+         options.forEach((option, index) => {
+            const button = Button({ text: option, onClick: () => resolve(index) })
+            dialogue.speakContent.appendChild(button)
+         })
       }
-
-      dialogue.speakContent.addEventListener('click', resolveAndRemoveListener)
-      dialogue.portrait.addEventListener('click', resolveAndRemoveListener)
    })
-
-   const interruption = () => {
-      interrupted.value = true
-      dialogue.speakContent.innerText = text
-   }
 
    dialogue.speakContent.addEventListener('click', interruption)
    dialogue.portrait.addEventListener('click', interruption)

@@ -4,7 +4,7 @@ import { startGameplay } from './gameplay'
 import { DoubleOpenScreen } from '../widgets/double-open-screen'
 import { createDialogue, showDialogue, speak } from '../widgets/dialogue'
 import { createRelicWindow, relicPushNormalText, relicPushSmallText, removeRelicWindow } from '../widgets/relic'
-import { randomPick, shuffle } from '../util/rand'
+import { randomPick, randomPickParabola, shuffle } from '../util/rand'
 import { sleep } from '../util/sleep'
 
 import './bootload.css'
@@ -39,6 +39,9 @@ export async function createBootloadScreen(gardenImage: HTMLImageElement) {
    await speak(dialogue, nerori, 'NeroRi', '常态', '请放心，我有非常丰富的经验，会接住你们的')
    await speak(dialogue, nerori, 'NeroRi', '常态', '我是友好型，请和我说说话吧 ^^')
    await speak(dialogue, nerori, 'NeroRi', '扇子', '每个天外来客都很有意思，我喜欢没见过的东西')
+   speak(dialogue, nerori, 'NeroRi', '加载中', '我... 你们... 参观... 花... 花园...')
+   await sleep(125)
+   const p = shuffleBarCode(dialogue.portrait)
 
    const relicWindow = await createRelicWindow(1503, '400px')
    await relicPushNormalText(relicWindow, '侦测到 NeroRi 故障')
@@ -47,17 +50,14 @@ export async function createBootloadScreen(gardenImage: HTMLImageElement) {
    await shuffleText(
       plzHelp,
       'Please help me 请帮助我',
-      50,
-      30,
+      32,
+      20,
       'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()烫屯锟斤铐锘 '
    )
    await sleep(1000)
    await removeRelicWindow(relicWindow)
 
-   speak(dialogue, nerori, 'NeroRi', '加载中', '我... 你们... 参观... 花... 花园...')
-   await sleep(125)
-   await shuffleBarCode(dialogue.portrait)
-
+   await p
    dialogue.container.style.opacity = '0'
    await sleep(250)
    dialogue.container.remove()
@@ -119,12 +119,12 @@ export async function shuffleBarCode(canvas: HTMLCanvasElement) {
    const blockWidth = width / 20
    const blockHeight = height / 15
 
-   for (let i = 0; i < blockCount; i += 4) {
-      for (let j = 0; j < 4; j++) {
+   for (let i = 0; i < blockCount; i += 8) {
+      for (let j = 0; j < 8; j++) {
          const blockIndex = blockArray[i + j]
          const x = (blockIndex % 20) * blockWidth
          const y = Math.floor(blockIndex / 20) * blockHeight
-         ctx.fillStyle = randomPick(colorPalette4Bit)
+         ctx.fillStyle = randomPickParabola(['#000000', '#AA00AA', '#FF00FF'], 3)
          ctx.fillRect(x, y, blockWidth, blockHeight)
       }
 
@@ -132,13 +132,3 @@ export async function shuffleBarCode(canvas: HTMLCanvasElement) {
    }
 }
 
-const colorPalette4Bit = [
-   // exclude over-bright colors
-   '#000000',
-   '#0000AA',
-   '#00AA00',
-   '#00AAAA',
-   '#AA0000',
-   '#AA00AA',
-   '#AA5500',
-]
