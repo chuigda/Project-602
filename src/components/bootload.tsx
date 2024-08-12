@@ -124,10 +124,21 @@ export async function shuffleBarCode(canvas: HTMLCanvasElement) {
          const blockIndex = blockArray[i + j]
          const x = (blockIndex % 20) * blockWidth
          const y = Math.floor(blockIndex / 20) * blockHeight
-         ctx.fillStyle = `rgb(${randomPick([0, 255])}, ${randomPick([0, 255])}, ${randomPick([0, 255])}`
+         ctx.fillStyle = randomPick(colorPalette4Bit)
          ctx.fillRect(x, y, blockWidth, blockHeight)
       }
 
       await sleep(50)
    }
 }
+
+const colorPalette4Bit = [
+   // exclude over-bright colors
+   '#000000',
+   '#0000AA',
+   '#00AA00',
+   '#00AAAA',
+   '#AA0000',
+   '#AA00AA',
+   '#AA5500',
+]
